@@ -1,0 +1,65 @@
+<!--
+  Generated template for the ProductsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>My Products</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content  class="global" padding>
+    <div [ngClass]="products_enabled">
+        <button ion-button (click)="initProducts()">
+            Get Products
+          </button>
+
+               <ion-list  *ngIf="getLoadedProducts()">
+                  <ion-card  *ngFor="let productDef of products">
+                   
+                       
+                      <ion-item text-wrap *ngIf="productDef!=null && productDef.product!=null">
+                          <ion-grid>
+                              <ion-row >
+                                  <ion-col col-5 >
+                                      <img class="profile-image" src="{{productDef.product.picture.url}}" cache="true"/>
+                                  </ion-col>
+                              
+                                      <ion-col>
+                                          <ion-row >
+                                          <span  class="productName" >{{productDef.product.name}}</span>
+                                        </ion-row> 
+                                      <ion-row >
+                                          <span  class="productPrice" > {{productDef.product.originalPrice}} ₪ </span>
+                                      </ion-row >
+                                 <ion-row >
+                                     <span   class="productDescription" >{{productDef.product.description}}</span>
+                                 </ion-row >
+                               </ion-col>
+                              
+                                
+                        
+                              </ion-row>
+                              </ion-grid>
+                            </ion-item>
+                         
+                    </ion-card>
+
+              </ion-list> 
+         </div>  
+   
+  <input type="file" #fileInput accept="image/*"  [hidden]="true" name="files[]" (change)="processImage($event)" />                      
+  <ion-select #selectPictureType [hidden]="true" (ionChange)="updatePicture(product,$event)" interface="action-sheet">
+    <ion-option value="Gallery">Gallery</ion-option>
+    <ion-option value="Camera">Camera</ion-option>
+  </ion-select> 
+
+</ion-content>

@@ -1,0 +1,155 @@
+// http://ionicframework.com/docs/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+
+ .spinner-container {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .global{
+        background: linear-gradient(to bottom, #4B64F3, #34B3E6); /* Standard syntax */
+    }      
+
+    .menuList{
+        background-color:transparent;
+    }
+    .menuItem
+    {
+        background-color:transparent;
+    }
+
+    .menuButton
+    {
+        color:white;
+    }
+
+    .toolbar-background-md {
+        background-color: #486ff1;
+      }
+    
+      .toolbar-title-md {
+        color: white;
+     }
+    
+     .back-button-md{
+         color:white;
+     }
+    
+     .bar-button-default-md
+     {
+      color:white;
+     }
+
+     .item{
+        margin-bottom:10px;
+    }
+
+    .md .tabs .tabbar
+    {
+       background-color:#496cf2
+     
+    }
+
+    .tabs-md .tab-button {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .tabs-md .tab-button .tab-button-icon{
+        color: rgba(255, 255, 255, 0.7);
+        
+    }
+
+    .tabs-md .tab-button[aria-selected=true] .tab-button-icon{
+        color: white;
+        
+    }
+
+    .tabs-md .tab-button[aria-selected=true] {
+        color: white;
+     }
+
+     .has-icon .tab-badge {
+        background-color: red;
+    }
+
+
+    .red
+    {
+    color:red
+    }
+
+    .green
+    {
+      color:green;
+    }
+   
+
+    .item-md ion-avatar ion-img, .item-md ion-avatar img {
+        /* border-radius: 50%; */
+        overflow: hidden;
+        width: 100px;
+        height: 100px;
+    }
+
+.alert-md .alert-wrapper
+{
+    background: linear-gradient(to bottom, #4B64F3, #34B3E6); /* Standard syntax */
+    border-radius: 20%;
+    
+}
+
+.alert-md .alert-message
+{
+    color:white;
+    font-size: 20px;
+}
+
+.alert-md .alert-button
+{
+    color:white
+}
+
+.alert-md .alert-radio-label
+{
+    color:white 
+}
+
+.alert-md .alert-checkbox-label
+{
+    color:white 
+}
+
+.blankTextSimpleButton
+{
+    color:white;
+    font-size: small;
+    font-weight: 400;
+}
+
+.whiteBig
+{
+    color:white;
+    font-size: large;
+    font-weight: bold;
+}
+
+.basic
+{
+    color:#4B64F3;
+}

@@ -33,7 +33,20 @@ export class MyApp {
   private storage: Storage ) {
     
            authService.getAuthState().subscribe(user=>
-          {});
+          {
+           
+            if (user)
+            {
+              this.userService.updateUserAuthConnected(true);
+              console.log("USER IS NOT CONNECTED");
+            }
+            else
+            {
+              this.userService.updateUserAuthConnected(false);
+              console.log("USER IS NOT CONNECTED");
+            }
+
+          });
 
            if (this.initTime)
          {
@@ -96,6 +109,11 @@ export class MyApp {
 
 
   
+  isUserAuthenticated():boolean
+  {
+    return this.userService.currentUser!=null && this.userService.currentUser.authenticated;
+  }
+
   initializeApp() {
     
       this.platform.ready().then( () => {

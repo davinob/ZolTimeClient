@@ -110,7 +110,7 @@
 .alert-md .alert-wrapper
 {
     background: linear-gradient(to bottom, #4B64F3, #34B3E6); /* Standard syntax */
-    border-radius: 20%;
+   
     
 }
 
@@ -147,6 +147,27 @@
     color:white;
     font-size: large;
     font-weight: bold;
+}
+
+
+.alert-md [aria-checked=true] .alert-radio-icon {
+    border-color: white;
+    border: 2px white solid;
+}
+
+.alert-md [aria-checked=false] .alert-radio-icon {
+    border-color: white;
+    
+}
+
+.alert-md [aria-checked=true] .alert-radio-label {
+    color: white;
+    font-weight: bold;
+}
+
+.alert-md .alert-radio-inner
+{
+    background-color:white
 }
 
 .basic

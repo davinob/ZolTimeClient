@@ -10,17 +10,83 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>My Products</ion-title>
+    <ion-title>Products</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content  class="global" padding>
+
+   
+     <div class="searchBox">
+        <div class="searchBoxInner">
+          
+            
+        <ion-grid>
+            <ion-row>
+                <span>Around:</span>
+            </ion-row>
+            <ion-row justify-content-start>
+                <ion-col col-8>
+                 <ion-input class="position" type="text"  placeholder="Current Position"></ion-input>
+                </ion-col>
+              <ion-col >
+                  <ion-grid (click)='editInput("range",true)'>
+                      <ion-row>
+                          <span>Range:</span>
+                      </ion-row>
+                      <ion-row>
+                          <span>{{theSearch.range}}</span>
+                      </ion-row>
+                    </ion-grid>
+            </ion-col>
+            </ion-row>
+        </ion-grid>  
+       
+       
+   
+       
+          <ion-item [hidden]="true">
+             <ion-select #rangeInput  multiple="false" (ionChange)='saveInput("range",$event)'>
+              <ion-option *ngFor="let range of ranges"  (value)="range">{{range}}</ion-option>
+             </ion-select>
+          </ion-item>
+
+
+
+        <ion-grid>
+            <ion-row justify-content-start>
+                <ion-col col-3 (click)='editInput("hashgaha",true)'>
+                <span>Hashgaha:</span>
+              </ion-col>
+                <ion-col col-3 (click)='editInput("hashgaha",true)'>
+                    {{theSearch.hashgaha}}
+                </ion-col>
+            </ion-row>
+ 
+        </ion-grid>  
+
+          
+                   <ion-item [hidden]="true">
+                      <ion-select #hashgahaInput  multiple="false" (ionChange)='saveInput("hashgaha",$event)'>
+                       <ion-option *ngFor="let hashga of hashgahot"  (value)="hashga">{{hashga}}</ion-option>
+                      </ion-select>
+                   </ion-item>
+      
+               
+     
+
+    </div>
+  </div>
+  
+    <button ion-button (click)="initProducts()">
+        Get Products
+     </button>
+
+ 
     <div [ngClass]="products_enabled">
-        <button ion-button (click)="initProducts()">
-            Get Products
-          </button>
+     
 
                <ion-list  *ngIf="getLoadedProducts()">
                   <ion-card  *ngFor="let productDef of products">
@@ -38,7 +104,7 @@
                                           <span  class="productName" >{{productDef.product.name}}</span>
                                         </ion-row> 
                                       <ion-row >
-                                          <span  class="productPrice" > {{productDef.product.originalPrice}} ₪ </span>
+                                          <span  class="productPriceBefore" > <del>{{productDef.product.originalPrice}}</del>  </span> <span  class="productPriceAfter" > {{productDef.promo.products[productDef.product.key].reducedPrice}}  ₪ </span>
                                       </ion-row >
                                  <ion-row >
                                      <span   class="productDescription" >{{productDef.product.description}}</span>

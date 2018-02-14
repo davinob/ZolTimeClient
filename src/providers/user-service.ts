@@ -36,6 +36,7 @@ export interface Seller {
   export interface User {
     email: string;
     profileCompleted?:boolean;
+    authenticated?:boolean
     }
 
 
@@ -70,11 +71,12 @@ export interface Promotion{
 @Injectable()
 export class UserService {
   
-  usersCollectionRef: firebase.firestore.CollectionReference;
+  usersCollection: AngularFirestoreCollection<Seller>;
   sellersCollectionRef: firebase.firestore.CollectionReference;
   productsCollectionRef:firebase.firestore.CollectionReference;
   promotionsCollectionRef:firebase.firestore.CollectionReference;
-  currentUser:User;
+  currentUser:User={email:"unset",
+                    authenticated:false};
   userStatus:Subject<any>=new Subject<any>();
    
   currentUserObs:Observable<any>=null;
@@ -91,10 +93,38 @@ export class UserService {
   constructor(private afs: AngularFirestore,public authService:AuthService,
    private http: HttpClient,
     private globalService:GlobalService) {
+      this.usersCollection = this.afs.collection<Seller>('users'); 
         this.sellersCollectionRef = this.afs.collection<Seller>('sellers').ref; 
         this.productsCollectionRef = this.afs.collection<Product>('products').ref; 
         this.promotionsCollectionRef = this.afs.collection<Product>('promotions').ref; 
    }
+
+
+
+   public  updateUserAuthConnected(flag:boolean)
+   {
+    this.currentUser.authenticated=flag;
+
+   }
+
+
+   public initCurrentUser(userID:string):Observable<any>
+   {
+     console.log("init with userID:"+userID);
+         this.globalService.userID=userID;
+         
+         this.currentUserObs=this.usersCollection.doc(this.globalService.userID).valueChanges();
+         
+        this.currentUserObs.subscribe(data =>
+         { 
+           this.setCurrentUserData(data);
+         });
+ 
+        
+ 
+         return this.userStatus.asObservable().first(data=>data!=null);
+   }
+
   
    public initProducts():Promise<any>
   {
@@ -132,6 +162,7 @@ export class UserService {
  
                let sellerPromotions:Array<any> = [];
                 querySnapshot.forEach(function(doc) {
+                  if (doc.data().isActivated)
                   sellerPromotions[doc.data().key]=doc.data();
               });
               this.allPromotions=sellerPromotions;
@@ -166,11 +197,14 @@ export class UserService {
    let promotionsGood:{}={};
    let productsGood:Array<{}>=[{}];
 
+  let prodKeyPromoPrice:{}={} ;
+
    for (var keyPromo in this.allPromotions) {
 
     let promo=this.allPromotions[keyPromo];
     if (promo==null)
       return;
+
     let seller=this.allSellers[promo.uID];
    
     if(! (seller.address!=null
@@ -184,13 +218,24 @@ export class UserService {
         continue;
       }
     
+     
+
     for (var keyProd in promo.products)
     {
+      if (prodKeyPromoPrice[keyProd])
+      {
+        if (prodKeyPromoPrice[keyProd]<promo.products[keyProd].reducedPrice)
+        {
+          continue;
+        }
+      }
 
       productsGood.push({product:this.allProducts[keyProd],promo:promo,seller:this.allSellers[promo.uID]});
+      prodKeyPromoPrice[keyProd]=promo.products[keyProd].reducedPrice;
+
     }
   }
-       console.log(promotionsGood);
+       console.log(productsGood);
     return productsGood;
 
   }
@@ -235,7 +280,7 @@ export class UserService {
    console.log("creating user on UID"+userUID);
     
      return new Promise<any>((resolve, reject) => {
-      let setUserPromise:Promise<void>=this.usersCollectionRef.doc(userUID).set(user);
+      let setUserPromise:Promise<void>=this.usersCollection.doc(userUID).set(user);
       console.log("PROMISE launched");
       setUserPromise.then( ()=>
       {
@@ -272,7 +317,7 @@ console.log("upadting user on UID"+this.globalService.userID);
 console.log(userUpdate); 
 
 return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<void>=this.usersCollectionRef.doc(this.globalService.userID).update(userUpdate);
+let setUserPromise:Promise<void>=this.usersCollection.doc(this.globalService.userID).update(userUpdate);
 console.log("PROMISE launched");
 setUserPromise.then( ()=>
 {

@@ -12,7 +12,7 @@
                 <div class="menuButton">{{p.title}}</div> 
             </button>
         </ion-item>
-        <ion-item class="menuItem">
+        <ion-item *ngIf="isUserAuthenticated()" class="menuItem">
             <button menuClose clear ion-button   (click)="logout()">
                 <div class="menuButton">Logout</div> 
             </button>

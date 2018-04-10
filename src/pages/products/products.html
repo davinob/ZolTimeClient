@@ -10,7 +10,18 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Products</ion-title>
+    <ion-title> 
+            <ion-grid>
+                    <ion-row >
+                        <ion-col col-10 >
+        <ion-input class="position" type="text"  placeholder="Current Position"></ion-input>
+    </ion-col>
+    <ion-col col-2 align-self-end>
+             <ion-icon (click)="presentPopover($event)" name="settings"></ion-icon>
+        </ion-col>
+     </ion-row >
+     </ion-grid>
+    </ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -19,67 +30,6 @@
 <ion-content  class="global" padding>
 
    
-     <div class="searchBox">
-        <div class="searchBoxInner">
-          
-            
-        <ion-grid>
-            <ion-row>
-                <span>Around:</span>
-            </ion-row>
-            <ion-row justify-content-start>
-                <ion-col col-8>
-                 <ion-input class="position" type="text"  placeholder="Current Position"></ion-input>
-                </ion-col>
-              <ion-col >
-                  <ion-grid (click)='editInput("range",true)'>
-                      <ion-row>
-                          <span>Range:</span>
-                      </ion-row>
-                      <ion-row>
-                          <span>{{theSearch.range}}</span>
-                      </ion-row>
-                    </ion-grid>
-            </ion-col>
-            </ion-row>
-        </ion-grid>  
-       
-       
-   
-       
-          <ion-item [hidden]="true">
-             <ion-select #rangeInput  multiple="false" (ionChange)='saveInput("range",$event)'>
-              <ion-option *ngFor="let range of ranges"  (value)="range">{{range}}</ion-option>
-             </ion-select>
-          </ion-item>
-
-
-
-        <ion-grid>
-            <ion-row justify-content-start>
-                <ion-col col-3 (click)='editInput("hashgaha",true)'>
-                <span>Hashgaha:</span>
-              </ion-col>
-                <ion-col col-3 (click)='editInput("hashgaha",true)'>
-                    {{theSearch.hashgaha}}
-                </ion-col>
-            </ion-row>
- 
-        </ion-grid>  
-
-          
-                   <ion-item [hidden]="true">
-                      <ion-select #hashgahaInput  multiple="false" (ionChange)='saveInput("hashgaha",$event)'>
-                       <ion-option *ngFor="let hashga of hashgahot"  (value)="hashga">{{hashga}}</ion-option>
-                      </ion-select>
-                   </ion-item>
-      
-               
-     
-
-    </div>
-  </div>
-  
     <button ion-button (click)="initProducts()">
         Get Products
      </button>
@@ -122,10 +72,6 @@
               </ion-list> 
          </div>  
    
-  <input type="file" #fileInput accept="image/*"  [hidden]="true" name="files[]" (change)="processImage($event)" />                      
-  <ion-select #selectPictureType [hidden]="true" (ionChange)="updatePicture(product,$event)" interface="action-sheet">
-    <ion-option value="Gallery">Gallery</ion-option>
-    <ion-option value="Camera">Camera</ion-option>
-  </ion-select> 
+
 
 </ion-content>

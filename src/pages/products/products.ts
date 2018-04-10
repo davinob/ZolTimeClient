@@ -12,6 +12,10 @@ import { Geolocation } from '@ionic-native/geolocation';
 
 import 'rxjs/Rx';
 import { AddressService,Address } from '../../providers/address-service';
+
+
+import { PopoverController } from 'ionic-angular';
+import { SearchSettingsPage } from '../search-settings/search-settings';
 /**
  * Generated class for the ProductsPage page.
  *
@@ -34,8 +38,8 @@ export class ProductsPage {
   @ViewChild('rangeInput') rangeInput;
   
 
-  hashgahot:string[]=["Kosher","Lemehadrin","Any"];
-  ranges:string[]=["1 Km","5 Km","10 Km","20 Km"];
+ 
+  
   categories:string[]=["Italian", "Sandwichs","Israeli", "Boulangerie"];
   
   
@@ -47,11 +51,7 @@ export class ProductsPage {
   addressSelected:boolean=false;
   addressJSON:Address;
 
-  theSearch:any={
-    hashgaha:"Any",
-    range:"1 Km"
-  }
-
+  
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private userService:UserService, public alertAndLoadingService: AlertAndLoadingService
@@ -59,19 +59,26 @@ export class ProductsPage {
    private elRef:ElementRef,
     public alertService: AlertAndLoadingService,
     private geolocation: Geolocation,
-    public addressService:AddressService ) {
+    public addressService:AddressService,
+    public popoverCtrl: PopoverController ) {
      
   }
 
 
+settings:any={hashgaha:"Any",range:"1 Km"};
 
+  presentPopover(myEvent) {
+    let popover = this.popoverCtrl.create('SearchSettingsPage',this.settings,{cssClass:"popOverClass"});
 
-
-  saveInput(name:string,inputValue:any)
-  {
-    this.theSearch[name]=inputValue;
+    popover.present({
+      ev: myEvent
+    });
   }
- 
+
+
+  
+
+
 
 
     
@@ -141,12 +148,13 @@ positionCords=null;
 
 
 getLoadedProducts(){
-
+  
   return this.products;
 }
   
   initProducts()
   {
+    console.log(this.settings);
     console.log("GETTING PRODUCTS");
     if (this.positionCords==null)
     return;

@@ -25,8 +25,7 @@ import {
   import { GlobalService } from './global-service';
 
   import { HttpClient, HttpParams } from '@angular/common/http';
-import { provideSettings } from '../../../myTest/src/app/app.module';
-
+  
 export interface Seller {
   email: string;
   address?:Address;

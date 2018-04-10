@@ -6,7 +6,7 @@ import { ProductsPage } from '../pages/products/products';
 
 import { TutorialPage } from '../pages/tutorial/tutorial';
 import { LoginPage } from '../pages/login/login';
-import { ProfileSettingsPage } from '../pages/profile-settings/profile-settings';
+import { SearchSettingsPage } from '../pages/search-settings/search-settings';
 
 import { AuthService } from '../providers/auth-service';
 import { UserService } from '../providers/user-service';

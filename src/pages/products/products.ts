@@ -15,13 +15,16 @@ import { AddressService,Address } from '../../providers/address-service';
 
 
 import { PopoverController } from 'ionic-angular';
-import { SearchSettingsPage } from '../search-settings/search-settings';
+import { SearchSettingsPage, SearchSettings } from '../search-settings/search-settings';
+import { TextInput } from 'ionic-angular/components/input/input';
 /**
  * Generated class for the ProductsPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
  */
+
+
 
 @IonicPage()
 @Component({
@@ -43,13 +46,6 @@ export class ProductsPage {
   categories:string[]=["Italian", "Sandwichs","Israeli", "Boulangerie"];
   
   
-  @ViewChild('address') addressInput ;
-  searchAddress: string = '';
-  addresses: any;
-  shouldShowAddresses:boolean;
-  searching:boolean=false;
-  addressSelected:boolean=false;
-  addressJSON:Address;
 
   
 
@@ -65,86 +61,33 @@ export class ProductsPage {
   }
 
 
-settings:any={hashgaha:"Any",range:"1 Km"};
+  goToSearchAddessPage()
+  {
+    this.navCtrl.push('SearchAddressPage',{position:this.position});
+  }
+
+  public settings:SearchSettings={hashgaha:"Any",range:"1 Km",order:"Low Price",onlyShowPromotion:true};
 
   presentPopover(myEvent) {
-    let popover = this.popoverCtrl.create('SearchSettingsPage',this.settings,{cssClass:"popOverClass"});
+    let popover = this.popoverCtrl.create('SearchSettingsPage',{settings:this.settings},{cssClass:"popOverClass"});
 
     popover.present({
       ev: myEvent
     });
   }
-
-
-  
-
-
-
-
-    
-  showAddresses(toShow:boolean)
-  {
-   this.shouldShowAddresses=toShow;  
-   if (!toShow)
-   {
-   this.searching=false;
-   if (!this.addressSelected)
-    this.searchAddress=null;
-   }
-  }
-
-  lastStringTyped:string="";
-
-  setFilteredItems() {
-    console.log("FILTERING ADDRESSES");
-    console.log(this.lastStringTyped);
-    console.log(this.searchAddress);
-    if ((this.searchAddress==null)||(this.searchAddress.length<2)
-    ||(this.lastStringTyped==this.searchAddress)||(!this.shouldShowAddresses))
-    {
-      if ((this.searchAddress==null)||(this.searchAddress.length<2))
-        this.addressSelected=false;
-      this.addresses=null;
-      return;
-    }
-    this.lastStringTyped=this.searchAddress;
-      this.searching=true;
-      this.addressSelected=false;
-      this.addressService.filterItems(this.searchAddress).first().subscribe((listOfAddresses)=>
-      {
-         this.searching=false;
-         this.addresses=listOfAddresses.value;
-      });
-
-  }
-
-
-
   
   
-  
-  selectAddress(address:any)
-  {
-    console.log("SELECT ADDRESS" + address.description);
-    this.addresses=null;
-    this.searchAddress=address.description;
-    this.lastStringTyped=this.searchAddress;
-    this.addressSelected=true;
-    
-    
-    this.addressService.getPosition(address.place_id).first().subscribe((addressJSON)=>
-    {
-        console.log(addressJSON);
-        this.addressJSON=addressJSON.value;
-    });
-    
-   this.addressInput.setFocus();
-    
-  }
 
 
 products;
-positionCords=null;
+
+public position=
+{lon:null,
+  lat:null,
+  description:""
+};
+
+
 
 
 getLoadedProducts(){
@@ -156,10 +99,10 @@ getLoadedProducts(){
   {
     console.log(this.settings);
     console.log("GETTING PRODUCTS");
-    if (this.positionCords==null)
+    if (this.position.lon==null)
     return;
     
-    this.products=this.userService.getClosestCurrentProducts(this.positionCords.coords.latitude,this.positionCords.coords.longitude);
+    this.products=this.userService.getClosestCurrentProducts(this.position.lat,this.position.lon);
      console.log("INIT PRODCTS");
      console.log(this.products);
   }
@@ -167,45 +110,40 @@ getLoadedProducts(){
   initPosition():Promise<any>
   {
     return this.geolocation.getCurrentPosition().then((resp) => {
-      this.positionCords=resp;
+      this.position.lat=resp.coords.latitude;
+      this.position.lon=resp.coords.longitude;
+     
+
      }).catch((error) => {
       this.alertService.showToast({message:"Error getting location"});
     });
   }
   
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ProductsPage');
+  ionViewDidEnter()
+  {
+    console.log('ionViewDidEnter ProductsPage');
+    if (this.position.description=="")
+    {
     this.initPosition().then( val=> {
        this.initProducts();
-  });
-  }
-
-
-
-
-  editInput(input:string,bool:boolean)
-  {
-    this.allInputsShows[input]=bool;
-    switch (input) {
-      case "categories":
-      this.categoriesInput._elementRef.nativeElement.click();
-        break;
-       case "hashgaha":
-      this.hashgahaInput._elementRef.nativeElement.click();
-      break;
-      case "range":
-      this.rangeInput._elementRef.nativeElement.click();
-      break;
-      case "address":
-      if (bool)
-        this.addressSelected=false;
-        break;
-      default:
-        break;
+    });
+    this.position.description="Current Location";
     }
 
   }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad ProductsPage');
+
+   
+  }
+
+
+
+
+  
+
+ 
  
   
 

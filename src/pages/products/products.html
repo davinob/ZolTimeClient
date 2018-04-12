@@ -6,29 +6,33 @@
 -->
 <ion-header>
 
-  <ion-navbar>
+<ion-navbar>
     <button ion-button menuToggle>
-      <ion-icon name="menu"></ion-icon>
+        <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title> 
-            <ion-grid>
-                    <ion-row >
-                        <ion-col col-10 >
-        <ion-input class="position" type="text"  placeholder="Current Position"></ion-input>
-    </ion-col>
-    <ion-col col-2 align-self-end>
-             <ion-icon (click)="presentPopover($event)" name="settings"></ion-icon>
-        </ion-col>
-     </ion-row >
-     </ion-grid>
+    <ion-title>
+        <ion-grid>
+            <ion-row>
+                <ion-col col-10>
+                
+                 <ion-input clearInput  [(ngModel)]="position.description" class="position" type="text" placeholder="Current Location" (ionFocus)="goToSearchAddessPage()">
+                        <ion-icon class='white' name="navigate"></ion-icon> 
+                 </ion-input>
+                </ion-col>
+                <ion-col col-2 align-self-end>
+                    <ion-icon (click)="presentPopover($event)" name="settings"></ion-icon>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
     </ion-title>
-  </ion-navbar>
+</ion-navbar>
 
 </ion-header>
 
 
 <ion-content  class="global" padding>
-
+        
+         
    
     <button ion-button (click)="initProducts()">
         Get Products

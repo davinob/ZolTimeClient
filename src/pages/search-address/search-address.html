@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-navbar>
+        <ion-item >
+        <ion-input  class="position" #address    type="text" [(ngModel)]="searchAddress"  placeholder="Current Location"></ion-input>
+        <button *ngIf="searchAddress" ion-button type="button" clear item-right (click)="clearAddressSearch()"> <ion-icon class='white'  name="close-circle"> </ion-icon> </button>
+      </ion-item> 
+      </ion-navbar>
+
+
+</ion-header>
+
+<ion-content padding>
+   
+    <div *ngIf="searching" class="spinner-container">
+        <ion-spinner></ion-spinner>
+    </div>
+
+    <ion-list *ngIf="addresses && searchAddress"  class="addressesList">
+        <ion-item class="addressItem" *ngFor="let address of addresses" (click)="selectAddress(address)">
+          {{address.description}}
+        </ion-item>
+     </ion-list>
+
+     <div *ngIf="!searchAddress && addressesHistory && addressesHistory.length>0">
+        <span class="historyHeader">SEARCH HISTORY</span>
+     <ion-list   class="addressesList">
+        <ion-item class="addressItem" *ngFor="let address of addressesHistory" (click)="selectAddressFromHistory(address)">
+          {{address.description}}
+        </ion-item>
+     </ion-list>
+     <span class="historyFooter"><a class="historyFooterLink" (click)="clearAddressesHistory()">CLEAR HISTORY</a></span>
+    </div>
+
+</ion-content>

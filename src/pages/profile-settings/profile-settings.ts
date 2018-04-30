@@ -170,10 +170,10 @@ export class ProfileSettingsPage {
     this.addressSelected=true;
     
     
-    this.addressService.getPosition(address.place_id).first().subscribe((addressJSON)=>
+    this.addressService.getPositionAddress(address.place_id).first().subscribe((addressJSON)=>
     {
         console.log(addressJSON);
-        this.addressJSON=addressJSON.value;
+        this.addressJSON=addressJSON;
     });
     
    this.addressInput.setFocus();

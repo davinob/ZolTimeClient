@@ -173,4 +173,78 @@ visibility: hidden
   visibility: hidden
 }
 
+
+.list-md {
+  max-width: 500px;
+  margin: auto;
+}
+
+
+.scrolling-wrapper {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  border-bottom: 1px solid white;
+    border-top: 1px solid white;
+  color:white;
+  height: 60px;
+}
+
+.scrolling-wrapperSubCategory {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  border-bottom: 2px solid white;
+ color:white;
+  height: 29px;
+  padding-bottom: 13px;
+  
+}
+
+.category {
+  display: inline-block;
+  margin-top: 5px;
+  padding-left: 20px;
+  
+  
+}
+
+.subCategory {
+  display: inline-block;
+  margin-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.categorySelected{
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.1), 0 6px 20px 0 rgba(0,0,0,1);
+
+ 
+}
+
+.subCategorySelected{
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.1), 0 6px 20px 0 rgba(0,0,0,1);
+
+ 
+}
+
+
+
+.categoryName{
+  float:left
+}
+
+.categoryPic{
+  height: 10%;
+  max-height: 22px;
+  margin-left: 20%;
+}
+
+
+
+
+
+
+
+
 }

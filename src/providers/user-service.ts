@@ -13,18 +13,24 @@ import {
   AngularFirestore,
   AngularFirestoreCollection,
   AngularFirestoreDocument} from 'angularfire2/firestore';
-  import { Address } from './address-service';
+  import { Position, Address, AddressService } from './address-service';
   
   import * as firebase from 'firebase/app';
   
+  
 
   import { Subject } from 'rxjs/Subject';
+  
 
   import { AuthService } from './auth-service';
   
   import { GlobalService } from './global-service';
 
   import { HttpClient, HttpParams } from '@angular/common/http';
+
+  import { from } from 'rxjs/observable/from';
+
+  
   
 export interface Seller {
   email: string;
@@ -67,13 +73,24 @@ export interface Promotion{
   isActivated:boolean
 }
 
+
+export interface SearchSettings {
+  position:Position;
+  hashgaha: string;
+  range:number;
+  order:string;
+  onlyShowPromotion:boolean
+  }
+
 @Injectable()
 export class UserService {
+
+  db=firebase.firestore();
   
   usersCollection: AngularFirestoreCollection<Seller>;
   sellersCollectionRef: firebase.firestore.CollectionReference;
-  productsCollectionRef:firebase.firestore.CollectionReference;
-  promotionsCollectionRef:firebase.firestore.CollectionReference;
+  productsCollection:firebase.firestore.CollectionReference;
+  promotionsCollection:firebase.firestore.CollectionReference;
   currentUser:User={email:"unset",
                     authenticated:false};
   userStatus:Subject<any>=new Subject<any>();
@@ -85,17 +102,19 @@ export class UserService {
   
   allProducts:{}={};
   allPromotions:{}={};
-  allSellers:{}={};
+  allSellers=[];
+  allSellersOrganized=[];
+
   
+
   
 
   constructor(private afs: AngularFirestore,public authService:AuthService,
    private http: HttpClient,
-    private globalService:GlobalService) {
+    private globalService:GlobalService,
+  private addressService:AddressService) {
       this.usersCollection = this.afs.collection<Seller>('users'); 
-        this.sellersCollectionRef = this.afs.collection<Seller>('sellers').ref; 
-        this.productsCollectionRef = this.afs.collection<Product>('products').ref; 
-        this.promotionsCollectionRef = this.afs.collection<Product>('promotions').ref; 
+        this.sellersCollectionRef = this.db.collection('sellers');
    }
 
 
@@ -125,57 +144,6 @@ export class UserService {
    }
 
   
-   public initProducts():Promise<any>
-  {
- 
-        this.sellersCollectionRef.onSnapshot
-        (querySnapshot =>
-      {
-        let sellers:Array<any>= [];
-      querySnapshot.forEach(function(doc) {
-        console.log(doc);
-        console.log(doc.data());
-      sellers[doc.data().key]=doc.data();
-      });
-      console.log("SELLERS");
-      console.log(sellers);
-      this.allSellers=sellers;
-      }
-      );
-        this.productsCollectionRef.onSnapshot(
-          querySnapshot =>
-          { 
-            let sellerProducts:Array<any>= [];
-            
-            querySnapshot.forEach(function(doc) {
-                 
-                 sellerProducts[doc.data().key]=doc.data();
-            });
-            this.allProducts=sellerProducts;
-
-          });
-
-          this.promotionsCollectionRef.onSnapshot(
-            querySnapshot =>
-            { 
- 
-               let sellerPromotions:Array<any> = [];
-                querySnapshot.forEach(function(doc) {
-                  if (doc.data().isActivated)
-                  sellerPromotions[doc.data().key]=doc.data();
-              });
-              this.allPromotions=sellerPromotions;
-  
-            });
-
-            
-            return new Promise(resolve =>
-              {
-                resolve([this.allSellers,this.allProducts,this.allPromotions]);
-              });
-          
-
-  }
   
 
   public setCurrentUserData(data:any)
@@ -186,57 +154,94 @@ export class UserService {
   }
 
 
-  getClosestCurrentProducts(lat:number,lng:number)
+  getClosestCurrentSellers(settings:SearchSettings)
+{
+
+  
+
+  console.log("queryAllBasedOnFilters");
+  if (!settings.position.geoPoint)
   {
-    
-    console.log(lat);
-    console.log(lng);
-    
-
-   let promotionsGood:{}={};
-   let productsGood:Array<{}>=[{}];
-
-  let prodKeyPromoPrice:{}={} ;
-
-   for (var keyPromo in this.allPromotions) {
-
-    let promo=this.allPromotions[keyPromo];
-    if (promo==null)
-      return;
-
-    let seller=this.allSellers[promo.uID];
-   
-    if(! (seller.address!=null
-      &&  seller.address.lat>=lat-1
-        &&seller.address.lat<=lat+1
-      &&seller.address.lng>=lng-1
-      &&seller.address.lng<=lng+1)
-      )
-      {
-        console.log("NOT IN GOOD POSTION");
-        continue;
-      }
-    
-     
-
-    for (var keyProd in promo.products)
-    {
-      if (prodKeyPromoPrice[keyProd])
-      {
-        if (prodKeyPromoPrice[keyProd]<promo.products[keyProd].reducedPrice)
-        {
-          continue;
-        }
-      }
-
-      productsGood.push({product:this.allProducts[keyProd],promo:promo,seller:this.allSellers[promo.uID]});
-      prodKeyPromoPrice[keyProd]=promo.products[keyProd].reducedPrice;
-
-    }
+    console.log("NO LOCATION");
+    return from(this.allSellers);
   }
-       console.log(productsGood);
-    return productsGood;
 
+  let box=this.addressService.boundingBoxCoordinates(settings.position.geoPoint,settings.range);
+  console.log(settings);
+  console.log(box);
+  
+  let lesserGeopoint = new firebase.firestore.GeoPoint(box.swCorner.latitude, box.swCorner.longitude);
+  let greaterGeopoint = new firebase.firestore.GeoPoint(box.neCorner.latitude, box.neCorner.longitude);
+  
+  
+
+
+
+  let query=this.sellersCollectionRef.where("address.geoPoint",">=",lesserGeopoint).
+    where("address.geoPoint","<=",greaterGeopoint);
+
+if (settings.hashgaha!="Any")
+query=query.where("hashgaha","==",settings.hashgaha);
+
+
+query.onSnapshot(sellersInfos =>
+    {
+      console.log(sellersInfos);
+      sellersInfos.forEach(doc=>{
+        let uid=doc.id;
+
+       this.allSellers[uid]=doc.data();
+   
+        
+       this.sellersCollectionRef.doc(uid).collection("products").onSnapshot(
+        querySnapshot =>
+        { 
+          this.allSellers[uid].products=new Array();
+            console.log("PRODUCTS");
+         
+            querySnapshot.forEach(product=>{
+              this.allSellers[uid].products.push(product.data());
+            });
+            console.log(this.allSellers[uid].products);
+           
+  
+
+            this.sellersCollectionRef.doc(uid).collection("promotions").onSnapshot(
+              querySnapshot =>
+              { 
+                this.allSellers[uid].promotions=new Array();
+                  console.log("PROMOTIONSSS");
+                  querySnapshot.forEach(promotion=>{
+                    this.allSellers[uid].promotions.push(promotion.data());
+                  });
+                  console.log(this.allSellers[uid].promotions);
+                  console.log(this.allSellers);
+
+                  this.organizeSellers(settings);
+              });
+      
+        });
+        });
+
+  
+  });
+
+    console.log("SELLERS");
+    console.log(this.allSellers);
+    
+}
+
+
+
+organizeSellers(settings:SearchSettings)
+  {
+    this.allSellersOrganized=new Array();
+    for (let sellerKey in this.allSellers)
+    {
+      this.allSellersOrganized.push(this.allSellers[sellerKey]);
+    }
+       
+        
   }
 
    public getCurrentUser():User
@@ -353,7 +358,7 @@ console.log("adding product on UID"+this.globalService.userID);
 console.log(product); 
 
 return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<any>=this.productsCollectionRef.doc(key).set(product);
+let setUserPromise:Promise<any>=this.productsCollection.doc(key).set(product);
 console.log("PROMISE launched");
 setUserPromise.then( ()=>
 {
@@ -383,7 +388,7 @@ public addPromotionToCurrentUser(promotion:Promotion):Promise<any>
   console.log(promotion);
 
 return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<any>=this.promotionsCollectionRef.doc(key).set(promotion);
+let setUserPromise:Promise<any>=this.promotionsCollection.doc(key).set(promotion);
 console.log("PROMISE launched");
 setUserPromise.then( ()=>
 {
@@ -407,7 +412,7 @@ public updatePromotionToCurrentUser(promotion:Promotion):Promise<any>
   console.log(promotion);
 
 return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<any>=this.promotionsCollectionRef.doc(promotion.key).update(promotion);
+let setUserPromise:Promise<any>=this.promotionsCollection.doc(promotion.key).update(promotion);
 console.log("PROMISE launched");
 setUserPromise.then( ()=>
 {

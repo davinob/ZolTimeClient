@@ -1,7 +1,7 @@
 import { Component,ViewChild,ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController  } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { UserService, User,Product } from '../../providers/user-service';
+import { SearchSettings,UserService, User,Product } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 
 import { Camera,CameraOptions  } from '@ionic-native/camera';
@@ -11,12 +11,15 @@ import { Observable } from 'rxjs/Observable';
 import { Geolocation } from '@ionic-native/geolocation';
 
 import 'rxjs/Rx';
-import { AddressService,Address } from '../../providers/address-service';
+import { Position,AddressService,Address } from '../../providers/address-service';
 
 
 import { PopoverController } from 'ionic-angular';
-import { SearchSettingsPage, SearchSettings } from '../search-settings/search-settings';
+import { SearchSettingsPage } from '../search-settings/search-settings';
 import { TextInput } from 'ionic-angular/components/input/input';
+import { Storage } from '@ionic/storage';
+import { Subscription } from 'rxjs/Subscription';
+import { GlobalService } from '../../providers/global-service';
 /**
  * Generated class for the ProductsPage page.
  *
@@ -56,17 +59,64 @@ export class ProductsPage {
     public alertService: AlertAndLoadingService,
     private geolocation: Geolocation,
     public addressService:AddressService,
-    public popoverCtrl: PopoverController ) {
+    public popoverCtrl: PopoverController,
+     public storage:Storage,
+    private globalSvc:GlobalService ) {
      
+  }
+
+
+
+  getCategories()
+  {
+    return this.globalSvc.categories;
+  }
+
+  categorySelected:any=null;
+  subCategorySelected:any=null;
+
+  selectCategory(catego:any){
+    console.log("CATEGO SELECTED:"+catego);
+    this.categorySelected=catego;
+    this.subCategorySelected=null;
+    this.initSellers();
+
+  }
+
+  selectSubCategory(subCatego:any){
+    console.log("Sub CATEGO SELECTED:"+subCatego);
+    this.subCategorySelected=subCatego;
+
+    this.initSellers();
+
+  }
+
+  getSubCategories(catego:any):any[]{
+    return catego.subCategories;
+  }
+
+  isCategorySelected(catego:any):boolean
+  {
+    return this.categorySelected && catego==this.categorySelected;
+  }
+
+  isSubCategorySelected(subCatego:any):boolean
+  {
+    return this.subCategorySelected && subCatego==this.subCategorySelected;
   }
 
 
   goToSearchAddessPage()
   {
-    this.navCtrl.push('SearchAddressPage',{position:this.position});
+    this.navCtrl.push('SearchAddressPage',{position:this.settings.position});
   }
 
-  public settings:SearchSettings={hashgaha:"Any",range:"1 Km",order:"Low Price",onlyShowPromotion:true};
+  public settings:SearchSettings={
+    position:{geoPoint:null,description:""},
+    hashgaha:"Any",
+    range:1,
+    order:"Low Price",
+    onlyShowPromotion:true};
 
   presentPopover(myEvent) {
     let popover = this.popoverCtrl.create('SearchSettingsPage',{settings:this.settings},{cssClass:"popOverClass"});
@@ -78,63 +128,73 @@ export class ProductsPage {
   
   
 
-
-products;
-
-public position=
-{lon:null,
-  lat:null,
-  description:""
-};
-
-
-
-
-getLoadedProducts(){
   
-  return this.products;
-}
-  
-  initProducts()
+  initSellers()
   {
+    //this.userService.sellersOrganizedSubject.unsubscribe();
+
     console.log(this.settings);
-    console.log("GETTING PRODUCTS");
-    if (this.position.lon==null)
-    return;
+    console.log("GETTING SELLERS");
+    if ((this.settings.position.geoPoint==null)&&(this.settings.position.description=="Current Location"))
+  {
+    this.initPosition().then(val=>{this.fetchSellers()});
+  }
+  else
+    this.fetchSellers();
+}
+
+  fetchSellers(){
+    console.log(this.settings.position);
     
-    this.products=this.userService.getClosestCurrentProducts(this.position.lat,this.position.lon);
-     console.log("INIT PRODCTS");
-     console.log(this.products);
+      this.userService.getClosestCurrentSellers(this.settings);
+  }
+
+  getOrganizedSellers():Array<any>{
+    console.log("ORGANIZED SELLERS");
+    console.log(this.userService.allSellersOrganized);
+    return this.userService.allSellersOrganized;
   }
 
   initPosition():Promise<any>
   {
+    console.log("INIT POSITION");
     return this.geolocation.getCurrentPosition().then((resp) => {
-      this.position.lat=resp.coords.latitude;
-      this.position.lon=resp.coords.longitude;
-     
-
+      this.settings.position=this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,"Current Position");
+    
      }).catch((error) => {
       this.alertService.showToast({message:"Error getting location"});
     });
   }
   
-  ionViewDidEnter()
-  {
-    console.log('ionViewDidEnter ProductsPage');
-    if (this.position.description=="")
-    {
-    this.initPosition().then( val=> {
-       this.initProducts();
-    });
-    this.position.description="Current Location";
-    }
+  initSearchSettingsFromStorage() {
+    console.log(this.settings);
 
+    this.storage.get("settings").then(val => {
+      if (val)
+      {
+       this.settings.hashgaha=val.hashgaha;
+       this.settings.onlyShowPromotion=val.onlyShowPromotion;
+       this.settings.order=val.order;
+       this.settings.range=val.range;
+      }
+        console.log(this.settings);
+     });
+
+  
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductsPage');
 
+    this.initSearchSettingsFromStorage();
+
+    if (this.settings.position.description=="")
+    {
+    this.initPosition().then( val=> {
+       this.fetchSellers();
+    });
+    this.settings.position.description="Current Location";
+    }
    
   }
 

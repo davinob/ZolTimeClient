@@ -14,6 +14,39 @@ export class GlobalService {
 
   constructor() { 
    }
+
+
+ 
+   public categories=
+   [
+    {
+      name: "Boulangerie",
+      icon: "bread.svg",
+      subCategories: ["Bread", "Cake", "Borekas", "Salad", "Sandwich","Drinks","Desserts"]
+    },
+    {
+      name: "Sandwich",
+      icon: "sandwich.svg",
+      subCategories: ["Sandwich","Drinks","Desserts"]
+    },
+    {
+       name: "American",
+       icon: "hamburger.svg",
+       subCategories: ["Hamburger", "Fries", "Hot-Dog", "Salad","Drinks","Desserts"]
+     },
+     {
+       name: "Italian",
+       icon: "italian.svg",
+       subCategories: ["Pizza", "Lasagna", "Pasta", "Salad","Drinks","Desserts"]
+     },
+      {
+       name: "Israeli",
+       icon: "falafel.png",
+       subCategories: ["Shawarma", "Falafel", "Fries", "Shnitzel", "Humus", "Salad","Drinks","Desserts"]
+     }
+     
+    
+    ];
   
   
 

@@ -51,11 +51,7 @@ export class MyApp {
            if (this.initTime)
          {
           console.log("REDIRECTING TO SIGNED PAGE")
-             this.userService.initProducts().then
-             (()=>
-             {
-              console.log("HELLO YOUUU");
-            
+          
               this.storage.get('tutoViewed').then(
                 viewed=>{
                   console.log("VALUE");
@@ -70,10 +66,6 @@ export class MyApp {
                   }
                 }
               ) ;
-             });
-          
-           
-      
        
           }
        

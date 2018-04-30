@@ -2,12 +2,13 @@ import { Component,ViewChild,ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { TextInput } from 'ionic-angular/components/input/input';
-import { Address, AddressService } from '../../providers/address-service';
+import { Position,Address, AddressService } from '../../providers/address-service';
 import { Observable } from 'rxjs/Observable';
 
 import { Geolocation } from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
+import { firestore } from 'firebase/app';
 
 /**
  * Generated class for the SearchAddressPage page.
@@ -33,7 +34,7 @@ export class SearchAddressPage {
   addressSelected:boolean=false;
   
 
-  position:any=null;
+  position:Position=null;
   tmpDescription:any=null;
 
 
@@ -50,9 +51,7 @@ export class SearchAddressPage {
     this.getAddressesHistory().then(val=>{
      console.log("ADDRESSES HIST");
      console.log(val);
-      this.addressesHistory=val.filter((val,index)=>{
-        return index<5;
-      });
+     this.addressesHistory=val;
     });
   }
   
@@ -131,7 +130,7 @@ clearAddressSearch(){
 
   }
 
-  getAddressesHistory():Promise<string[]>
+  getAddressesHistory():Promise<any[]>
   {
     return this.storage.get('locations');
     
@@ -139,13 +138,23 @@ clearAddressSearch(){
 
   addAddressToHistory(position:any)
   {
+
+    let posToSave=
+    {
+      lat:position.geoPoint.latitude,
+      lng:position.geoPoint.longitude,
+      description:position.description
+    }
+
   // Or to get a key/value pair
   this.getAddressesHistory().then((val) => {
    console.log("history from storage");
    console.log(val);
     if(!val)
-   val=new Array();
-  val.unshift(position);
+   val=new Array<any>();
+  val.unshift(posToSave);
+  if (val.length>=5)
+    val.pop();
   this.storage.set('locations',val );
   });
   }
@@ -170,52 +179,28 @@ clearAddressSearch(){
     this.addresses=null;
     this.searchAddress=position.description;
     console.log(position);
-    this.position.lat=position.lat;
-    this.position.lon=position.lon;
     this.position.description=position.description;
+    this.position.geoPoint=new firestore.GeoPoint(position.lat,position.lng);
     this.navCtrl.pop();
 
   }
 
-  selectAddress(address:any)
+  selectAddress(myAddress:any)
   {
-    console.log("SELECT ADDRESS" + address.description);
+    console.log("SELECT ADDRESS" + myAddress.description);
     this.addresses=null;
-    this.searchAddress=address.description;
+    this.searchAddress=myAddress.description;
     this.lastStringTyped=this.searchAddress;
     this.addressSelected=true;
 
   
     
-    this.addressService.getPosition(address.place_id).first().subscribe((addressJSON)=>
+    this.addressService.getPositionAddress(myAddress.place_id).first().subscribe((address)=>
     {
-        console.log(addressJSON);
         console.log(address);
-
-        this.position.lat=addressJSON.value.lat;
-        this.position.lon=addressJSON.value.lng;
-
-        let description="";
-
-        if (addressJSON.value.street)
-        description+=addressJSON.value.street;
-
-        if (addressJSON.value.streetNumber)
-          {
-            if (description!="")
-              description+=" ";
-            description+=addressJSON.value.streetNumber+" ";
-          }
-
-        if (addressJSON.value.city)
-        {
-          if (description!="")
-            description+=", ";
-          description+=addressJSON.value.city;
-        }
-        
-  
-        this.position.description=description;
+    
+        this.position.geoPoint=address.geoPoint;
+        this.position.description=address.description;
         this.addAddressToHistory(this.position);
 
 

@@ -4,7 +4,7 @@
          <ion-list>
         <div class="listTitle">Search Range</div>
         <ion-item>
-                <ion-range min="{{rangeMin}}" max="{{rangeMax}}" [(ngModel)]="settings.range"  (ionChange)="updateStorage()">
+                <ion-range min="{{rangeMin}}" max="{{rangeMax}}" [(ngModel)]="settings.range"  (ionChange)="updateStorageAndSearch()">
                   <ion-label  class="rangeLeft" range-left>{{rangeMin}} Km</ion-label>
                   <ion-label class="rangeRight" range-right>{{settings.range}} Km</ion-label>
                 </ion-range>
@@ -14,7 +14,7 @@
      
       
       
-      <ion-list *ngIf="hashgahot" no-border radio-group [(ngModel)]="settings.hashgaha" (ionChange)="updateStorage()">
+      <ion-list *ngIf="hashgahot" no-border radio-group [(ngModel)]="settings.hashgaha" (ionChange)="updateStorageAndSearch()">
   
      
           <div class="listTitle">Hashgahot</div>
@@ -29,7 +29,7 @@
     </ion-list>
 
 
-    <ion-list *ngIf="orders" no-border radio-group [(ngModel)]="settings.order" (ionChange)="updateStorage()">
+    <ion-list *ngIf="orders" no-border radio-group [(ngModel)]="settings.order" (ionChange)="updateStorageAndSearch()">
   
      
         <div class="listTitle">Order by</div>
@@ -45,7 +45,7 @@
 
   <ion-item  >
         <ion-label>Show only Promotions</ion-label>
-     <ion-checkbox  item-right [(ngModel)]="settings.onlyShowPromotion" (ionChange)="updateStorage()"></ion-checkbox>
+     <ion-checkbox  item-right [(ngModel)]="settings.onlyShowPromotion" (ionChange)="updateStorageAndSearch()"></ion-checkbox>
   </ion-item>
 
 

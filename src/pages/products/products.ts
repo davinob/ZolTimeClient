@@ -45,10 +45,7 @@ export class ProductsPage {
   
 
  
-  
-  categories:string[]=["Italian", "Sandwichs","Israeli", "Boulangerie"];
-  
-  
+ 
 
   
 
@@ -65,6 +62,8 @@ export class ProductsPage {
      
   }
 
+  
+
 
 
   getCategories()
@@ -73,25 +72,40 @@ export class ProductsPage {
   }
 
   categorySelected:any=null;
-  subCategorySelected:any=null;
+  subCategorySelected:string=null;
 
   selectCategory(catego:any){
     console.log("CATEGO SELECTED:"+catego);
-    this.categorySelected=catego;
+    if (catego==this.categorySelected)
+    {
+      this.categorySelected=null;
+    }
+    else
+    {
+      this.categorySelected=catego;
+    }
     this.subCategorySelected=null;
-    this.initSellers();
-
   }
 
   selectSubCategory(subCatego:any){
     console.log("Sub CATEGO SELECTED:"+subCatego);
+    if (subCatego==this.subCategorySelected)
+    {
+      this.subCategorySelected=null;
+    }
+    else
+    {
     this.subCategorySelected=subCatego;
-
-    this.initSellers();
-
+    }
   }
 
+
+
+
   getSubCategories(catego:any):any[]{
+    if (!catego)
+    return new Array();
+    
     return catego.subCategories;
   }
 
@@ -108,7 +122,7 @@ export class ProductsPage {
 
   goToSearchAddessPage()
   {
-    this.navCtrl.push('SearchAddressPage',{position:this.settings.position});
+    this.navCtrl.push('SearchAddressPage',{settings:this.settings});
   }
 
   public settings:SearchSettings={
@@ -126,40 +140,65 @@ export class ProductsPage {
     });
   }
   
-  
-
-  
-  initSellers()
-  {
-    //this.userService.sellersOrganizedSubject.unsubscribe();
-
-    console.log(this.settings);
-    console.log("GETTING SELLERS");
-    if ((this.settings.position.geoPoint==null)&&(this.settings.position.description=="Current Location"))
-  {
-    this.initPosition().then(val=>{this.fetchSellers()});
-  }
-  else
-    this.fetchSellers();
-}
 
   fetchSellers(){
     console.log(this.settings.position);
-    
-      this.userService.getClosestCurrentSellers(this.settings);
+   this.userService.getClosestCurrentSellers(this.settings);
   }
 
   getOrganizedSellers():Array<any>{
-    console.log("ORGANIZED SELLERS");
-    console.log(this.userService.allSellersOrganized);
-    return this.userService.allSellersOrganized;
+    return this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
+    
   }
+
+
+
+  filterPerCategoryAndSubCategory(sellers:Array<any>)
+  {
+    let sellersFiltered=new Array();
+
+    sellers.forEach((seller,index)=>
+    {
+      sellersFiltered[index]= Object.assign({}, seller); 
+    });
+  
+    
+    if (!this.categorySelected)
+    return sellersFiltered;
+
+   
+    
+    sellersFiltered=sellersFiltered.filter(seller=>
+      {
+         return seller.categories[this.categorySelected.name];
+      });
+
+      if (this.subCategorySelected)
+          {
+
+            sellersFiltered.forEach((seller,index)=>
+          {
+            if (seller.products)
+            {        
+              
+              sellersFiltered[index].products=seller.products.filter(product=>
+            {
+              return product.category==this.subCategorySelected;
+            });
+            }
+
+          });
+        }
+     return sellersFiltered;
+
+  }
+
 
   initPosition():Promise<any>
   {
     console.log("INIT POSITION");
     return this.geolocation.getCurrentPosition().then((resp) => {
-      this.settings.position=this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,"Current Position");
+      this.settings.position=this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,"Current Location");
     
      }).catch((error) => {
       this.alertService.showToast({message:"Error getting location"});
@@ -183,20 +222,53 @@ export class ProductsPage {
   
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ProductsPage');
+  ionViewDidLoad()
+  {
 
+    Observable
+    .interval(200)
+    .subscribe(x=>
+      {
+       
+        if (this.userService.showLoading)
+        this.alertService.showLoading();
+        else
+       {
+          this.alertService.dismissLoading();
+       }
+      }
+    );
+
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter ProductsPage');
+ 
     this.initSearchSettingsFromStorage();
 
-    if (this.settings.position.description=="")
-    {
-    this.initPosition().then( val=> {
-       this.fetchSellers();
-    });
-    this.settings.position.description="Current Location";
-    }
-   
+    this.initSellers();
   }
+
+  initSellersNewLocation()
+  {
+    this.categorySelected=null;
+    this.subCategorySelected=null;
+    this.initSellers();
+  }
+
+    
+  initSellers()
+  {
+    console.log(this.settings);
+    console.log("GETTING SELLERS");
+    if ((this.settings.position.geoPoint==null)&&((this.settings.position.description=="Current Location")||(this.settings.position.description=="")))
+  {
+    this.initPosition().then(val=>{this.fetchSellers()});
+    this.settings.position.description="Current Location";
+  }
+  else
+    this.fetchSellers();
+}
 
 
 

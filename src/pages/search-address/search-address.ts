@@ -9,6 +9,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 import { firestore } from 'firebase/app';
+import { UserService, SearchSettings } from '../../providers/user-service';
 
 /**
  * Generated class for the SearchAddressPage page.
@@ -34,7 +35,7 @@ export class SearchAddressPage {
   addressSelected:boolean=false;
   
 
-  position:Position=null;
+  settings:SearchSettings=null;
   tmpDescription:any=null;
 
 
@@ -42,7 +43,8 @@ export class SearchAddressPage {
     private geolocation: Geolocation,
     public addressService:AddressService,
     private storage: Storage,
-    private alertLoadingService:AlertAndLoadingService) {
+    private alertLoadingService:AlertAndLoadingService,
+    private userService:UserService) {
 
   }
 
@@ -61,10 +63,10 @@ export class SearchAddressPage {
     
 
 
-    this.position=this.navParams.data.position;
-    this.position.description="";
+    this.settings=this.navParams.data.settings;
+    this.settings.position.description="";
     this.tmpDescription="";
-    console.log(this.position);
+    console.log(this.settings.position);
 
     console.log('ionViewDidLoad SearchAddressPage');
   console.log("addressInput");
@@ -179,8 +181,8 @@ clearAddressSearch(){
     this.addresses=null;
     this.searchAddress=position.description;
     console.log(position);
-    this.position.description=position.description;
-    this.position.geoPoint=new firestore.GeoPoint(position.lat,position.lng);
+    this.settings.position.description=position.description;
+    this.settings.position.geoPoint=new firestore.GeoPoint(position.lat,position.lng);
     this.navCtrl.pop();
 
   }
@@ -199,10 +201,11 @@ clearAddressSearch(){
     {
         console.log(address);
     
-        this.position.geoPoint=address.geoPoint;
-        this.position.description=address.description;
-        this.addAddressToHistory(this.position);
+        this.settings.position.geoPoint=address.geoPoint;
+        this.settings.position.description=address.description;
+        this.addAddressToHistory(this.settings.position);
 
+        this.userService.getClosestCurrentSellers(this.settings);
 
         this.navCtrl.pop();
 

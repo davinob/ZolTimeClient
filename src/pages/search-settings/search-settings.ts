@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component} from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { SearchSettings } from '../../providers/user-service';
+import { SearchSettings, UserService } from '../../providers/user-service';
 
 
 /**
@@ -23,9 +23,11 @@ import { SearchSettings } from '../../providers/user-service';
 })
 export class SearchSettingsPage {
 
+  
   settings:SearchSettings=null;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public storage:Storage) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public storage:Storage,
+    private userService:UserService) {
     console.log('constructore SearchSettingsPage');
     this.settings=this.navParams.data.settings;
   
@@ -48,10 +50,21 @@ export class SearchSettingsPage {
  
 
   
+lastTime:number=0;
 
-updateStorage()
+updateStorageAndSearch()
+{
+  this.lastTime=new Date().getTime();
+
+  setTimeout(
+    ()=>{
+let now=new Date().getTime();
+if (now-this.lastTime>=1000)
 {
   this.storage.set("settings",this.settings);
+  this.userService.getClosestCurrentSellers(this.settings);
+}
+  },1000);
 }
 
 

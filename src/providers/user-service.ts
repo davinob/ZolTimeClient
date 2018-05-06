@@ -105,7 +105,9 @@ export class UserService {
   allSellers=[];
   allSellersOrganized=[];
 
-  
+  previousSearchSettings:SearchSettings=null;
+
+  showLoading=false;
 
   
 
@@ -154,16 +156,81 @@ export class UserService {
   }
 
 
-  getClosestCurrentSellers(settings:SearchSettings)
+  areSearchSettingTheSame(settings:SearchSettings):boolean
+  {
+    console.log(settings);
+    console.log(this.previousSearchSettings);
+
+    if (this.previousSearchSettings==null&&settings!=null)
+      return false;
+   
+    if (settings.position)
+    {
+      if (settings.position.description!=this.previousSearchSettings.position.description)
+      return false;
+      if (settings.position.geoPoint){
+      if (settings.position.geoPoint.latitude!=this.previousSearchSettings.position.geoPoint.latitude)
+      return false;
+      if (settings.position.geoPoint.longitude!=this.previousSearchSettings.position.geoPoint.longitude)
+      return false;
+      }
+    }
+
+ 
+    if (settings.hashgaha && settings.hashgaha!=this.previousSearchSettings.hashgaha)
+     return false;
+
+    if (settings.range &&  settings.range!=this.previousSearchSettings.range)
+      return false;
+     
+    if (settings.order && settings.order!=this.previousSearchSettings.order)
+    return false;
+     
+    if (settings.onlyShowPromotion && settings.onlyShowPromotion!=this.previousSearchSettings.onlyShowPromotion)
+    return false;
+     
+  
+    return true;
+  }
+
+
+  cloneSettings(settings:SearchSettings):SearchSettings
+  {
+    let newSettings:SearchSettings=Object.assign({},settings);
+    if (settings.position.geoPoint!=null)
+    {
+      newSettings.position=this.addressService.createPosition(
+      settings.position.geoPoint.latitude,settings.position.geoPoint.longitude,settings.position.description);
+    }
+    else
+    {
+      newSettings.position.description=settings.position.description;
+      newSettings.position.geoPoint=null;
+    }
+      return newSettings;
+  }
+
+  getClosestCurrentSellers(settings:SearchSettings):void
 {
 
-  
+  if (this.areSearchSettingTheSame(settings))
+   {
+     console.log("SAME SETTINGS");
+    return;
+   } 
+
+   this.showLoading=true;
+
+  this.previousSearchSettings=this.cloneSettings(settings);
+
+  this.allSellers=new Array();
+  this.allSellersOrganized=new Array();
 
   console.log("queryAllBasedOnFilters");
   if (!settings.position.geoPoint)
   {
     console.log("NO LOCATION");
-    return from(this.allSellers);
+    return;
   }
 
   let box=this.addressService.boundingBoxCoordinates(settings.position.geoPoint,settings.range);
@@ -177,41 +244,56 @@ export class UserService {
 
 
 
-  let query=this.sellersCollectionRef.where("address.geoPoint",">=",lesserGeopoint).
+  let query:firebase.firestore.Query=this.sellersCollectionRef.where("address.geoPoint",">=",lesserGeopoint).
     where("address.geoPoint","<=",greaterGeopoint);
 
 if (settings.hashgaha!="Any")
-query=query.where("hashgaha","==",settings.hashgaha);
+{
+  console.log("HASHGAHA REQUESTED");
+  console.log(settings.hashgaha);
+  
+if (settings.hashgaha=="Kosher")
+query=query.where("hashgaha.Kosher","==",true);
+else
+query=query.where("hashgaha.Lemehadrin","==",true);
+}
 
-
-query.onSnapshot(sellersInfos =>
+query.get().then(sellersInfos =>
     {
       console.log(sellersInfos);
+
+      if (!sellersInfos || sellersInfos.empty)
+      {
+       this.showLoading=false;
+      }
+
       sellersInfos.forEach(doc=>{
         let uid=doc.id;
 
        this.allSellers[uid]=doc.data();
    
         
-       this.sellersCollectionRef.doc(uid).collection("products").onSnapshot(
-        querySnapshot =>
+       this.sellersCollectionRef.doc(uid).collection("products").get().then(
+        productsInfo =>
         { 
           this.allSellers[uid].products=new Array();
             console.log("PRODUCTS");
          
-            querySnapshot.forEach(product=>{
+         
+            productsInfo.forEach(product=>{
               this.allSellers[uid].products.push(product.data());
             });
             console.log(this.allSellers[uid].products);
            
   
 
-            this.sellersCollectionRef.doc(uid).collection("promotions").onSnapshot(
-              querySnapshot =>
+            this.sellersCollectionRef.doc(uid).collection("promotions").get().then(
+              promotionsInfo =>
               { 
                 this.allSellers[uid].promotions=new Array();
                   console.log("PROMOTIONSSS");
-                  querySnapshot.forEach(promotion=>{
+               
+                  promotionsInfo.forEach(promotion=>{
                     this.allSellers[uid].promotions.push(promotion.data());
                   });
                   console.log(this.allSellers[uid].promotions);
@@ -236,11 +318,14 @@ query.onSnapshot(sellersInfos =>
 organizeSellers(settings:SearchSettings)
   {
     this.allSellersOrganized=new Array();
+  
     for (let sellerKey in this.allSellers)
     {
       this.allSellersOrganized.push(this.allSellers[sellerKey]);
     }
-       
+    
+    console.log("SHOWLOADING FALSE");
+    this.showLoading=false;
         
   }
 

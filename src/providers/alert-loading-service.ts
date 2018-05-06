@@ -18,7 +18,7 @@ import { ToastController } from 'ionic-angular/components/toast/toast-controller
 @Injectable()
 export class AlertAndLoadingService {
   
-    public loading:Loading;
+    public loading:Loading=null;
    
   constructor(public translateService: TranslateService,public alertCtrl: AlertController,
     public loadingCtrl: LoadingController,public toastCtrl:ToastController
@@ -34,15 +34,25 @@ export class AlertAndLoadingService {
 
   showLoading()
   {
+    if (this.loading)
+    return;
+
     this.loading = this.loadingCtrl.create({
-      dismissOnPageChange: true      
+      spinner:"dots",
+      dismissOnPageChange: true,
+      
     });
     this.loading.present();
   }
   
   dismissLoading()
   {
-    this.loading.dismiss();
+    if (this.loading)
+    {
+    console.log("DISMISS LOADING");
+      this.loading.dismiss();
+      this.loading=null;
+    }
   }
  
   showAlert(error:any)

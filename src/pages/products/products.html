@@ -36,11 +36,11 @@
                 <div *ngFor="let category of getCategories()"  (click)="selectCategory(category)"
                 [ngClass]="isCategorySelected(category)? 'category categorySelected' :'category' ">
                     <img class="categoryPic" src="../../assets/icon/{{category.icon}}" />
-                    <span class="categoryName">{{category.name}}</span>
+                    <span class="categoryName">{{category.description}}</span>
                 </div>
      </div>  
 
-     <div  *ngIf="categorySelected" class="scrolling-wrapperSubCategory"  >
+     <div  [hidden]="!categorySelected" class="scrolling-wrapperSubCategory"  >
             <div *ngFor="let subCategory of getSubCategories(categorySelected)"  (click)="selectSubCategory(subCategory)"
             [ngClass]="isSubCategorySelected(subCategory)? 'subCategory subCategorySelected' :'subCategory' ">
                  <span class="categoryName">{{subCategory}}</span>

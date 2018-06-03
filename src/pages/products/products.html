@@ -6,85 +6,104 @@
 -->
 <ion-header>
 
-<ion-navbar>
-    <button ion-button menuToggle>
-        <ion-icon name="menu"></ion-icon>
-    </button>
-    <ion-title>
-        <ion-grid>
-            <ion-row>
-                <ion-col col-10>
-                
-                 <ion-input clearInput  [(ngModel)]="settings.position.description" class="position" type="text" placeholder="Current Location" (ionFocus)="goToSearchAddessPage()">
-                        <ion-icon class='white' name="navigate"></ion-icon> 
-                 </ion-input>
-                </ion-col>
-                <ion-col col-2 align-self-end>
-                    <ion-icon (click)="presentPopover($event)" name="settings"></ion-icon>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </ion-title>
-</ion-navbar>
+    <ion-navbar>
+        <button ion-button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>
+            <ion-grid>
+                <ion-row>
+                    <ion-col col-10>
 
+                        <ion-input clearInput [(ngModel)]="settings.position.description" class="position" type="text" placeholder="Current Location"
+                            (ionFocus)="goToSearchAddessPage()">
+                            <ion-icon class='white' name="navigate"></ion-icon>
+                        </ion-input>
+                    </ion-col>
+                    <ion-col col-2 align-self-end>
+                        <ion-icon (click)="presentPopover($event)" name="settings"></ion-icon>
+                    </ion-col>
+                </ion-row>
+       
+            </ion-grid>
+        </ion-title>
+    </ion-navbar>
+    <div class="scrolling-wrapper">
+            <div *ngFor="let category of getCategories()" (click)="selectCategory(category)" [ngClass]="isCategorySelected(category)? 'categorySelected' :'category' ">
+                <img class="categoryPic" src="../../assets/icon/{{category.icon}}" />
+                <span class="categoryName">{{category.description}}</span>
+            </div>
+        </div>
+    
+        <div  [ngClass]="categorySelected? 'scrolling-wrapperSubCategorySelected' : 'scrolling-wrapperSubCategory'">
+            <div  *ngFor="let subCategory of getSubCategories(categorySelected)" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
+                <span class="categoryName">{{subCategory}}</span>
+            </div>
+        </div>
 </ion-header>
 
 
-<ion-content  class="global" padding>
-    
-        <div  class="scrolling-wrapper">
-                <div *ngFor="let category of getCategories()"  (click)="selectCategory(category)"
-                [ngClass]="isCategorySelected(category)? 'category categorySelected' :'category' ">
-                    <img class="categoryPic" src="../../assets/icon/{{category.icon}}" />
-                    <span class="categoryName">{{category.description}}</span>
-                </div>
-     </div>  
+<ion-content class="global" padding>
 
-     <div  [hidden]="!categorySelected" class="scrolling-wrapperSubCategory"  >
-            <div *ngFor="let subCategory of getSubCategories(categorySelected)"  (click)="selectSubCategory(subCategory)"
-            [ngClass]="isSubCategorySelected(subCategory)? 'subCategory subCategorySelected' :'subCategory' ">
-                 <span class="categoryName">{{subCategory}}</span>
-            </div>
-    </div> 
 
-   
- 
+
+
+
     <div [ngClass]="products_enabled">
-     
 
-               <ion-list  *ngIf="userService.allSellersOrganized">
-                   
-                  <ion-item  *ngFor="let seller of getOrganizedSellers()">
-                   
-                          <ion-card  *ngFor="let product of seller.products">
-                      <ion-item text-wrap *ngIf="product">
-                          <ion-grid>
-                              <ion-row >
-                                  <ion-col col-5 >
-                                      <img class="profile-image" src="{{product.picture.url}}" cache="true"/>
-                                  </ion-col>
-                              
-                                      <ion-col>
-                                          <ion-row >
-                                          <span  class="productName" >{{product.name}}</span>
-                                        </ion-row> 
-                                      
-                                 <ion-row >
-                                     <span   class="productDescription" >{{product.description}}</span>
-                                 </ion-row >
-                               </ion-col>
-                              
-                                
-                        
-                              </ion-row>
-                              </ion-grid>
-                            </ion-item>
-                        </ion-card>
-                    </ion-item>
 
-              </ion-list> 
-         </div>  
-   
+        <ion-list *ngIf="userService.allSellersOrganized">
+
+            <ion-card *ngFor="let seller of getOrganizedSellers()">
+                <div>
+                    <ion-grid class="productsSeller">
+                        <ion-row>
+                            <ion-col>
+                                <ion-row>
+                                    <span class="sellerName"> {{seller.restaurantName}}</span>
+                                </ion-row>
+                                <ion-row>
+                                        <span class="sellerDistance">
+                                            {{seller.address.description}}
+                                        </span>
+    
+                                    </ion-row>
+                                <ion-row>
+                                    <span class="sellerDistance">
+                                        <ion-icon name="navigate"></ion-icon>
+                                        {{seller.distanceFromPosition}} Km
+                                    </span>
+
+                                </ion-row>
+
+                            </ion-col>
+                            <ion-col>
+                                <img class="sellerPic" src="{{seller.picture.url}}" />
+                            </ion-col>
+                        </ion-row>
+
+                        <ion-row>
+                            <span class="sellerDescription"> {{seller.description}}</span>
+                        </ion-row>
+            </ion-grid>
+                 
+                            <div class="scrolling-products" >
+                                    <div *ngFor="let product of seller.products" class="product">
+                                        <img class="productPic" src="{{product.picture.url}}" />
+                                        <span class="productName">{{product.name}}</span>
+                                        <span class="productDescription">{{product.description}}</span>
+                                        <span class="productOriginalPrice"><del>{{product.originalPrice}} ₪</del></span>
+                                    </div>
+                                </div>
+                 
+                   
+                </div>
+
+
+            </ion-card>
+        </ion-list>
+    </div>
+
 
 
 </ion-content>

@@ -53,7 +53,7 @@ export function createTranslateLoader(http: HttpClient) {
   imports: [
     BrowserModule,
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFirestoreModule,
+    AngularFirestoreModule.enablePersistence(),
     AngularFireAuthModule,
     HttpModule,
     HttpClientModule,

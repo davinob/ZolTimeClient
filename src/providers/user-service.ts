@@ -36,6 +36,13 @@ export interface Seller {
   email: string;
   address?:Address;
   profileCompleted?:boolean;
+  products?:Array<Product>;
+  promotions?:Array<Promotion>;
+  restaurantName:string;
+  description:string;
+  telNo:string;
+  distanceFromPosition:number;
+
   }
 
   export interface User {
@@ -102,12 +109,12 @@ export class UserService {
   
   allProducts:{}={};
   allPromotions:{}={};
-  allSellers=[];
-  allSellersOrganized=[];
+  allSellers:Array<Seller>=[];
+  allSellersOrganized:Array<Seller>=[];
 
   previousSearchSettings:SearchSettings=null;
 
-  showLoading=false;
+  lookingForProducts:Subject<boolean>=new Subject();
 
   
 
@@ -117,7 +124,10 @@ export class UserService {
   private addressService:AddressService) {
       this.usersCollection = this.afs.collection<Seller>('users'); 
         this.sellersCollectionRef = this.db.collection('sellers');
-   }
+        
+        this.lookingForProducts.next(false);
+   
+      }
 
 
 
@@ -210,7 +220,7 @@ export class UserService {
       return newSettings;
   }
 
-  getClosestCurrentSellers(settings:SearchSettings):void
+  getClosestCurrentSellers(settings:SearchSettings)
 {
 
   if (this.areSearchSettingTheSame(settings))
@@ -219,7 +229,7 @@ export class UserService {
     return;
    } 
 
-   this.showLoading=true;
+   this.lookingForProducts.next(true);
 
   this.previousSearchSettings=this.cloneSettings(settings);
 
@@ -264,13 +274,20 @@ query.get().then(sellersInfos =>
 
       if (!sellersInfos || sellersInfos.empty)
       {
-       this.showLoading=false;
+        this.lookingForProducts.next(false);
       }
 
       sellersInfos.forEach(doc=>{
         let uid=doc.id;
 
        this.allSellers[uid]=doc.data();
+       console.log(this.allSellers[uid].address.geoPoint);
+       console.log(settings.position.geoPoint);
+        let distance=this.addressService.distance(this.allSellers[uid].address.geoPoint,settings.position.geoPoint);
+        distance=Math.round(distance*10)/10;
+       
+        console.log("DISTANCE:" +distance);
+       this.allSellers[uid].distanceFromPosition=distance;
    
         
        this.sellersCollectionRef.doc(uid).collection("products").get().then(
@@ -299,14 +316,28 @@ query.get().then(sellersInfos =>
                   console.log(this.allSellers[uid].promotions);
                   console.log(this.allSellers);
 
+                  this.findAndSetBestPromoForAllProducts();
+
+
                   this.organizeSellers(settings);
+              }).catch(error=>{
+                console.log("ERROR");
+                console.log(error);
               });
       
-        });
+        }).catch(error=>{
+          console.log("ERROR");
+          console.log(error);
         });
 
+      });
+
   
+  }).catch(error=>{
+    console.log("ERROR");
+    console.log(error);
   });
+  
 
     console.log("SELLERS");
     console.log(this.allSellers);
@@ -314,6 +345,9 @@ query.get().then(sellersInfos =>
 }
 
 
+findAndSetBestPromoForAllProducts(){
+
+}
 
 organizeSellers(settings:SearchSettings)
   {
@@ -325,7 +359,7 @@ organizeSellers(settings:SearchSettings)
     }
     
     console.log("SHOWLOADING FALSE");
-    this.showLoading=false;
+    this.lookingForProducts.next(false);
         
   }
 
@@ -384,146 +418,6 @@ organizeSellers(settings:SearchSettings)
   });
 
 }
-
-
-public updateCurrentUser(address:Address,description:string,
-  hashgaha:string,categories:string):Promise<any>
-{
-
-let userUpdate:any={
-address:address,
-description:description,
-hashgaha:hashgaha,
-categories:categories,
-profileCompleted:true,
-promotionStartTime:"18:00",
-promotionEndTime:"20:00"
-};
-
-
-
-console.log("upadting user on UID"+this.globalService.userID);
-console.log(userUpdate); 
-
-return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<void>=this.usersCollection.doc(this.globalService.userID).update(userUpdate);
-console.log("PROMISE launched");
-setUserPromise.then( ()=>
-{
-console.log("PROMISE DONE");
-}
-).catch( (error)=>
-{
-console.log(error);
-});
-resolve(setUserPromise);
-    
-});
-
-}
-
-
-public addProductToCurrentUser(
-  name:string,description:string,
-  originalPrice:number):Promise<any>
-{
-  let key=new Date().valueOf()+Math.random()+"";
-
-  let product:Product={
-  name: name,
-  description: description,
-  originalPrice: originalPrice,
-  key:key,
-  uID:this.globalService.userID
-  };
-
-  
-
-console.log("adding product on UID"+this.globalService.userID);
-console.log(product); 
-
-return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<any>=this.productsCollection.doc(key).set(product);
-console.log("PROMISE launched");
-setUserPromise.then( ()=>
-{
-console.log("PROMISE DONE");
-resolve(key);
-}
-).catch( (error)=>
-{
-console.log(error);
-reject(new Error("Error inserting the data"));
-});
-
-     
-});
-
-}
-
-
-public addPromotionToCurrentUser(promotion:Promotion):Promise<any>
-{
-  let key=new Date().valueOf()+Math.random()+"";
-  promotion.key=key;
-  promotion.uID=this.globalService.userID;
- 
-
-  console.log("MY PROMO:");
-  console.log(promotion);
-
-return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<any>=this.promotionsCollection.doc(key).set(promotion);
-console.log("PROMISE launched");
-setUserPromise.then( ()=>
-{
-console.log("PROMISE DONE");
-resolve(setUserPromise);
-}
-).catch( (error)=>
-{
-console.log(error);
-reject(new Error("Error inserting the data"));
-});
-    
-});
-
-}
-
-
-public updatePromotionToCurrentUser(promotion:Promotion):Promise<any>
-{
-  console.log("MY PROMO:");
-  console.log(promotion);
-
-return new Promise<any>((resolve, reject) => {
-let setUserPromise:Promise<any>=this.promotionsCollection.doc(promotion.key).update(promotion);
-console.log("PROMISE launched");
-setUserPromise.then( ()=>
-{
-console.log("PROMISE DONE");
-resolve(setUserPromise);
-}
-).catch( (error)=>
-{
-console.log(error);
-reject(new Error("Error inserting the data"));
-});
-
-      
-});
-
-}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -618,18 +512,6 @@ isPromotionExpired(promo:Promotion):boolean
 }
 
 
-public startPromotion(promo:Promotion)
-{
-  promo.isActivated=true;
-   this.updatePromotionToCurrentUser(promo);
-}
-
-public stopPromotion(promo:Promotion)
-{
-  promo.isActivated=false;
-  this.updatePromotionToCurrentUser(promo);
- 
-}
 
 
 

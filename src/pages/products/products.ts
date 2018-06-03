@@ -1,7 +1,7 @@
 import { Component,ViewChild,ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController  } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { SearchSettings,UserService, User,Product } from '../../providers/user-service';
+import { SearchSettings,UserService, User,Product, Seller } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 
 import { Camera,CameraOptions  } from '@ionic-native/camera';
@@ -65,7 +65,6 @@ export class ProductsPage {
   
 
 
-
   getCategories()
   {
     return this.globalSvc.categories;
@@ -85,6 +84,8 @@ export class ProductsPage {
       this.categorySelected=catego;
     }
     this.subCategorySelected=null;
+
+    this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
   }
 
   selectSubCategory(subCatego:any){
@@ -97,6 +98,8 @@ export class ProductsPage {
     {
     this.subCategorySelected=subCatego;
     }
+
+    this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
   }
 
 
@@ -147,41 +150,43 @@ export class ProductsPage {
   }
 
   getOrganizedSellers():Array<any>{
-    return this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
+    return this.sellersFiltered;
     
   }
 
-
+  sellersFiltered=new Array();
 
   filterPerCategoryAndSubCategory(sellers:Array<any>)
   {
-    let sellersFiltered=new Array();
+    this.sellersFiltered=new Array();
 
     sellers.forEach((seller,index)=>
     {
-      sellersFiltered[index]= Object.assign({}, seller); 
+      if (seller && seller.products && seller.products.length>0)
+      this.sellersFiltered=this.sellersFiltered.concat(Object.assign({}, seller)); 
     });
   
-    
+    console.log(this.sellersFiltered);
+
     if (!this.categorySelected)
-    return sellersFiltered;
+    return;
 
    
     
-    sellersFiltered=sellersFiltered.filter(seller=>
+    this.sellersFiltered=this.sellersFiltered.filter(seller=>
       {
-         return seller.categories[this.categorySelected.name];
+         return seller.category==this.categorySelected.name;
       });
 
       if (this.subCategorySelected)
           {
 
-            sellersFiltered.forEach((seller,index)=>
+            this. sellersFiltered.forEach((seller,index)=>
           {
             if (seller.products)
             {        
               
-              sellersFiltered[index].products=seller.products.filter(product=>
+              this.sellersFiltered[index].products=seller.products.filter(product=>
             {
               return product.category==this.subCategorySelected;
             });
@@ -189,7 +194,7 @@ export class ProductsPage {
 
           });
         }
-     return sellersFiltered;
+     return ;
 
   }
 
@@ -221,23 +226,25 @@ export class ProductsPage {
 
   
   }
-
+  
   ionViewDidLoad()
   {
 
-    Observable
-    .interval(200)
-    .subscribe(x=>
+    this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
-       
-        if (this.userService.showLoading)
+        console.log("IS LOOKING FOR PRODS??");
+        console.log(isLookingforProds);
+
+        if  (isLookingforProds)
+        {
         this.alertService.showLoading();
+        }
         else
-       {
+        {
           this.alertService.dismissLoading();
-       }
-      }
-    );
+          this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
+        }
+      });
 
   }
 

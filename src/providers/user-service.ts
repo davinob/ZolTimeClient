@@ -42,6 +42,7 @@ export interface Seller {
   description:string;
   telNo:string;
   distanceFromPosition:number;
+  hasAtLeastOnePromo:boolean;
 
   }
 
@@ -64,12 +65,13 @@ export interface Product{
   uID:string,
   discount?:number,
   enabled?:boolean,
-  isPreviouslyChosen?:boolean
+  isPreviouslyChosen?:boolean,
+  bestPromo?:any
 }
 
 export interface Promotion{
   name: string,
-  products:{},
+  products:Array<Product>,
   isOneTime:boolean,
   promotionStartTime:string,
   promotionEndTime:string,
@@ -85,7 +87,6 @@ export interface SearchSettings {
   position:Position;
   hashgaha: string;
   range:number;
-  order:string;
   onlyShowPromotion:boolean
   }
 
@@ -107,9 +108,7 @@ export class UserService {
   userProducts:Array<any>=[];
   userPromotions:Array<any> = [];
   
-  allProducts:{}={};
-  allPromotions:{}={};
-  allSellers:Array<Seller>=[];
+  allSellers={};
   allSellersOrganized:Array<Seller>=[];
 
   previousSearchSettings:SearchSettings=null;
@@ -192,14 +191,8 @@ export class UserService {
 
     if (settings.range &&  settings.range!=this.previousSearchSettings.range)
       return false;
-     
-    if (settings.order && settings.order!=this.previousSearchSettings.order)
-    return false;
-     
-    if (settings.onlyShowPromotion && settings.onlyShowPromotion!=this.previousSearchSettings.onlyShowPromotion)
-    return false;
-     
-  
+   
+    
     return true;
   }
 
@@ -284,7 +277,7 @@ query.get().then(sellersInfos =>
        console.log(this.allSellers[uid].address.geoPoint);
        console.log(settings.position.geoPoint);
         let distance=this.addressService.distance(this.allSellers[uid].address.geoPoint,settings.position.geoPoint);
-        distance=Math.round(distance*10)/10;
+        distance=Math.round(distance*100)/100;
        
         console.log("DISTANCE:" +distance);
        this.allSellers[uid].distanceFromPosition=distance;
@@ -316,10 +309,10 @@ query.get().then(sellersInfos =>
                   console.log(this.allSellers[uid].promotions);
                   console.log(this.allSellers);
 
-                  this.findAndSetBestPromoForAllProducts();
-
-
-                  this.organizeSellers(settings);
+                 this.organizeSellers(settings);
+                 this.findAndSetBestPromoForAllProducts();
+                 
+                 this.lookingForProducts.next(false);
               }).catch(error=>{
                 console.log("ERROR");
                 console.log(error);
@@ -346,8 +339,74 @@ query.get().then(sellersInfos =>
 
 
 findAndSetBestPromoForAllProducts(){
+  console.log("findAndSetBestPromoForAllProducts:")
+  console.log(this.allSellersOrganized);
 
-}
+  this.allSellersOrganized.forEach((seller,indexSeller)=>{
+    let hasFoundOnePromo=false;
+    seller.products.forEach((product, indexProd)=>
+    {
+      let lastGoodPromo=null;
+
+      
+      if (!seller.promotions)
+      { 
+        return;
+      }
+      for(let i=0; i<seller.promotions.length;i++)
+      {
+        let promo=seller.promotions[i];
+        
+        if (!promo.isActivated)
+        {
+          continue;
+        }
+
+        let promoTimes=this.calculatePromotionMessage(promo);
+        if (promoTimes.notValid)
+        {
+          continue;
+        }
+        
+        for (let prodKey in promo.products)
+        {
+          let prodPromo=promo.products[prodKey];
+          if (!prodPromo)
+          continue;
+
+        
+          if (prodKey==product.key)
+          {
+            console.log("PRICE COMPARISONS");
+            if (lastGoodPromo)
+            {
+            console.log(prodPromo.reducedPrice+"vs"+lastGoodPromo.price);
+            }
+
+            if (lastGoodPromo==null ||prodPromo.reducedPrice<lastGoodPromo.price)
+            {
+              hasFoundOnePromo=true;
+              lastGoodPromo={price:prodPromo.reducedPrice,
+                            quantity:prodPromo.currentQuantity,
+                            name:promo.name,
+                            promoTimes:promoTimes};
+
+                    console.log("lastGoodPromo:");
+                            console.log(lastGoodPromo);
+            }
+          } 
+        }
+      }
+      this.allSellersOrganized[indexSeller].products[indexProd].bestPromo=lastGoodPromo;
+      });
+
+      this.allSellersOrganized[indexSeller].promotions=null;
+      this.allSellersOrganized[indexSeller].hasAtLeastOnePromo=hasFoundOnePromo;
+      
+  });
+
+  console.log(this.allSellersOrganized);
+  }
 
 organizeSellers(settings:SearchSettings)
   {
@@ -359,7 +418,7 @@ organizeSellers(settings:SearchSettings)
     }
     
     console.log("SHOWLOADING FALSE");
-    this.lookingForProducts.next(false);
+
         
   }
 
@@ -421,25 +480,26 @@ organizeSellers(settings:SearchSettings)
 
 
 
-
-
-
-
-promoMessages:Array<any>=[];
-
-
- initPromotionMessage(promo:Promotion):boolean
+calculatePromotionMessage(promo:Promotion):any
 {
- 
-
       let nowDate=new Date();
       let promotionHasStarted=false;
       let datesCalculated=this.calculatePromoStartEndDates(promo,false);
-      let startDate=datesCalculated.startDate;
-      let endDate=datesCalculated.endDate;
+      let startDate:Date=datesCalculated.startDate;
+      let endDate:Date=datesCalculated.endDate;
 
      
       let timeDiffInSecBeforeStart=Math.round((startDate.valueOf()-nowDate.valueOf())/1000);
+      let timeDiffInSecBeforeEnd=Math.round((endDate.valueOf()-nowDate.valueOf())/1000);
+
+      console.log("TIME DIFF BEFORE END");
+      console.log(timeDiffInSecBeforeEnd);
+      
+      if (timeDiffInSecBeforeEnd>(15 * 3600)) //limit to next 15 hours
+      {
+        return {start:"",notValid:true};
+      }
+
       let timeDiffInSec=timeDiffInSecBeforeStart;
       if (timeDiffInSecBeforeStart<=0)
       {
@@ -448,67 +508,20 @@ promoMessages:Array<any>=[];
         
         if (timeDiffInSec<0)
         {
-          this.promoMessages[promo.key]= {message:"Promotion is expired",isExpired:true};
-          return true;
+          return {start:"",notValid:true};
         }
           
       }
-
-      if (!promo.isActivated)
-      {
-        this.promoMessages[promo.key]={message:"",isExpired:false}
-        return false;
-      }
-
-
-
-      let secondsDiff=timeDiffInSec%(60);
-      timeDiffInSec-=secondsDiff;
-      let timeDiffInMin=timeDiffInSec/60;
-      let minutesDiff=(timeDiffInMin)%60;
-      timeDiffInMin-=minutesDiff;
-      let timeDiffInHours=timeDiffInMin/60;
-      let hoursDiff=timeDiffInHours%24;
-      timeDiffInHours-=hoursDiff;
-      let daysDiff=timeDiffInHours/24;
-
-     
     
-      let promoMessage={message:"",isExpired:false};
-      if (promotionHasStarted)
-      {
-        promoMessage.message+=" Ends in: ";
-      }
-      else
-      {
-        promoMessage.message+=" Starts in: ";
-      }
+      let promoTimes={start:"", end:"",notValid:false,hasStarted:false};
+     
+        promoTimes.hasStarted=true;
 
-      if (daysDiff!=0)
-      {
-        promoMessage.message+=daysDiff+ " day(s) ";
-      }
-
-      promoMessage.message+=this.formT(hoursDiff)+":"+this.formT(minutesDiff);//+":"+this.formT(secondsDiff);
-      
-      this.promoMessages[promo.key]=promoMessage;
-
-      return true;
-
-}
-
-getPromotionMessage(promo:Promotion):string
-{
- if (this.promoMessages[promo.key]==null)
-  return "";
-  return this.promoMessages[promo.key].message;
-}
-
-isPromotionExpired(promo:Promotion):boolean
-{
-  if (this.promoMessages[promo.key]==null)
-  return false;
-  return this.promoMessages[promo.key].isExpired;
+      promoTimes.end+=this.formT(endDate.getHours())+":"+this.formT(endDate.getMinutes());
+      promoTimes.start+=this.formT(startDate.getHours())+":"+this.formT(startDate.getMinutes());
+   
+    
+      return promoTimes;
 }
 
 
@@ -519,6 +532,7 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
 {
 
 
+  console.log(promo);
   let nowDate=new Date();
 
   let startDate:Date;
@@ -536,17 +550,24 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
 
     let daysToAddToToday=-1;
 
-    if ((startH>endH)||((startH==endH)&&((startM>endM)))) //promotion not in same day
+
+    if (((startH>endH)||((startH==endH)&&((startM>endM)))) //promotion not in same day
+      && 
+      ((nowDate.getHours()<endH)||((nowDate.getHours()==endH)&&((nowDate.getMinutes()<endH))))
+      )
     {
+      console.log("HERE 1");
       nowDate=new Date(nowDate.valueOf()-(1000 * 60 * 60 * 24))
     }
 
-    let nowD:number=nowDate.getDay()+1;
-    let i=0;
+    let nowD:number=nowDate.getDay();
+    console.log("nowD"+nowD);
+    let i=-1;
     
     if (checkForNext)
     {
-      i=1;
+      console.log("HERE 2");
+      i=0;
     }
 
     
@@ -554,10 +575,14 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
    
     while (i<=7 && daysToAddToToday==-1)
     {
-      
-      if (promo.days[(nowD+i)%7])
+      console.log(i);
+      console.log((nowD+i)%7+1);
+      console.log(promo.days[(nowD+i)%7+1]);
+      if (promo.days[(nowD+i)%7+1])
       {
-        daysToAddToToday=i;
+        console.log("HERE 3");
+        daysToAddToToday=i+1;
+        console.log(daysToAddToToday);
       }
       i++;
     }
@@ -590,8 +615,12 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
   }
 
   if ((!promo.isOneTime)&&(!checkForNext)&&(Math.round( endDate.valueOf()-nowDate.valueOf())<0))
-    return this.calculatePromoStartEndDates(promo,true);
+      return this.calculatePromoStartEndDates(promo,true);
+    
   
+  
+      console.log("DATE RETURNED");
+      console.log({startDate:startDate,endDate:endDate});
 
   return {startDate:startDate,endDate:endDate};
   

@@ -55,7 +55,7 @@
         <ion-list *ngIf="userService.allSellersOrganized">
 
             <ion-card *ngFor="let seller of getOrganizedSellers()">
-                <div>
+                
                     <ion-grid class="productsSeller">
                         <ion-row>
                             <ion-col>
@@ -76,6 +76,15 @@
 
                                 </ion-row>
 
+                                <ion-row>
+                                        <span class="sellerTelNo">
+                                            <ion-icon name="call"></ion-icon>
+                                            {{seller.telNo}}
+                                        </span>
+    
+                                    </ion-row>
+
+
                             </ion-col>
                             <ion-col>
                                 <img class="sellerPic" src="{{seller.picture.url}}" />
@@ -88,18 +97,16 @@
             </ion-grid>
                  
                             <div class="scrolling-products" >
-                                    <div *ngFor="let product of seller.products" class="product">
-                                        <img class="productPic" src="{{product.picture.url}}" />
+                                    <div *ngFor="let product of getSellerProducts(seller)" class="product">
+                                            <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
+                                            <span *ngIf="product.bestPromo"  class="productPrice">{{product.bestPromo.price}} ₪ </span>
+                                            <span class="prodPicBox"><img class="productPic" src="{{product.picture.url}}" /></span>
+                                        <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
                                         <span class="productName">{{product.name}}</span>
-                                        <span class="productDescription">{{product.description}}</span>
-                                        <span class="productOriginalPrice"><del>{{product.originalPrice}} ₪</del></span>
+                                        <span *ngIf="product.bestPromo" class="productOriginalPrice"><del>{{product.originalPrice}} ₪</del></span>
+                                        
                                     </div>
                                 </div>
-                 
-                   
-                </div>
-
-
             </ion-card>
         </ion-list>
     </div>

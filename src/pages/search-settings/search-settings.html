@@ -28,23 +28,8 @@
   
     </ion-list>
 
-
-    <ion-list *ngIf="orders" no-border radio-group [(ngModel)]="settings.order" (ionChange)="updateStorageAndSearch()">
-  
-     
-        <div class="listTitle">Order by</div>
-    
-
-
-    <ion-item *ngFor="let order of orders" >
-        <ion-label>{{order}}</ion-label>
-        <ion-radio value="{{order}}"></ion-radio>
-      </ion-item>
-
-  </ion-list>
-
   <ion-item  >
-        <ion-label>Show only Promotions</ion-label>
+        <ion-label>Deals only</ion-label>
      <ion-checkbox  item-right [(ngModel)]="settings.onlyShowPromotion" (ionChange)="updateStorageAndSearch()"></ion-checkbox>
   </ion-item>
 

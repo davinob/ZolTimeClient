@@ -132,7 +132,6 @@ export class ProductsPage {
     position:{geoPoint:null,description:""},
     hashgaha:"Any",
     range:1,
-    order:"Low Price",
     onlyShowPromotion:true};
 
   presentPopover(myEvent) {
@@ -150,9 +149,16 @@ export class ProductsPage {
   }
 
   getOrganizedSellers():Array<any>{
+    if (!this.settings.onlyShowPromotion)
     return this.sellersFiltered;
-    
+
+    return this.sellersFiltered.filter((seller)=>
+    {
+      return this.shouldShowSeller(seller);
+    });
   }
+
+   
 
   sellersFiltered=new Array();
 
@@ -218,7 +224,6 @@ export class ProductsPage {
       {
        this.settings.hashgaha=val.hashgaha;
        this.settings.onlyShowPromotion=val.onlyShowPromotion;
-       this.settings.order=val.order;
        this.settings.range=val.range;
       }
         console.log(this.settings);
@@ -226,15 +231,18 @@ export class ProductsPage {
 
   
   }
+
+  shouldShowSeller(seller:Seller):boolean
+  {
+    return !this.settings.onlyShowPromotion || seller.hasAtLeastOnePromo;
+  }
   
   ionViewDidLoad()
   {
 
     this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
-        console.log("IS LOOKING FOR PRODS??");
-        console.log(isLookingforProds);
-
+     
         if  (isLookingforProds)
         {
         this.alertService.showLoading();
@@ -246,6 +254,17 @@ export class ProductsPage {
         }
       });
 
+  }
+
+  getSellerProducts(seller:Seller):Array<Product>
+  {
+    if (!this.settings.onlyShowPromotion)
+    return seller.products;
+
+    return seller.products.filter((product)=>
+    {
+      return product.bestPromo;
+    });
   }
 
   ionViewDidEnter() {

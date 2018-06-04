@@ -17,6 +17,7 @@ page-products{
 {
   font-weight: bolder;
   font-size: larger;
+  
 }
 
 .productDescription {
@@ -109,19 +110,7 @@ width:10%;
   font-weight:bold;
 }
 
-.productPriceBefore
-{
-  color:red;
-  font-size: x-large;
-}
 
-.productPriceAfter
-{
-  color:red;
-  font-weight:bold;
-  margin-left:10px;
-  font-size: x-large;
-}
 
 .products_disabled{
   opacity:0.5;
@@ -282,6 +271,11 @@ ion-backdrop{
   color: #4676f0;
 }
 
+.sellerTelNo
+{
+  color: #4676f0;
+}
+
 .scrolling-products {
   overflow-x: scroll;
   overflow-y: hidden;
@@ -295,20 +289,45 @@ ion-backdrop{
   margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
-  color: #4676f0;
+  color: #08073b;
 }
 
 .productPic
 {
   width: auto;
-  max-height: 90px;
+  max-height: 110px;
 }
 
 .productOriginalPrice
 {
-  color: red;
-  font-size: 20px;
-  font-weight: 500;
+  color: #4676f0;
+}
+
+.productPrice
+{
+  background-color: #f41111;
+  position: relative;
+  margin-bottom: -20px;
+  width: 70px;
+  color: white;
+  line-height: 20px;
+  font-weight: bold;
+  padding-left: 2px;
+}
+
+
+.promoTime
+{
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.prodPicBox
+{
+  align-content: center;
+  align-items: center;
 }
 
 .productsSeller{

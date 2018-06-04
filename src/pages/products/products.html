@@ -103,6 +103,7 @@
                                             <span class="prodPicBox"><img class="productPic" src="{{product.picture.url}}" /></span>
                                         <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
                                         <span class="productName">{{product.name}}</span>
+                                        <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
                                       
                                         
                                     </div>

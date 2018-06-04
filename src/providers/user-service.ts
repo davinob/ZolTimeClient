@@ -383,7 +383,7 @@ findAndSetBestPromoForAllProducts(){
             console.log(prodPromo.reducedPrice+"vs"+lastGoodPromo.price);
             }
 
-            if (lastGoodPromo==null ||prodPromo.reducedPrice<lastGoodPromo.price)
+            if (lastGoodPromo==null ||(prodPromo.reducedPrice<lastGoodPromo.price)&&(prodPromo.currentQuantity>0))
             {
               hasFoundOnePromo=true;
               lastGoodPromo={price:prodPromo.reducedPrice,

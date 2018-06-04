@@ -269,11 +269,13 @@ ion-backdrop{
 .sellerDistance
 {
   color: #4676f0;
+  font-weight: 700;
 }
 
 .sellerTelNo
 {
   color: #4676f0;
+  font-weight: 700;
 }
 
 .scrolling-products {
@@ -303,18 +305,23 @@ ion-backdrop{
   color: #4676f0;
 }
 
+.productQty
+{
+  font-size:14px
+}
+
 .productPrice
 {
   background-color: white;
   position: relative;
   margin-bottom: -25px;
   margin-left: 1px;
-  width: 90px;
+  width: 130px;
   color: #f41111;
   line-height: 20px;
   font-weight: 800;
   font-size: 19px;
-  padding-left: 2px;
+  padding-left: 8px;
   border: solid 2px;
   border-radius: 10px;
 }

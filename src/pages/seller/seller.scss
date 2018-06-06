@@ -1,0 +1,381 @@
+page-seller{
+
+
+ 
+
+    .promotions
+    {
+        color: white;
+        border-color: white;
+        border: 3px solid;
+        margin-bottom: 13px;
+        border-radius: 15px;
+        font-size: larger;
+    }
+    
+    .productName
+    {
+      font-weight: bolder;
+      font-size: larger;
+      
+    }
+    
+    .productDescription {
+      font-style: italic;
+     
+    }
+    .searchBoxInner
+    {
+      margin-left: 10px;
+      margin-top: 10px;
+    }
+    
+    
+    
+    .text-input{
+      font-size: 15px;
+      color: #486ff1;
+      font-weight: bold;
+    }
+    
+    
+    
+     .item-md {
+      padding-left: 10px;
+      margin: 3px 4px 4px 3px;
+      color: rgb(39, 28, 187);
+      background-color: transparent;
+    }
+    
+    .item-input-has-focus ion-input
+    {
+    border-color:transparent;
+    }
+    
+    .position {
+      color: rgb(39, 28, 187);
+      background-color: white;
+      }
+    
+    .rangeLabel
+    {
+      font-size: large
+    }
+    
+    .col15
+    {
+      -webkit-flex: 0 0 9.33333%;
+      width: 9.33333%; 
+       max-width: 9.33333%; 
+    }
+    
+    .radio-md .radio-checked {
+      border-color: white;
+      border: 3px solid white;
+    }
+    
+    
+    .radio-md .radio-inner
+    {
+      background-color: white;
+    }
+    
+    .checksAligned
+    {
+    width:10%;
+    }
+    
+    .item-input .label-md
+    {
+      color: white;
+    }
+    
+    .item-md.item-block .item-inner {
+      /* padding-right: 8px; */
+       border-bottom: 0px solid; 
+    }
+    
+    
+    .searchBox
+      {
+        border-radius: 15px;
+        border: 3px solid;
+        color: white;
+      }
+    
+    
+    
+    .productQuantity
+    {
+      font-weight:bold;
+    }
+    
+    
+    
+    .products_disabled{
+      opacity:0.5;
+      left: 0;
+      position: absolute;
+      width:100%;
+    
+    }
+    
+    .products_enabled{
+      opacity:1;
+      left: 0;
+      position: absolute;
+      width:100%;
+    
+    }
+    
+    .buttonPromotion
+    {
+      align-items: center;
+    }
+    
+    .publishPromo
+    {
+      background-color: green;
+    }
+    
+    .stopPromo
+    {
+      background-color: red;
+    }
+    
+    .card-md {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      margin-left:0px;
+      border-radius: 10px;
+      width:100%;
+      border-radius: 0;
+    }
+    
+    .select-text
+    {
+    visibility: hidden
+    }
+    
+    .select-icon
+    {
+      visibility: hidden
+    }
+    
+    
+    .list-md {
+      max-width: 500px;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 20px;
+    }
+    
+    
+    .scrolling-wrapper {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+      border-bottom: 1px solid white;
+        border-top: 1px solid white;
+      color:white;
+    }
+    
+    .scrolling-wrapperSubCategorySelected {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+      border-bottom: 2px solid white;
+     color:white;
+     height:28px;
+    }
+    
+    .scrolling-wrapperSubCategory {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+     color:white;
+     height:28px;
+    }
+    
+    
+    .category {
+      display: inline-block;
+      margin-top: 5px;
+      padding-left: 20px;  
+      
+    }
+    
+    .subCategory {
+      display: inline-block;
+      margin-top: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    
+    .categorySelected{
+      display: inline-block;
+      margin-top: 5px;
+      padding-left: 20px;  
+      border-bottom: 4px solid #34b3e6;
+      
+    }
+    
+    .subCategorySelected{
+      display: inline-block;
+      margin-top: 5px;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-bottom: 4px solid #34b3e6;
+      
+    }
+    
+    
+    
+    .categoryName{
+      float:left;
+      font-size:18px;
+      font-weight: bold;
+    }
+    
+    .categoryPic{
+      height: 10%;
+      max-height: 22px;
+      margin-left: 20%;
+    }
+    
+    
+    ion-backdrop{
+      opacity: 0.3 !important;	
+    }
+    
+    
+    .sellerName
+    {
+      font-weight: 800;
+      font-size: 22px;
+      color: #08073b;
+    }
+    
+    .sellerPic
+    {
+      width: auto;
+      max-height: 65px;
+    }
+    
+    .sellerDescription
+    {
+      font-weight: 500;
+      color: #4676f0;
+    }
+    
+    .sellerDistance
+    {
+      color: #4676f0;
+      font-weight: 700;
+    }
+    
+    .sellerTelNo
+    {
+      color: #4676f0;
+      font-weight: 700;
+    }
+    
+    .scrolling-products {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;  
+      margin-top: 10px;
+    
+    }
+    
+    .product {
+      padding: 10px;
+      border-radius: 10px;
+      display: inline-grid;
+      margin-top: 5px;
+      margin-left: 10px;
+      margin-right: 10px;
+      margin-bottom: 8px;
+      color: #08073b;
+      border-style: groove;
+    }
+    
+    .productPic
+    {
+      width: auto;
+      max-height: 110px;
+    }
+    
+    .productOriginalPrice
+    {
+      color: #4676f0;
+    }
+    
+    .productQty
+    {
+      font-size:14px
+    }
+    
+    .cardText{
+      font-size: 35px;
+      color:#201f4e;
+      font-weight: bold;
+    }
+    
+    .seeOthers
+    {
+      vertical-align: text-top;
+      height: 90px;
+      display: inline-block;
+      margin-right:20px;
+     
+     
+    }
+    
+    .productPrice
+    {
+      background-color: white;
+      position: relative;
+      margin-bottom: -25px;
+      margin-left: 1px;
+      width: max-content;
+      color: #f41111;
+      line-height: 20px;
+      font-weight: 800;
+      font-size: 19px;
+      padding-left: 8px;
+      padding-right: 8px;
+      border: solid 2px;
+      border-radius: 10px;
+      
+    }
+    
+    del{
+      font-weight: 400;
+        font-size: 18px;
+    }
+    
+    
+    .promoTime
+    {
+      background-color: red;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+    
+    .prodPicBox
+    {
+      align-content: center;
+      align-items: center;
+    }
+    
+    .productsSeller{
+     
+    }
+    
+    
+    
+    
+    
+    }

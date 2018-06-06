@@ -85,7 +85,7 @@ export class ProductsPage {
     }
     this.subCategorySelected=null;
 
-    this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
+    this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
   }
 
   selectSubCategory(subCatego:any){
@@ -99,7 +99,7 @@ export class ProductsPage {
     this.subCategorySelected=subCatego;
     }
 
-    this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
+    this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
   }
 
 
@@ -129,7 +129,7 @@ export class ProductsPage {
   }
 
   public settings:SearchSettings={
-    position:{geoPoint:null,description:""},
+    position:{geoPoint:null,description:"",isAddress:true},
     hashgaha:"Any",
     range:1,
     onlyShowPromotion:true};
@@ -143,9 +143,9 @@ export class ProductsPage {
   }
   
 
-  fetchSellers(){
+  getFilteredSellersProdsAndDeals(){
     console.log(this.settings.position);
-   this.userService.getClosestCurrentSellers(this.settings);
+   this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
   }
 
   getOrganizedSellers():Array<any>{
@@ -239,6 +239,18 @@ export class ProductsPage {
   
   ionViewDidLoad()
   {
+    this.initSearchSettingsFromStorage();
+    
+    this.userService.doneLookingForSellers.subscribe(doneLookingForSellers=>
+      { 
+        console.log("DONE LOOKING SELLERS");
+        console.log(doneLookingForSellers);
+        console.log(this.userService.allSellersFiltered);
+        
+        if (doneLookingForSellers)
+        this.filterSellersAndGetTheirProdsAndProms();
+
+      });
 
     this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
@@ -250,55 +262,55 @@ export class ProductsPage {
         else
         {
           this.alertService.dismissLoading();
-          this.filterPerCategoryAndSubCategory(this.userService.allSellersOrganized);
+          this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
         }
       });
+
+      
 
   }
 
   getSellerProducts(seller:Seller):Array<Product>
   {
     if (!this.settings.onlyShowPromotion)
-    return seller.products;
+    return seller.products.filter((val,index)=>{return index<5});
 
     return seller.products.filter((product)=>
     {
       return product.bestPromo;
-    });
+    }).filter((val,index)=>{return index<5});
   }
 
-  ionViewDidEnter() {
-    console.log('ionViewDidEnter ProductsPage');
  
-    this.initSearchSettingsFromStorage();
-
-    this.initSellers();
-  }
-
-  initSellersNewLocation()
+  filterSellersNewLocation()
   {
     this.categorySelected=null;
     this.subCategorySelected=null;
-    this.initSellers();
+    this.filterSellersAndGetTheirProdsAndProms();
   }
 
     
-  initSellers()
+  filterSellersAndGetTheirProdsAndProms()
   {
     console.log(this.settings);
     console.log("GETTING SELLERS");
     if ((this.settings.position.geoPoint==null)&&((this.settings.position.description=="Current Location")||(this.settings.position.description=="")))
   {
-    this.initPosition().then(val=>{this.fetchSellers()});
+    this.initPosition().then(val=>{this.getFilteredSellersProdsAndDeals()});
     this.settings.position.description="Current Location";
   }
   else
-    this.fetchSellers();
+    this.getFilteredSellersProdsAndDeals();
 }
 
 
 
 
+goToSeller(seller:Seller)
+{
+  console.log("GO TO SELLER");
+  this.navCtrl.push("SellerPage",{seller:seller});
+}
   
 
  

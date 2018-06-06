@@ -6,6 +6,7 @@ import { Subject } from 'rxjs/Subject';
 import * as firebase from 'firebase/app';
 import { firestore } from 'firebase/app';
 
+
 export interface Address{
     geoPoint:firebase.firestore.GeoPoint;
    streetNumber:number;
@@ -16,7 +17,8 @@ export interface Address{
 
 export interface Position{
   geoPoint:firebase.firestore.GeoPoint;
-  description:string
+  description:string;
+  isAddress:boolean
 }
 
 @Injectable()
@@ -29,30 +31,33 @@ export class AddressService{
   
   createPosition(lat:number,lng:number,description:string):Position
   {
-    return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description};
+    return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
   }
   
   key:string="AIzaSyDXH1P9t_7NbM4xKUptwQ47YjNYSosLi_k";
       
-  filterItems(searchTerm:string):Observable<any>
+  searchAddresses(searchTerm:string):Promise<any>
   {
     let searchUrl:string="https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+searchTerm+"&types=geocode&components=country:il&language=iw&key="+this.key;
-    let allAddresses:Subject<any>=new Subject<any>();
+    
+    return new Promise((resolve,reject)=>{
 
-     this.http.get(searchUrl).map(res => res.json()).subscribe(data => {
-      let newAdd=data.predictions.filter((address) => {
-        return address.description.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+      this.http.get(searchUrl).map(res => res.json()).subscribe(data => {
+        let newAddresses=data.predictions.filter((address) => {
+          return address.description.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
+        }).map(address=>{
+          address.isAddress=true;
+          return address;
       });
-      console.log("NEW ADDRESS:");
-      console.log(newAdd);
-      
-      allAddresses.next({value:newAdd});
-     },
-    err=>{
-    console.log(err);
-    }
-    );
-   return allAddresses.asObservable();
+      console.log("SEARCHED ADDRESSES SERVICE");
+      console.log(newAddresses);
+        resolve(newAddresses);
+       },
+      err=>{
+      console.log(err);
+      }
+      );
+    });
 
   }
   
@@ -190,6 +195,17 @@ boundingBoxCoordinates(center:firestore.GeoPoint, radius:number):any {
       longitude:this. wrapLongitude(center.longitude + longDegs),
     },
   };
+}
+
+isGeoPointNotSoFar(geoPoint1:firestore.GeoPoint,geoPoint2:firestore.GeoPoint,maxDistance:any):boolean
+{
+  console.log("CHECK DISTANCE CORRECT");
+  console.log(geoPoint1);
+  console.log(geoPoint2);
+  console.log(this.distance(geoPoint1,geoPoint2));
+  console.log(maxDistance);
+
+  return this.distance(geoPoint1,geoPoint2)<=maxDistance;
 }
  
 }

@@ -16,16 +16,21 @@
     </div>
 
     <ion-list *ngIf="addresses && searchAddress"  class="addressesList">
-        <ion-item class="addressItem" *ngFor="let address of addresses" (click)="selectAddress(address)">
-          {{address.description}}
+        <ion-item  class="addressItem" *ngFor="let place of addresses" (click)="selectAddress(place)">
+            <span *ngIf="!place.isAddress">  <ion-icon name="basket"></ion-icon><span class="sellerName"> {{place.description}}</span><span class="sellerAddress"> {{place.address}}</span></span>
+            <span *ngIf="place.isAddress" class="placeAddress" ><ion-icon name="pin"></ion-icon> {{place.description}}</span>
+            
         </ion-item>
+      
      </ion-list>
 
      <div *ngIf="!searchAddress && addressesHistory && addressesHistory.length>0">
         <span class="historyHeader">SEARCH HISTORY</span>
      <ion-list   class="addressesList">
-        <ion-item class="addressItem" *ngFor="let address of addressesHistory" (click)="selectAddressFromHistory(address)">
-          {{address.description}}
+        <ion-item class="addressItem" *ngFor="let place of addressesHistory" (click)="selectAddressFromHistory(place)">
+            <span *ngIf="!place.isAddress">  <ion-icon name="basket"></ion-icon><span class="sellerName"> {{place.description}}</span><span class="sellerAddress"> {{place.address}}</span></span>
+            <span *ngIf="place.isAddress" class="placeAddress" ><ion-icon name="pin"></ion-icon> {{place.description}}</span>
+            
         </ion-item>
      </ion-list>
      <span class="historyFooter"><a class="historyFooterLink" (click)="clearAddressesHistory()">CLEAR HISTORY</a></span>

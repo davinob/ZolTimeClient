@@ -52,11 +52,11 @@
     <div [ngClass]="products_enabled">
 
 
-        <ion-list *ngIf="userService.allSellersOrganized">
+        <ion-list *ngIf="getOrganizedSellers()" >
 
-            <ion-card *ngFor="let seller of getOrganizedSellers()">
+            <ion-card *ngFor="let seller of getOrganizedSellers()" (click)="goToSeller(seller)">
                 
-                    <ion-grid class="productsSeller">
+                    <ion-grid class="productsSeller" >
                         <ion-row>
                             <ion-col>
                                 <ion-row>
@@ -104,9 +104,8 @@
                                         <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
                                         <span class="productName">{{product.name}}</span>
                                         <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
-                                      
-                                        
                                     </div>
+                                    <div class="seeOthers"><p class="cardText" >...</p></div>
                                 </div>
             </ion-card>
         </ion-list>

@@ -251,7 +251,7 @@ ion-backdrop{
 {
   font-weight: 800;
   font-size: 22px;
-  color: #486ef1;
+  color: #08073b;
 }
 
 .sellerPic
@@ -287,11 +287,15 @@ ion-backdrop{
 }
 
 .product {
+  padding: 10px;
+  border-radius: 10px;
   display: inline-grid;
   margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
+  margin-bottom: 8px;
   color: #08073b;
+  border-style: groove;
 }
 
 .productPic
@@ -310,20 +314,38 @@ ion-backdrop{
   font-size:14px
 }
 
+.cardText{
+  font-size: 35px;
+  color:#201f4e;
+  font-weight: bold;
+}
+
+.seeOthers
+{
+  vertical-align: text-top;
+  height: 90px;
+  display: inline-block;
+  margin-right:20px;
+ 
+ 
+}
+
 .productPrice
 {
   background-color: white;
   position: relative;
   margin-bottom: -25px;
   margin-left: 1px;
-  width: 130px;
+  width: max-content;
   color: #f41111;
   line-height: 20px;
   font-weight: 800;
   font-size: 19px;
   padding-left: 8px;
+  padding-right: 8px;
   border: solid 2px;
   border-radius: 10px;
+  
 }
 
 del{

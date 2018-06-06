@@ -124,10 +124,10 @@ clearAddressSearch(){
     this.lastStringTyped=this.searchAddress;
       this.searching=true;
       this.addressSelected=false;
-      this.addressService.filterItems(this.searchAddress).first().subscribe((listOfAddresses)=>
+      this.userService.searchAddressesAndSellers(this.searchAddress).then((listOfAddresses)=>
       {
          this.searching=false;
-         this.addresses=listOfAddresses.value;
+         this.addresses=listOfAddresses;
       });
 
   }
@@ -140,24 +140,72 @@ clearAddressSearch(){
 
   addAddressToHistory(position:any)
   {
+    console.log("POSITION");
+    console.log(position);
+    let posToSave:any={};
+    posToSave={
+      description:position.description,
+    };
 
-    let posToSave=
+    if (!position.isAddress)
     {
-      lat:position.geoPoint.latitude,
-      lng:position.geoPoint.longitude,
-      description:position.description
+      posToSave["address"]=position.address;
+      posToSave["uid"]=position.uid;
+      posToSave["isAddress"]=false;
     }
+  else
+  {
+    posToSave["lat"]=position.geoPoint.latitude;
+    posToSave["lng"]=position.geoPoint.longitude;
+    posToSave["isAddress"]=true;
+
+  }
+
+  console.log("POS BEING SAVED");
+  console.log(posToSave);
 
   // Or to get a key/value pair
-  this.getAddressesHistory().then((val) => {
+  this.getAddressesHistory().then((placesFromHistory) => {
+    if(!placesFromHistory)
+   placesFromHistory=new Array<any>();
+   
    console.log("history from storage");
-   console.log(val);
-    if(!val)
-   val=new Array<any>();
-  val.unshift(posToSave);
-  if (val.length>=5)
-    val.pop();
-  this.storage.set('locations',val );
+   console.log(placesFromHistory);
+   console.log(posToSave);
+
+  //if same address already in the list, we won't add it:
+  if (posToSave.isAddress)
+  {
+    for (let index = 0; index < placesFromHistory.length; index++) {
+      const place = placesFromHistory[index];
+      if ((place.lat==posToSave.lat)&&(place.lng==posToSave.lng))
+      {
+        console.log("NO NEED TO SAVE");
+        //no need to save the place
+        return;
+      }
+    }  
+  }  
+  else
+  {
+    for (let index = 0; index < placesFromHistory.length; index++) {
+      const place = placesFromHistory[index];
+      if (place.uid==posToSave.uid)
+      {
+        console.log("NO NEED TO SAVE");
+        //no need to save the place
+        return;
+      }
+    }  
+  }
+
+  
+
+   
+  placesFromHistory.unshift(posToSave);
+  if (placesFromHistory.length>=5)
+    placesFromHistory.pop();
+  this.storage.set('locations',placesFromHistory );
   });
   }
 
@@ -180,40 +228,51 @@ clearAddressSearch(){
   {
     this.addresses=null;
     this.searchAddress=position.description;
+    
+    
+    if (position.isAddress)
+    {
     console.log(position);
     this.settings.position.description=position.description;
     this.settings.position.geoPoint=new firestore.GeoPoint(position.lat,position.lng);
+    this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
     this.navCtrl.pop();
-
+    }
+    else
+    {
+      this.navCtrl.setRoot("SellerPage",{sellerKey:position.key});
+    }
+    
   }
 
-  selectAddress(myAddress:any)
+  selectAddress(place:any)
   {
-    console.log("SELECT ADDRESS" + myAddress.description);
+    console.log("SELECT ADDRESS" + place.description);
     this.addresses=null;
-    this.searchAddress=myAddress.description;
+    this.searchAddress=place.description;
     this.lastStringTyped=this.searchAddress;
     this.addressSelected=true;
 
   
-    
-    this.addressService.getPositionAddress(myAddress.place_id).first().subscribe((address)=>
+  if (place.isAddress) 
+  {
+    this.addressService.getPositionAddress(place.place_id).first().subscribe((address)=>
     {
         console.log(address);
     
         this.settings.position.geoPoint=address.geoPoint;
         this.settings.position.description=address.description;
-        this.addAddressToHistory(this.settings.position);
-
-        this.userService.getClosestCurrentSellers(this.settings);
-
+        this.addAddressToHistory(this.settings.position); 
+        this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
         this.navCtrl.pop();
-
-
-
-
     });
-    
+  }
+  else
+  {
+    this.addAddressToHistory(place);
+    this.navCtrl.push("SellerPage",{sellerKey:place.key});
+  }
+
    this.addressInput.setFocus();
     
   }

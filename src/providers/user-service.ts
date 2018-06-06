@@ -43,6 +43,8 @@ export interface Seller {
   telNo:string;
   distanceFromPosition:number;
   hasAtLeastOnePromo:boolean;
+  key:string;
+  category:string;
 
   }
 
@@ -108,12 +110,13 @@ export class UserService {
   userProducts:Array<any>=[];
   userPromotions:Array<any> = [];
   
-  allSellers={};
-  allSellersOrganized:Array<Seller>=[];
+  allSellers:Array<any>=[];
+  allSellersFiltered:Array<any>=[];
 
-  previousSearchSettings:SearchSettings=null;
+  
 
   lookingForProducts:Subject<boolean>=new Subject();
+  doneLookingForSellers:Subject<boolean>=new Subject();
 
   
 
@@ -121,14 +124,58 @@ export class UserService {
    private http: HttpClient,
     private globalService:GlobalService,
   private addressService:AddressService) {
-      this.usersCollection = this.afs.collection<Seller>('users'); 
+      this.usersCollection = this.afs.collection('users'); 
         this.sellersCollectionRef = this.db.collection('sellers');
-        
-        this.lookingForProducts.next(false);
-   
+     
+        this.getAllSellers();
       }
 
 
+      public getAllSellers()
+      {
+        this.doneLookingForSellers.next(false);
+        this.sellersCollectionRef.get().then(sellersInfos =>
+          {
+
+            if (!sellersInfos || sellersInfos.empty)
+            {
+              return;
+            }
+      
+            sellersInfos.forEach(doc=>{
+              
+              let uid=doc.id;
+            let seller=doc.data();  
+            seller.key=uid;
+
+             this.allSellers.push(seller);
+             this.allSellersFiltered.push(seller);
+           });
+           
+          }).then(()=>{
+            this.doneLookingForSellers.next(true);
+          }).catch(error=>{
+            console.log(error);
+            this.doneLookingForSellers.next(true);
+      
+      
+          });
+      }
+
+
+      public getSellerOfKey(sellerKey:string):Seller{
+        
+        if (!this.allSellers)
+        return null;
+
+        for (let index = 0; index < this.allSellers.length; index++) {
+          const seller:Seller = this.allSellers[index];
+          if (seller.key==sellerKey)
+          return seller;
+        }
+
+        return null;
+      }
 
    public  updateUserAuthConnected(flag:boolean)
    {
@@ -164,185 +211,102 @@ export class UserService {
     
   }
 
-
-  areSearchSettingTheSame(settings:SearchSettings):boolean
-  {
-    console.log(settings);
-    console.log(this.previousSearchSettings);
-
-    if (this.previousSearchSettings==null&&settings!=null)
-      return false;
-   
-    if (settings.position)
-    {
-      if (settings.position.description!=this.previousSearchSettings.position.description)
-      return false;
-      if (settings.position.geoPoint){
-      if (settings.position.geoPoint.latitude!=this.previousSearchSettings.position.geoPoint.latitude)
-      return false;
-      if (settings.position.geoPoint.longitude!=this.previousSearchSettings.position.geoPoint.longitude)
-      return false;
-      }
-    }
-
- 
-    if (settings.hashgaha && settings.hashgaha!=this.previousSearchSettings.hashgaha)
-     return false;
-
-    if (settings.range &&  settings.range!=this.previousSearchSettings.range)
-      return false;
-   
-    
-    return true;
-  }
-
-
-  cloneSettings(settings:SearchSettings):SearchSettings
-  {
-    let newSettings:SearchSettings=Object.assign({},settings);
-    if (settings.position.geoPoint!=null)
-    {
-      newSettings.position=this.addressService.createPosition(
-      settings.position.geoPoint.latitude,settings.position.geoPoint.longitude,settings.position.description);
-    }
-    else
-    {
-      newSettings.position.description=settings.position.description;
-      newSettings.position.geoPoint=null;
-    }
-      return newSettings;
-  }
-
-  getClosestCurrentSellers(settings:SearchSettings)
+  filterSellersAndGetTheirProdsAndDeals(settings:SearchSettings)
 {
+  this.lookingForProducts.next(true);
 
-  if (this.areSearchSettingTheSame(settings))
-   {
-     console.log("SAME SETTINGS");
-    return;
-   } 
-
-   this.lookingForProducts.next(true);
-
-  this.previousSearchSettings=this.cloneSettings(settings);
-
-  this.allSellers=new Array();
-  this.allSellersOrganized=new Array();
+  this.allSellersFiltered=new Array();
 
   console.log("queryAllBasedOnFilters");
   if (!settings.position.geoPoint)
   {
     console.log("NO LOCATION");
+    this.lookingForProducts.next(false);
     return;
   }
 
-  let box=this.addressService.boundingBoxCoordinates(settings.position.geoPoint,settings.range);
-  console.log(settings);
-  console.log(box);
-  
-  let lesserGeopoint = new firebase.firestore.GeoPoint(box.swCorner.latitude, box.swCorner.longitude);
-  let greaterGeopoint = new firebase.firestore.GeoPoint(box.neCorner.latitude, box.neCorner.longitude);
-  
-  
+  this.allSellersFiltered=this.allSellers.filter((seller) => {
+      let validSeller:boolean=true;
 
-
-
-  let query:firebase.firestore.Query=this.sellersCollectionRef.where("address.geoPoint",">=",lesserGeopoint).
-    where("address.geoPoint","<=",greaterGeopoint);
-
-if (settings.hashgaha!="Any")
-{
-  console.log("HASHGAHA REQUESTED");
-  console.log(settings.hashgaha);
-  
-if (settings.hashgaha=="Kosher")
-query=query.where("hashgaha.Kosher","==",true);
-else
-query=query.where("hashgaha.Lemehadrin","==",true);
-}
-
-query.get().then(sellersInfos =>
-    {
-      console.log(sellersInfos);
-
-      if (!sellersInfos || sellersInfos.empty)
-      {
-        this.lookingForProducts.next(false);
+      if (settings.hashgaha != "Any") {
+         validSeller=validSeller && seller.hashgaha[settings.hashgaha];
       }
 
-      sellersInfos.forEach(doc=>{
-        let uid=doc.id;
+      validSeller=validSeller && this.addressService.isGeoPointNotSoFar(seller.address.geoPoint,settings.position.geoPoint,settings.range);
+    
+      return validSeller;
 
-       this.allSellers[uid]=doc.data();
-       console.log(this.allSellers[uid].address.geoPoint);
-       console.log(settings.position.geoPoint);
-        let distance=this.addressService.distance(this.allSellers[uid].address.geoPoint,settings.position.geoPoint);
+    });
+    
+
+    if (!this.allSellersFiltered || this.allSellersFiltered.length==0) 
+    {
+      this.lookingForProducts.next(false);
+      return;
+    }
+
+    this.allSellersFiltered.forEach(seller=>{
+      this.lookingForProducts.next(true);
+    
+        let distance=this.addressService.distance(seller.address.geoPoint,settings.position.geoPoint);
         distance=Math.round(distance*100)/100;
-       
         console.log("DISTANCE:" +distance);
-       this.allSellers[uid].distanceFromPosition=distance;
+       seller.distanceFromPosition=distance;
    
+      this.fetchSellerProdsAndProms(seller).then(()=>
+      {
+        console.log("SELLER IN PROMISE");
+        console.log(seller);
+        this.lookingForProducts.next(false);
         
-       this.sellersCollectionRef.doc(uid).collection("products").get().then(
-        productsInfo =>
-        { 
-          this.allSellers[uid].products=new Array();
-            console.log("PRODUCTS");
-         
-         
-            productsInfo.forEach(product=>{
-              this.allSellers[uid].products.push(product.data());
-            });
-            console.log(this.allSellers[uid].products);
-           
-  
-
-            this.sellersCollectionRef.doc(uid).collection("promotions").get().then(
-              promotionsInfo =>
-              { 
-                this.allSellers[uid].promotions=new Array();
-                  console.log("PROMOTIONSSS");
-               
-                  promotionsInfo.forEach(promotion=>{
-                    this.allSellers[uid].promotions.push(promotion.data());
-                  });
-                  console.log(this.allSellers[uid].promotions);
-                  console.log(this.allSellers);
-
-                 this.organizeSellers(settings);
-                 this.findAndSetBestPromoForAllProducts();
-                 
-                 this.lookingForProducts.next(false);
-              }).catch(error=>{
-                console.log("ERROR");
-                console.log(error);
-              });
+      });
+ 
       
-        }).catch(error=>{
-          console.log("ERROR");
-          console.log(error);
-        });
-
       });
 
-  
-  }).catch(error=>{
-    console.log("ERROR");
-    console.log(error);
-  });
-  
+  }
 
-    console.log("SELLERS");
-    console.log(this.allSellers);
-    
+
+fetchSellerProdsAndProms(seller:any):Promise<any>
+{
+  console.log("SELLER before return PROMISE");
+let promiseProducts:Promise<any>=this.sellersCollectionRef.doc(seller.key).collection("products").get().then(
+    productsInfo =>
+    { 
+      seller.products=new Array();
+        console.log("PRODUCTS");
+     
+     
+        productsInfo.forEach(product=>{
+          seller.products.push(product.data());
+        });
+      });
+
+  let promisePromotions=this.sellersCollectionRef.doc(seller.key).collection("promotions").get().then(
+          promotionsInfo =>
+          { 
+            seller.promotions=new Array();
+              console.log("PROMOTIONSSS");
+           
+              promotionsInfo.forEach(promotion=>{
+                seller.promotions.push(promotion.data());
+              });
+          });
+
+      return Promise.all([promiseProducts,promisePromotions]).then(()=>
+        {
+          console.log("SELLER before return PROMISE 1");
+          this.findAndSetBestPromoForAllProductsOfSeller(seller);
+          console.log("SELLER before return PROMISE 2");
+        });
 }
 
 
-findAndSetBestPromoForAllProducts(){
+findAndSetBestPromoForAllProductsOfSeller(seller:any){
   console.log("findAndSetBestPromoForAllProducts:")
-  console.log(this.allSellersOrganized);
+ 
 
-  this.allSellersOrganized.forEach((seller,indexSeller)=>{
+  
     let hasFoundOnePromo=false;
     seller.products.forEach((product, indexProd)=>
     {
@@ -397,30 +361,14 @@ findAndSetBestPromoForAllProducts(){
           } 
         }
       }
-      this.allSellersOrganized[indexSeller].products[indexProd].bestPromo=lastGoodPromo;
+      seller.products[indexProd].bestPromo=lastGoodPromo;
       });
 
-      this.allSellersOrganized[indexSeller].promotions=null;
-      this.allSellersOrganized[indexSeller].hasAtLeastOnePromo=hasFoundOnePromo;
-      
-  });
-
-  console.log(this.allSellersOrganized);
+      seller.promotions=null;
+      seller.hasAtLeastOnePromo=hasFoundOnePromo;
+ 
   }
 
-organizeSellers(settings:SearchSettings)
-  {
-    this.allSellersOrganized=new Array();
-  
-    for (let sellerKey in this.allSellers)
-    {
-      this.allSellersOrganized.push(this.allSellers[sellerKey]);
-    }
-    
-    console.log("SHOWLOADING FALSE");
-
-        
-  }
 
    public getCurrentUser():User
   {
@@ -479,6 +427,51 @@ organizeSellers(settings:SearchSettings)
 }
 
 
+searchAddressesAndSellers(searchTerm:string):Promise<any>
+{
+  return new Promise((resolve,reject)=>{
+    let sellersNames=this.getAllSellersWithSearchTerm(searchTerm);
+    this.addressService.searchAddresses(searchTerm).then(addresses=>{
+      console.log("SEARCHED ADDRESSES");
+     
+      let sellersAndAddresses=new Array();
+
+      sellersAndAddresses=sellersAndAddresses.concat(sellersNames,addresses);
+      console.log(sellersAndAddresses);
+        resolve(sellersAndAddresses);
+    });
+    
+  
+  
+  
+    console.log(sellersNames);
+
+
+  });
+
+
+
+
+}
+
+getAllSellersWithSearchTerm(searchTerm:string)
+{
+  let sellers=new Array();
+  if (!this.allSellers || this.allSellers.length==0)
+  {
+    return sellers;
+  }
+
+  this.allSellers.filter(seller=>{
+    let sellerName:string=seller.restaurantName;
+    return sellerName.toLocaleLowerCase().indexOf(searchTerm.toLocaleLowerCase())>=0;
+  }).forEach((seller)=>{
+  sellers.push({description:seller.restaurantName,address:seller.address.description,key:seller.key,isAddress:false});
+  });
+
+  return sellers;
+}
+
 
 calculatePromotionMessage(promo:Promotion):any
 {
@@ -492,9 +485,6 @@ calculatePromotionMessage(promo:Promotion):any
       let timeDiffInSecBeforeStart=Math.round((startDate.valueOf()-nowDate.valueOf())/1000);
       let timeDiffInSecBeforeEnd=Math.round((endDate.valueOf()-nowDate.valueOf())/1000);
 
-      console.log("TIME DIFF BEFORE END");
-      console.log(timeDiffInSecBeforeEnd);
-      
       if (timeDiffInSecBeforeEnd>(15 * 3600)) //limit to next 15 hours
       {
         return {start:"",notValid:true};
@@ -530,9 +520,6 @@ calculatePromotionMessage(promo:Promotion):any
 
 calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
 {
-
-
-  console.log(promo);
   let nowDate=new Date();
 
   let startDate:Date;
@@ -556,17 +543,15 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
       ((nowDate.getHours()<endH)||((nowDate.getHours()==endH)&&((nowDate.getMinutes()<endH))))
       )
     {
-      console.log("HERE 1");
       nowDate=new Date(nowDate.valueOf()-(1000 * 60 * 60 * 24))
     }
 
     let nowD:number=nowDate.getDay();
-    console.log("nowD"+nowD);
+    
     let i=-1;
     
     if (checkForNext)
     {
-      console.log("HERE 2");
       i=0;
     }
 
@@ -575,14 +560,10 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
    
     while (i<=7 && daysToAddToToday==-1)
     {
-      console.log(i);
-      console.log((nowD+i)%7+1);
-      console.log(promo.days[(nowD+i)%7+1]);
+  
       if (promo.days[(nowD+i)%7+1])
       {
-        console.log("HERE 3");
         daysToAddToToday=i+1;
-        console.log(daysToAddToToday);
       }
       i++;
     }
@@ -616,11 +597,7 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
 
   if ((!promo.isOneTime)&&(!checkForNext)&&(Math.round( endDate.valueOf()-nowDate.valueOf())<0))
       return this.calculatePromoStartEndDates(promo,true);
-    
   
-  
-      console.log("DATE RETURNED");
-      console.log({startDate:startDate,endDate:endDate});
 
   return {startDate:startDate,endDate:endDate};
   

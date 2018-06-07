@@ -35,9 +35,9 @@ export class SearchAddressPage {
   addressSelected:boolean=false;
   
 
-  settings:SearchSettings=null;
   tmpDescription:any=null;
 
+  settings:SearchSettings;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
     private geolocation: Geolocation,
@@ -45,6 +45,7 @@ export class SearchAddressPage {
     private storage: Storage,
     private alertLoadingService:AlertAndLoadingService,
     private userService:UserService) {
+      this.settings=this.userService.cloneSettings();
 
   }
 
@@ -58,12 +59,13 @@ export class SearchAddressPage {
   }
   
  
+loadSettings(){
+
+
+}
+
 
   ionViewDidLoad() {
-    
-
-
-    this.settings=this.navParams.data.settings;
     this.settings.position.description="";
     this.tmpDescription="";
     console.log(this.settings.position);
@@ -150,7 +152,7 @@ clearAddressSearch(){
     if (!position.isAddress)
     {
       posToSave["address"]=position.address;
-      posToSave["uid"]=position.uid;
+      posToSave["key"]=position.key;
       posToSave["isAddress"]=false;
     }
   else
@@ -190,7 +192,7 @@ clearAddressSearch(){
   {
     for (let index = 0; index < placesFromHistory.length; index++) {
       const place = placesFromHistory[index];
-      if (place.uid==posToSave.uid)
+      if (place.key==posToSave.key)
       {
         console.log("NO NEED TO SAVE");
         //no need to save the place
@@ -270,7 +272,7 @@ clearAddressSearch(){
   else
   {
     this.addAddressToHistory(place);
-    this.navCtrl.push("SellerPage",{sellerKey:place.key});
+    this.navCtrl.setRoot("SellerPage",{sellerKey:place.key});
   }
 
    this.addressInput.setFocus();

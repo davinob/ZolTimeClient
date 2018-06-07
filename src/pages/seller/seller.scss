@@ -21,7 +21,7 @@ page-seller{
     }
     
     .productDescription {
-      font-style: italic;
+      color:#486ff1;
      
     }
     .searchBoxInner
@@ -29,8 +29,22 @@ page-seller{
       margin-left: 10px;
       margin-top: 10px;
     }
+
+    .listOfProdsCatego
+    {
+        margin-top:12px;
+        margin-left:5px;
+    }
+
+    .listOfProds
+    {
+        margin-right:22px;
+    }
     
-    
+    .productPromo
+{
+  border-color:red;
+}
     
     .text-input{
       font-size: 15px;
@@ -162,31 +176,22 @@ page-seller{
       visibility: hidden
     }
     
-    
-    .list-md {
-      max-width: 500px;
-        margin-left: 10px;
-        margin-right: 10px;
-        margin-top: 20px;
-    }
-    
+  
     
     .scrolling-wrapper {
       overflow-x: scroll;
       overflow-y: hidden;
       white-space: nowrap;
-      border-bottom: 1px solid white;
-        border-top: 1px solid white;
+      border-top: 1px solid #08073b;
       color:white;
+      background-color: #486ff1;
     }
     
     .scrolling-wrapperSubCategorySelected {
       overflow-x: scroll;
       overflow-y: hidden;
       white-space: nowrap;
-      border-bottom: 2px solid white;
-     color:white;
-     height:28px;
+     height:35px;
     }
     
     .scrolling-wrapperSubCategory {
@@ -197,7 +202,12 @@ page-seller{
      height:28px;
     }
     
-    
+    .categoTitle {
+        font-size: 18px;
+    font-weight: bold;
+        color:white;
+      }
+
     .category {
       display: inline-block;
       margin-top: 5px;
@@ -249,12 +259,14 @@ page-seller{
     }
     
     
-    .sellerName
-    {
-      font-weight: 800;
-      font-size: 22px;
-      color: #08073b;
+    ion-header{
+        background-color: white;
     }
+
+    .bar-button-default-md
+     {
+      color:#08073b;
+     }
     
     .sellerPic
     {
@@ -264,8 +276,8 @@ page-seller{
     
     .sellerDescription
     {
-      font-weight: 500;
       color: #4676f0;
+      font-weight: 500;
     }
     
     .sellerDistance
@@ -332,6 +344,14 @@ page-seller{
      
     }
     
+    .sellerName
+{
+  font-weight: 800;
+  font-size: 22px;
+  color: #08073b;
+}
+
+
     .productPrice
     {
       background-color: white;
@@ -370,11 +390,16 @@ page-seller{
       align-items: center;
     }
     
-    .productsSeller{
+    .toolbar-background-md {
+        background-color: white;
+      }
+    
+   
+    .md .tabs .tabbar
+    {
+       background-color:white
      
     }
-    
-    
     
     
     

@@ -32,8 +32,8 @@ export class SearchSettingsPage {
     private userService:UserService,
   private addressService:AddressService) {
     console.log('constructore SearchSettingsPage');
-    this.settings=this.navParams.data.settings;
-    this.previousSearchSettings=this.cloneSettings();
+    this.settings=this.userService.userSearchSettings;
+    this.previousSearchSettings=this.userService.cloneSettings();
   
   }
 
@@ -46,9 +46,8 @@ export class SearchSettingsPage {
 
 
   ionViewDidLoad() {
-    
     console.log('ionViewDidLoad SearchSettingsPage');
-    this.settings=this.navParams.data.settings;
+    
    }
 
  
@@ -68,14 +67,16 @@ updateStorageAndSearch()
 let now=new Date().getTime();
 if (now-this.lastTime>=1000)
 { 
+  this.storage.set("settings",this.settings);
+  this.previousSearchSettings=this.userService.cloneSettings();
+  
   if (this.areSearchSettingTheSame())
   {
     console.log("SAME SETTINGS");
    return;
   } 
 
-  this.storage.set("settings",this.settings);
-  this.previousSearchSettings=this.cloneSettings();
+  
 
   this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
 }
@@ -86,21 +87,7 @@ if (now-this.lastTime>=1000)
  
 
 
-cloneSettings():SearchSettings
-{
-  let newSettings:SearchSettings=Object.assign({},this.settings);
-  if (this.settings.position.geoPoint!=null)
-  {
-    newSettings.position=this.addressService.createPosition(
-      this.settings.position.geoPoint.latitude,this.settings.position.geoPoint.longitude,this.settings.position.description);
-  }
-  else
-  {
-    newSettings.position.description=this.settings.position.description;
-    newSettings.position.geoPoint=null;
-  }
-    return newSettings;
-}
+
 
 areSearchSettingTheSame():boolean
   {

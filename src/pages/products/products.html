@@ -15,13 +15,14 @@
                 <ion-row>
                     <ion-col col-10>
 
-                        <ion-input clearInput [(ngModel)]="settings.position.description" class="position" type="text" placeholder="Current Location"
+                        <ion-input clearInput [(ngModel)]="userService.userSearchSettings.position.description" class="position" type="text" placeholder="Current Location"
                             (ionFocus)="goToSearchAddessPage()">
                             <ion-icon class='white' name="navigate"></ion-icon>
                         </ion-input>
                     </ion-col>
                     <ion-col col-2 align-self-end>
-                        <ion-icon (click)="presentPopover($event)" name="settings"></ion-icon>
+                            <ion-row><ion-icon (click)="getFilteredSellersProdsAndDeals()" name="refresh"></ion-icon></ion-row>
+                            <ion-row><ion-icon (click)="presentPopover($event)" name="settings"></ion-icon></ion-row>
                     </ion-col>
                 </ion-row>
        
@@ -69,7 +70,7 @@
     
                                     </ion-row>
                                 <ion-row>
-                                    <span class="sellerDistance">
+                                    <span class="sellerDistance" >
                                         <ion-icon name="navigate"></ion-icon>
                                         {{seller.distanceFromPosition}} Km
                                     </span>
@@ -97,7 +98,7 @@
             </ion-grid>
                  
                             <div class="scrolling-products" >
-                                    <div *ngFor="let product of getSellerProducts(seller)" class="product">
+                                    <div *ngFor="let product of getSellerProducts(seller)" [ngClass]="product.bestPromo? 'product productPromo' :'product'" >
                                             <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
                                             <span *ngIf="product.bestPromo"  class="productPrice"><del>{{product.originalPrice}} ₪</del>  {{product.bestPromo.price}} ₪ </span>
                                             <span class="prodPicBox"><img class="productPic" src="{{product.picture.url}}" /></span>

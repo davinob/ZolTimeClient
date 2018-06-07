@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Seller, UserService, Product } from '../../providers/user-service';
 import { GlobalService } from '../../providers/global-service';
+import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
 
 /**
  * Generated class for the SellerPage page.
@@ -22,7 +23,8 @@ export class SellerPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
     public userService:UserService,
-    public globalService:GlobalService) {
+    public globalService:GlobalService,
+    private launchNavigator: LaunchNavigator) {
     this.seller=this.navParams.data.seller;
     if (!this.seller)
     {
@@ -33,26 +35,63 @@ export class SellerPage {
     console.log("MY SELLER is:");
     console.log(this.seller);
     this.userService.fetchSellerProdsAndProms(this.seller);
+    this.initSubCategories();
+  
   }
 
+
+
+navigateToAddress()
+{
+  console.log("NAVIGATE TO ADDRESS");
+  this.launchNavigator.navigate(this.seller.address.description)
+  .then(
+    success => console.log('Launched navigator'),
+    error => console.log('Error launching navigator', error)
+  );
+}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SellerPage'); 
+  
+    
   }
 
+  subCategories:any[]=new Array();
+  
   getSubCategories():any[]{
-    console.log("CATEGORY");
-    console.log(this.seller.category);
-    console.log(this.globalService.categories);
+  return this.subCategories;
+  }
+
+  getSubCategoriesForShow():any[]
+  {
+    let subCategos:Array<any>;
+    if (!this.subCategorySelected)
+    subCategos=this.subCategories;
+    else
+    subCategos= [this.subCategorySelected];
+
+    return subCategos.filter(catego=>
+    {
+      return this.getCategoryProducts(catego) && this.getCategoryProducts(catego).length>0;
+    });
+  }
+
+  initSubCategories(){
     let category=null;
 
     for (const key in this.globalService.categories) {
       category=this.globalService.categories[key];
       if (category.name==this.seller.category)
-        return category.subCategories;
+        {
+          this.subCategories=category.subCategories;
+          return;
+        }
     }
     return new Array();
   }
+
+
 
   isSubCategorySelected(subCatego:any):boolean
   {
@@ -71,11 +110,14 @@ export class SellerPage {
     this.subCategorySelected=subCatego;
     }
 
-    //this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
   }
 
 
 
+  getCategoryProducts(catego:string):Array<any>
+  {
+    return this.seller.productsPerCategory[catego];
+  }
 
   getSellerProducts():Array<Product>
   {

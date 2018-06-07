@@ -25,6 +25,8 @@ import { UserService } from './../providers/user-service';
 import { AddressService } from './../providers/address-service';
 import { GlobalService } from './../providers/global-service';
 
+import {LaunchNavigator} from '@ionic-native/launch-navigator';
+
 
 import { Geolocation } from '@ionic-native/geolocation';
 
@@ -74,6 +76,7 @@ export function createTranslateLoader(http: HttpClient) {
     MyApp
   ],
   providers: [
+    LaunchNavigator,
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
@@ -84,6 +87,8 @@ export function createTranslateLoader(http: HttpClient) {
     Camera,
     Geolocation,
     GlobalService
+    
+    
   ]
 })
 export class AppModule {}

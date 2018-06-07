@@ -125,17 +125,13 @@ export class ProductsPage {
 
   goToSearchAddessPage()
   {
-    this.navCtrl.push('SearchAddressPage',{settings:this.settings});
+    this.navCtrl.push('SearchAddressPage');
   }
 
-  public settings:SearchSettings={
-    position:{geoPoint:null,description:"",isAddress:true},
-    hashgaha:"Any",
-    range:1,
-    onlyShowPromotion:true};
+  public ;
 
   presentPopover(myEvent) {
-    let popover = this.popoverCtrl.create('SearchSettingsPage',{settings:this.settings},{cssClass:"popOverClass"});
+    let popover = this.popoverCtrl.create('SearchSettingsPage',{},{cssClass:"popOverClass"});
 
     popover.present({
       ev: myEvent
@@ -144,12 +140,11 @@ export class ProductsPage {
   
 
   getFilteredSellersProdsAndDeals(){
-    console.log(this.settings.position);
-   this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
+   this.userService.filterSellersAndGetTheirProdsAndDeals(this.userService.userSearchSettings);
   }
 
   getOrganizedSellers():Array<any>{
-    if (!this.settings.onlyShowPromotion)
+    if (!this.userService.userSearchSettings.onlyShowPromotion)
     return this.sellersFiltered;
 
     return this.sellersFiltered.filter((seller)=>
@@ -209,7 +204,7 @@ export class ProductsPage {
   {
     console.log("INIT POSITION");
     return this.geolocation.getCurrentPosition().then((resp) => {
-      this.settings.position=this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,"Current Location");
+      this.userService.userSearchSettings.position=this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,"Current Location");
     
      }).catch((error) => {
       this.alertService.showToast({message:"Error getting location"});
@@ -217,16 +212,16 @@ export class ProductsPage {
   }
   
   initSearchSettingsFromStorage() {
-    console.log(this.settings);
+    
 
     this.storage.get("settings").then(val => {
       if (val)
       {
-       this.settings.hashgaha=val.hashgaha;
-       this.settings.onlyShowPromotion=val.onlyShowPromotion;
-       this.settings.range=val.range;
+       this.userService.userSearchSettings.hashgaha=val.hashgaha;
+       this.userService.userSearchSettings.onlyShowPromotion=val.onlyShowPromotion;
+       this.userService.userSearchSettings.range=val.range;
       }
-        console.log(this.settings);
+        console.log(this.userService.userSearchSettings);
      });
 
   
@@ -234,13 +229,13 @@ export class ProductsPage {
 
   shouldShowSeller(seller:Seller):boolean
   {
-    return !this.settings.onlyShowPromotion || seller.hasAtLeastOnePromo;
+    return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
   }
   
   ionViewDidLoad()
   {
     this.initSearchSettingsFromStorage();
-    
+
     this.userService.doneLookingForSellers.subscribe(doneLookingForSellers=>
       { 
         console.log("DONE LOOKING SELLERS");
@@ -272,7 +267,7 @@ export class ProductsPage {
 
   getSellerProducts(seller:Seller):Array<Product>
   {
-    if (!this.settings.onlyShowPromotion)
+    if (!this.userService.userSearchSettings.onlyShowPromotion)
     return seller.products.filter((val,index)=>{return index<5});
 
     return seller.products.filter((product)=>
@@ -292,12 +287,12 @@ export class ProductsPage {
     
   filterSellersAndGetTheirProdsAndProms()
   {
-    console.log(this.settings);
+    console.log(this.userService.userSearchSettings);
     console.log("GETTING SELLERS");
-    if ((this.settings.position.geoPoint==null)&&((this.settings.position.description=="Current Location")||(this.settings.position.description=="")))
+    if ((this.userService.userSearchSettings.position.geoPoint==null)&&((this.userService.userSearchSettings.position.description=="Current Location")||(this.userService.userSearchSettings.position.description=="")))
   {
     this.initPosition().then(val=>{this.getFilteredSellersProdsAndDeals()});
-    this.settings.position.description="Current Location";
+    this.userService.userSearchSettings.position.description="Current Location";
   }
   else
     this.getFilteredSellersProdsAndDeals();

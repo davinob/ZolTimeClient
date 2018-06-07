@@ -7,31 +7,53 @@
 <ion-header>
 
   <ion-navbar>
-      <button ion-button menuToggle>
-          <ion-icon name="menu"></ion-icon>
-      </button>
-      <ion-grid class="productsSeller">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    
+    <ion-grid class="productsSeller">
+      <ion-row>
+        <ion-col align-self-center col-8>
           <ion-row>
-              <ion-col>
-         <ion-title>
-          {{seller.restaurantName}}
-      </ion-title>
-    </ion-col>
-      <ion-col>
-        <img class="sellerPic" src="{{seller.picture.url}}" />
-    </ion-col>
-   </ion-row>
-  </ion-grid> 
+              <span class="sellerName"> {{seller.restaurantName}}</span>
+          </ion-row>
+          <ion-row>
+           <a href="https://maps.google.com/?q={{seller.address.description}}" target="_blank">
+            <span class="sellerDistance" >
+                <ion-icon name="navigate"></ion-icon>
+              {{seller.address.description}}
+            </span>
+          </a> 
+          </ion-row>
+          <ion-row>
+            <span class="sellerTelNo">
+              <ion-icon name="call"></ion-icon>
+              {{seller.telNo}}
+            </span>
+          </ion-row>
 
+        </ion-col>
+        <ion-col col-4>
+          <img class="sellerPic" src="{{seller.picture.url}}" />
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-navbar>
+
+  <ion-grid class="productsSeller">
+      <ion-row>
+        <span class="sellerDescription"> {{seller.description}}</span>
+      </ion-row>
+    </ion-grid>
   <div class="scrolling-wrapper">
-      <div  [ngClass]="scrolling-wrapperSubCategorySelected">
-          <div  *ngFor="let subCategory of getSubCategories()" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
-              <span class="categoryName">{{subCategory}}</span>
-          </div>
+    <div class="scrolling-wrapperSubCategorySelected">
+      <div *ngFor="let subCategory of getSubCategories()" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
+        <span class="categoryName">{{subCategory}}</span>
       </div>
+    </div>
   </div>
 </ion-header>
+<ion-header></ion-header>
 
 
 <ion-content class="global" padding>
@@ -41,59 +63,28 @@
 
 
   <div [ngClass]="products_enabled">
+    <ion-list class="listOfProdsCatego" *ngIf="getSubCategoriesForShow()">
+      <div *ngFor="let category of getSubCategoriesForShow()" text-wrap>
+        <div class="categoTitle">{{category}}</div>
+        <ion-list class="listOfProds" *ngIf="getCategoryProducts(category) as categoProducts ">
+          <ion-card class="product" *ngFor="let product of categoProducts"  [ngClass]="product.bestPromo? 'product productPromo' :'product'">
+            <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
+            <span *ngIf="product.bestPromo" class="productPrice">
+              <del>{{product.originalPrice}} ₪</del> {{product.bestPromo.price}} ₪ </span>
+            <span class="prodPicBox">
+              <img class="productPic" src="{{product.picture.url}}" />
+            </span>
+            <span *ngIf="product.bestPromo" class="promoTime">
+              <ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span>
+            <span class="productName">{{product.name}}</span>
+            <span class="productDescription">{{product.description}}</span>
+            <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
+          </ion-card>
+        </ion-list>
+      </div>
+    </ion-list>
 
 
-     
-    <ion-card>
-          
-              
-                  <ion-grid class="productsSeller">
-                      <ion-row>
-                          <ion-col>
-                
-                              <ion-row>
-                                      <span class="sellerDistance">
-                                          {{seller.address.description}}
-                                      </span>
-  
-                                  </ion-row>
-                              <ion-row>
-                                  <span class="sellerDistance">
-                                      <ion-icon name="navigate"></ion-icon>
-                                      {{seller.distanceFromPosition}} Km
-                                  </span>
-
-                              </ion-row>
-
-                              <ion-row>
-                                      <span class="sellerTelNo">
-                                          <ion-icon name="call"></ion-icon>
-                                          {{seller.telNo}}
-                                      </span>
-  
-                                  </ion-row>
-
-
-                          </ion-col>
-                         
-                      </ion-row>
-
-                      <ion-row>
-                          <span class="sellerDescription"> {{seller.description}}</span>
-                      </ion-row>
-          </ion-grid>
-               
-                          <div class="products" >
-                                  <div *ngFor="let product of getSellerProducts()" class="product">
-                                          <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
-                                          <span *ngIf="product.bestPromo"  class="productPrice"><del>{{product.originalPrice}} ₪</del>  {{product.bestPromo.price}} ₪ </span>
-                                          <span class="prodPicBox"><img class="productPic" src="{{product.picture.url}}" /></span>
-                                      <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
-                                      <span class="productName">{{product.name}}</span>
-                                      <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
-                                  </div>
-                              </div>
-         </ion-card>
   </div>
 
 

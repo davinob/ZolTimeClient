@@ -37,6 +37,7 @@ export interface Seller {
   address?:Address;
   profileCompleted?:boolean;
   products?:Array<Product>;
+  productsPerCategory?:{};
   promotions?:Array<Promotion>;
   restaurantName:string;
   description:string;
@@ -113,6 +114,8 @@ export class UserService {
   allSellers:Array<any>=[];
   allSellersFiltered:Array<any>=[];
 
+  userSearchSettings:SearchSettings;
+
   
 
   lookingForProducts:Subject<boolean>=new Subject();
@@ -124,6 +127,15 @@ export class UserService {
    private http: HttpClient,
     private globalService:GlobalService,
   private addressService:AddressService) {
+
+
+    this.userSearchSettings={
+      position:{geoPoint:null,description:"",isAddress:true},
+      hashgaha:"Any",
+      range:1,
+      onlyShowPromotion:true};
+   
+      
       this.usersCollection = this.afs.collection('users'); 
         this.sellersCollectionRef = this.db.collection('sellers');
      
@@ -201,7 +213,22 @@ export class UserService {
          return this.userStatus.asObservable().first(data=>data!=null);
    }
 
-  
+   cloneSettings():SearchSettings
+   {
+     let newSettings:SearchSettings=Object.assign({},this.userSearchSettings);
+     if (this.userSearchSettings.position.geoPoint!=null)
+     {
+       newSettings.position=this.addressService.createPosition(
+         this.userSearchSettings.position.geoPoint.latitude,this.userSearchSettings.position.geoPoint.longitude,this.userSearchSettings.position.description);
+     }
+     else
+     {
+       newSettings.position.description=this.userSearchSettings.position.description;
+       newSettings.position.geoPoint=null;
+     }
+       return newSettings;
+   }
+
   
 
   public setCurrentUserData(data:any)
@@ -213,12 +240,14 @@ export class UserService {
 
   filterSellersAndGetTheirProdsAndDeals(settings:SearchSettings)
 {
+  this.userSearchSettings=settings;
+
   this.lookingForProducts.next(true);
 
   this.allSellersFiltered=new Array();
 
   console.log("queryAllBasedOnFilters");
-  if (!settings.position.geoPoint)
+  if (!this.userSearchSettings.position.geoPoint)
   {
     console.log("NO LOCATION");
     this.lookingForProducts.next(false);
@@ -228,11 +257,11 @@ export class UserService {
   this.allSellersFiltered=this.allSellers.filter((seller) => {
       let validSeller:boolean=true;
 
-      if (settings.hashgaha != "Any") {
-         validSeller=validSeller && seller.hashgaha[settings.hashgaha];
+      if (this.userSearchSettings.hashgaha != "Any") {
+         validSeller=validSeller && seller.hashgaha[this.userSearchSettings.hashgaha];
       }
 
-      validSeller=validSeller && this.addressService.isGeoPointNotSoFar(seller.address.geoPoint,settings.position.geoPoint,settings.range);
+      validSeller=validSeller && this.addressService.isGeoPointNotSoFar(seller.address.geoPoint,this.userSearchSettings.position.geoPoint,this.userSearchSettings.range);
     
       return validSeller;
 
@@ -248,7 +277,7 @@ export class UserService {
     this.allSellersFiltered.forEach(seller=>{
       this.lookingForProducts.next(true);
     
-        let distance=this.addressService.distance(seller.address.geoPoint,settings.position.geoPoint);
+        let distance=this.addressService.distance(seller.address.geoPoint,this.userSearchSettings.position.geoPoint);
         distance=Math.round(distance*100)/100;
         console.log("DISTANCE:" +distance);
        seller.distanceFromPosition=distance;
@@ -274,12 +303,12 @@ let promiseProducts:Promise<any>=this.sellersCollectionRef.doc(seller.key).colle
     productsInfo =>
     { 
       seller.products=new Array();
+
         console.log("PRODUCTS");
-     
-     
         productsInfo.forEach(product=>{
           seller.products.push(product.data());
         });
+        
       });
 
   let promisePromotions=this.sellersCollectionRef.doc(seller.key).collection("promotions").get().then(
@@ -310,6 +339,8 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
     let hasFoundOnePromo=false;
     seller.products.forEach((product, indexProd)=>
     {
+      
+      
       let lastGoodPromo=null;
 
       
@@ -351,6 +382,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
             {
               hasFoundOnePromo=true;
               lastGoodPromo={price:prodPromo.reducedPrice,
+                            percentage:(prodPromo.reducedPrice*100/product.originalPrice),
                             quantity:prodPromo.currentQuantity,
                             name:promo.name,
                             promoTimes:promoTimes};
@@ -364,9 +396,49 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
       seller.products[indexProd].bestPromo=lastGoodPromo;
       });
 
+      seller.products=seller.products.sort((prod1,prod2)=>
+      {
+       if (!prod1.bestPromo)
+       return 1;
+       if (!prod2.bestPromo)
+       return -1;
+        if (prod1.bestPromo.percentage>prod2.bestPromo.percentage)
+        return -1;
+        if (prod1.bestPromo.percentage<prod2.bestPromo.percentage)
+        return 1;
+        
+        return 0;
+      });
+
+      seller.productsPerCategory=this.caculateProductsGroupedByCategory(seller);
+
       seller.promotions=null;
       seller.hasAtLeastOnePromo=hasFoundOnePromo;
  
+  }
+
+
+
+  public caculateProductsGroupedByCategory(seller:any):{}
+  {
+    let productsPerCategos={};
+    
+    if (!seller.products)
+      return {};
+
+      seller.products.forEach(
+      product=>{
+        if (productsPerCategos[product.category])
+        {
+        (<Array<any>>productsPerCategos[product.category]).push(product);
+        }
+        else
+        {
+          productsPerCategos[product.category]=[product];
+        }
+    });
+    
+    return productsPerCategos;
   }
 
 

@@ -92,4 +92,8 @@
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
+    <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="^4.2.1">
+        <variable name="OKHTTP_VERSION" value="3.+" />
+    </plugin>
+    <engine name="windows" spec="~5.0.0" />
 </widget>

@@ -53,7 +53,7 @@
     <div [ngClass]="products_enabled">
 
 
-        <ion-list *ngIf="getOrganizedSellers()" >
+        <ion-list *ngIf="haveOrganizedSellers()" >
 
             <ion-card *ngFor="let seller of getOrganizedSellers()" (click)="goToSeller(seller)">
                 
@@ -110,6 +110,13 @@
                                 </div>
             </ion-card>
         </ion-list>
+
+        <div class="noResult" *ngIf="!haveOrganizedSellers()" >
+            <p>No result found for your search :(</p> 
+            <p>Please search with a different address or search filter...</p>
+        </div>
+
+
     </div>
 
 

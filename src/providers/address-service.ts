@@ -42,6 +42,13 @@ export class AddressService{
     
     return new Promise((resolve,reject)=>{
 
+      console.log("TIMEOUT");
+      setTimeout(
+        ()=>{
+        resolve([])
+        }, 15000);
+      console.log("TIMEOUT");
+
       this.http.get(searchUrl).map(res => res.json()).subscribe(data => {
         let newAddresses=data.predictions.filter((address) => {
           return address.description.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;

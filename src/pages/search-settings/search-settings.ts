@@ -32,7 +32,7 @@ export class SearchSettingsPage {
     private userService:UserService,
   private addressService:AddressService) {
     console.log('constructore SearchSettingsPage');
-    this.settings=this.userService.userSearchSettings;
+    this.settings=this.userService.cloneSettings();
     this.previousSearchSettings=this.userService.cloneSettings();
   
   }
@@ -67,17 +67,13 @@ updateStorageAndSearch()
 let now=new Date().getTime();
 if (now-this.lastTime>=1000)
 { 
-  this.storage.set("settings",this.settings);
-  this.previousSearchSettings=this.userService.cloneSettings();
-  
   if (this.areSearchSettingTheSame())
   {
     console.log("SAME SETTINGS");
    return;
   } 
-
-  
-
+  this.storage.set("settings",this.settings);
+  this.previousSearchSettings=this.userService.cloneSettings();
   this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
 }
   },1000);

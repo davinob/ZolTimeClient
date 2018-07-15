@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Seller, UserService, Product } from '../../providers/user-service';
 import { GlobalService } from '../../providers/global-service';
-import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
 
 /**
  * Generated class for the SellerPage page.
@@ -23,8 +22,7 @@ export class SellerPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
     public userService:UserService,
-    public globalService:GlobalService,
-    private launchNavigator: LaunchNavigator) {
+    public globalService:GlobalService) {
     this.seller=this.navParams.data.seller;
     if (!this.seller)
     {
@@ -41,15 +39,6 @@ export class SellerPage {
 
 
 
-navigateToAddress()
-{
-  console.log("NAVIGATE TO ADDRESS");
-  this.launchNavigator.navigate(this.seller.address.description)
-  .then(
-    success => console.log('Launched navigator'),
-    error => console.log('Error launching navigator', error)
-  );
-}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SellerPage'); 
@@ -116,7 +105,8 @@ navigateToAddress()
 
   getCategoryProducts(catego:string):Array<any>
   {
-    return this.seller.productsPerCategory[catego];
+    if (this.seller.productsPerCategory)
+      return this.seller.productsPerCategory[catego];
   }
 
   getSellerProducts():Array<Product>

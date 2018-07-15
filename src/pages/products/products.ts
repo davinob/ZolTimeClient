@@ -143,6 +143,12 @@ export class ProductsPage {
    this.userService.filterSellersAndGetTheirProdsAndDeals(this.userService.userSearchSettings);
   }
 
+
+  haveOrganizedSellers():boolean{
+  return this.sellersFiltered!=null && this.sellersFiltered.length>0;
+
+  }
+
   getOrganizedSellers():Array<any>{
     if (!this.userService.userSearchSettings.onlyShowPromotion)
     return this.sellersFiltered;

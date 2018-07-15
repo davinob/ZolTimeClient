@@ -66,21 +66,29 @@
     <ion-list class="listOfProdsCatego" *ngIf="getSubCategoriesForShow()">
       <div *ngFor="let category of getSubCategoriesForShow()" text-wrap>
         <div class="categoTitle">{{category}}</div>
-        <ion-list class="listOfProds" *ngIf="getCategoryProducts(category) as categoProducts ">
-          <ion-card class="product" *ngFor="let product of categoProducts"  [ngClass]="product.bestPromo? 'product productPromo' :'product'">
-            <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
-            <span *ngIf="product.bestPromo" class="productPrice">
-              <del>{{product.originalPrice}} ₪</del> {{product.bestPromo.price}} ₪ </span>
-            <span class="prodPicBox">
-              <img class="productPic" src="{{product.picture.url}}" />
-            </span>
-            <span *ngIf="product.bestPromo" class="promoTime">
-              <ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span>
-            <span class="productName">{{product.name}}</span>
-            <span class="productDescription">{{product.description}}</span>
-            <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
-          </ion-card>
-        </ion-list>
+        <ion-grid class="listOfProds" *ngIf="getCategoryProducts(category) as categoProducts ">
+
+          <ion-row class="product" *ngFor="let product of categoProducts, let i=index"  [ngClass]="i%2==0? 'product one' :'product two'">
+            <ion-col col-4> 
+              <span class="prodPicBox">
+                <img class="productPic" src="{{product.picture.url}}" />
+              </span>
+            </ion-col>
+
+            <ion-col col-6>
+                <span *ngIf="product.bestPromo" class="promoTime">
+                    <ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span>
+                  <span class="productName">{{product.name}}</span>
+                  <span class="productDescription">{{product.description}}</span>
+                  <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
+
+            </ion-col>
+
+            <ion-col col-2  align-self-center *ngIf="!product.bestPromo"><span class='productPrice'>{{product.originalPrice}} ₪</span></ion-col>
+            <ion-col col-2 align-self-center *ngIf="product.bestPromo"><span class='productPrice'><del>{{product.originalPrice}} ₪</del> {{product.bestPromo.price}} ₪ </span></ion-col>
+        </ion-row>
+     </ion-grid>
+         
       </div>
     </ion-list>
 

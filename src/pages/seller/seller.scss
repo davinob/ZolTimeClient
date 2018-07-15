@@ -17,13 +17,21 @@ page-seller{
     {
       font-weight: bolder;
       font-size: larger;
+      width: 100%;
+    display: inline-block;
       
     }
     
     .productDescription {
       color:#486ff1;
+      display:inline-block;
+      width:100%;
      
     }
+
+
+    
+
     .searchBoxInner
     {
       margin-left: 10px;
@@ -301,15 +309,8 @@ page-seller{
     }
     
     .product {
-      padding: 10px;
-      border-radius: 10px;
-      display: inline-grid;
-      margin-top: 5px;
-      margin-left: 10px;
-      margin-right: 10px;
-      margin-bottom: 8px;
-      color: #08073b;
-      border-style: groove;
+      background-color: white;
+      color:#08073b
     }
     
     .productPic
@@ -325,7 +326,8 @@ page-seller{
     
     .productQty
     {
-      font-size:14px
+      font-size:14px;
+      color:#e91010
     }
     
     .cardText{
@@ -351,28 +353,29 @@ page-seller{
   color: #08073b;
 }
 
+.one{
+background-color: white;
+}
+
+.two{
+  background-color: #eceded;
+  }
 
     .productPrice
     {
-      background-color: white;
-      position: relative;
-      margin-bottom: -25px;
-      margin-left: 1px;
-      width: max-content;
       color: #f41111;
-      line-height: 20px;
-      font-weight: 800;
-      font-size: 19px;
-      padding-left: 8px;
-      padding-right: 8px;
-      border: solid 2px;
-      border-radius: 10px;
-      
+      font-weight: bolder;
+ 
+    font-size: 15px;
+    display:inline-block;
+    width:100%;
     }
     
     del{
-      font-weight: 400;
-        font-size: 18px;
+   
+        font-size: 12px;
+        display:inline-block;
+        width:100%;
     }
     
     
@@ -382,6 +385,8 @@ page-seller{
       color: white;
       font-weight: bold;
       text-align: center;
+      padding-right:10px;
+      padding-left:10px;
     }
     
     .prodPicBox

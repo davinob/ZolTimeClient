@@ -114,19 +114,23 @@ clearAddressSearch(){
     console.log(this.lastStringTyped);
     console.log(this.searchAddress);
     if ((this.searchAddress==null)||(this.searchAddress.length<2)
-    ||(this.lastStringTyped==this.searchAddress))
+    )
     {
-      if ((this.searchAddress==null)||(this.searchAddress.length<2))
-        {
-          this.addressSelected=false;
-        }
+      this.addressSelected=false;
       this.addresses=null;
+      console.log("NOT DOING SEARCH AGAIN!");
       return;
     }
+    
+
     this.lastStringTyped=this.searchAddress;
       this.searching=true;
       this.addressSelected=false;
-      this.userService.searchAddressesAndSellers(this.searchAddress).then((listOfAddresses)=>
+
+      let sellersNamesFiltered=this.userService.getAllSellersWithSearchTerm(this.searchAddress);
+      this.addresses=sellersNamesFiltered;
+      
+      this.userService.searchAddressesAndSellers(this.searchAddress,sellersNamesFiltered).then((listOfAddresses)=>
       {
          this.searching=false;
          this.addresses=listOfAddresses;
@@ -205,7 +209,7 @@ clearAddressSearch(){
 
    
   placesFromHistory.unshift(posToSave);
-  if (placesFromHistory.length>=5)
+  if (placesFromHistory.length>=10)
     placesFromHistory.pop();
   this.storage.set('locations',placesFromHistory );
   });

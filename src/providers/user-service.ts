@@ -499,10 +499,11 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
 }
 
 
-searchAddressesAndSellers(searchTerm:string):Promise<any>
+
+searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>):Promise<any>
 {
   return new Promise((resolve,reject)=>{
-    let sellersNames=this.getAllSellersWithSearchTerm(searchTerm);
+
     this.addressService.searchAddresses(searchTerm).then(addresses=>{
       console.log("SEARCHED ADDRESSES");
      
@@ -618,7 +619,7 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
       nowDate=new Date(nowDate.valueOf()-(1000 * 60 * 60 * 24))
     }
 
-    let nowD:number=nowDate.getDay();
+    let nowD:number=nowDate.getDay()+7; //on sunday it returns 0, so adding 7
     
     let i=-1;
     

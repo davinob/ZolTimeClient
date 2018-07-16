@@ -31,7 +31,7 @@
     </ion-navbar>
     <div class="scrolling-wrapper">
             <div *ngFor="let category of getCategories()" (click)="selectCategory(category)" [ngClass]="isCategorySelected(category)? 'categorySelected' :'category' ">
-                <img class="categoryPic" src="../../assets/icon/{{category.icon}}" />
+                <img class="categoryPic" src="assets/icon/{{category.icon}}" />
                 <span class="categoryName">{{category.description}}</span>
             </div>
         </div>

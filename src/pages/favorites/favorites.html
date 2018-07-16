@@ -1,9 +1,3 @@
-<!--
-  Generated template for the ProductsPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
 
     <ion-navbar>
@@ -11,38 +5,11 @@
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>
-            <ion-grid>
-                <ion-row>
-                    <ion-col col-10>
-
-                        <ion-input clearInput [(ngModel)]="userService.userSearchSettings.position.description" class="position" type="text" placeholder="Current Location"
-                            (ionFocus)="goToSearchAddessPage()">
-                            <ion-icon class='white' name="navigate"></ion-icon>
-                        </ion-input>
-                    </ion-col>
-                    <ion-col col-2 align-self-end>
-                            <ion-row><ion-icon (click)="getFilteredSellersProdsAndDeals()" name="refresh"></ion-icon></ion-row>
-                            <ion-row><ion-icon (click)="presentPopover($event)" name="settings"></ion-icon></ion-row>
-                    </ion-col>
-                </ion-row>
-       
-            </ion-grid>
+          Favorites
         </ion-title>
     </ion-navbar>
-    <div class="scrolling-wrapper">
-            <div *ngFor="let category of getCategories()" (click)="selectCategory(category)" [ngClass]="isCategorySelected(category)? 'categorySelected' :'category' ">
-                <img class="categoryPic" src="../../assets/icon/{{category.icon}}" />
-                <span class="categoryName">{{category.description}}</span>
-            </div>
-        </div>
-    
-        <div  [ngClass]="categorySelected? 'scrolling-wrapperSubCategorySelected' : 'scrolling-wrapperSubCategory'">
-            <div  *ngFor="let subCategory of getSubCategories(categorySelected)" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
-                <span class="categoryName">{{subCategory}}</span>
-            </div>
-        </div>
+   
 </ion-header>
-
 
 <ion-content class="global" padding>
 
@@ -53,7 +20,7 @@
     <div [ngClass]="products_enabled">
 
 
-        <ion-list *ngIf="haveOrganizedSellers()" >
+        <ion-list [hidden]="!haveOrganizedSellers()"  >
 
             <ion-card *ngFor="let seller of getOrganizedSellers()" (click)="goToSeller(seller, $event)">
                 
@@ -62,7 +29,6 @@
                             <ion-col>
                                 <ion-row>
                                     <span class="sellerName"> {{seller.restaurantName}}</span> 
-                                    <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller)"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
                                     <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller)"> <ion-icon class="star" name="star"></ion-icon></span>
                                 </ion-row>
                                 <ion-row>
@@ -117,9 +83,9 @@
             </ion-card>
         </ion-list>
 
-        <div class="noResult" *ngIf="!haveOrganizedSellers()" >
-            <p>No result found for your search :(</p> 
-            <p>Please search with a different address or search filter...</p>
+        <div class="noResult" [hidden]="haveOrganizedSellers()" >
+            <p>No favorite :(</p> 
+            <p>Please add favorites...</p>
         </div>
 
 

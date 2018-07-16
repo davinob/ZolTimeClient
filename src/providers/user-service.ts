@@ -29,6 +29,7 @@ import {
   import { HttpClient, HttpParams } from '@angular/common/http';
 
   import { from } from 'rxjs/observable/from';
+import { Storage } from '@ionic/storage';
 
   
   
@@ -120,13 +121,18 @@ export class UserService {
 
   lookingForProducts:Subject<boolean>=new Subject();
   doneLookingForSellers:Subject<boolean>=new Subject();
+  doneLookingForSellersCompleteValue:boolean=false;
 
   
+  myFavorites:Array<string>=null;
+
+
 
   constructor(private afs: AngularFirestore,public authService:AuthService,
    private http: HttpClient,
     private globalService:GlobalService,
-  private addressService:AddressService) {
+  private addressService:AddressService,
+  private storage:Storage) {
 
 
     this.userSearchSettings={
@@ -139,8 +145,83 @@ export class UserService {
       this.usersCollection = this.afs.collection('users'); 
         this.sellersCollectionRef = this.db.collection('sellers');
      
+        this.initFavoritesFromStorage();
+        this.initSearchSettingsFromStorage();
         this.getAllSellers();
+        
       }
+
+
+      initSearchSettingsFromStorage() {
+    
+
+        this.storage.get("settings").then(val => {
+          if (val)
+          {
+           this.userSearchSettings.hashgaha=val.hashgaha;
+           this.userSearchSettings.onlyShowPromotion=val.onlyShowPromotion;
+           this.userSearchSettings.range=val.range;
+          }
+            console.log(this.userSearchSettings);
+         });
+    
+      
+      }
+
+
+      initFavoritesFromStorage()
+      {
+      this.storage.get("favorites").then((favs:Array<string>) => {
+        this.myFavorites=favs;
+        console.log("FAVORITES");
+        console.log(this.myFavorites);
+        });
+      }
+
+
+
+    removeFromFavorites(seller:Seller)
+    {
+      if (!this.myFavorites)
+        {
+          return;
+        }
+        this.myFavorites=this.myFavorites.filter(fav=>fav!=seller.key);
+        console.log(seller);
+        console.log(this.myFavorites);
+        
+        this.storage.set("favorites",this.myFavorites);
+        return;
+    
+    }
+
+    addToFavorites(seller:Seller)
+{
+
+    if (!this.myFavorites)
+    {
+      this.myFavorites=new Array<string>();
+    }
+
+    this.myFavorites.push(seller.key);
+    console.log(seller);
+    console.log(this.myFavorites);
+    
+    this.storage.set("favorites",this.myFavorites);
+}
+
+
+
+isSellerFavorite(seller:Seller):boolean
+{
+    if (!this.myFavorites) 
+      return false;
+  let myFavs=this.myFavorites.filter(fav=>fav==seller.key);
+    return myFavs.length>0;
+}
+ 
+ 
+
 
 
       public getAllSellers()
@@ -166,9 +247,11 @@ export class UserService {
            
           }).then(()=>{
             this.doneLookingForSellers.next(true);
+            this.doneLookingForSellersCompleteValue=true;
           }).catch(error=>{
             console.log(error);
             this.doneLookingForSellers.next(true);
+            this.doneLookingForSellersCompleteValue=true;
       
       
           });
@@ -237,6 +320,52 @@ export class UserService {
 
     
   }
+
+  filterSellersByKeysAndGetTheirProdsAndDeals(keys:Array<string>)
+  {
+    console.log(keys);
+    console.log(this.allSellers);
+  
+    this.lookingForProducts.next(true);
+  
+    this.allSellersFiltered=new Array();
+  
+    if (!keys || keys.length==0)
+      {
+        this.lookingForProducts.next(false);
+        return;
+      }
+  
+    this.allSellersFiltered=this.allSellers.filter((seller) => {
+        return keys.filter(key=>key==seller.key).length>0;
+  
+      });
+      
+  
+      if (!this.allSellersFiltered || this.allSellersFiltered.length==0) 
+      {
+        this.lookingForProducts.next(false);
+        return;
+      }
+  
+      this.allSellersFiltered.forEach(seller=>{
+        this.lookingForProducts.next(true);
+     
+        this.fetchSellerProdsAndProms(seller).then(()=>
+        {
+          console.log("SELLER IN PROMISE");
+          console.log(seller);
+          this.lookingForProducts.next(false);
+          
+        });
+   
+        
+        });
+  
+    }
+
+
+
 
   filterSellersAndGetTheirProdsAndDeals(settings:SearchSettings)
 {

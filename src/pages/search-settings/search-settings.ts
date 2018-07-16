@@ -71,7 +71,10 @@ if (now-this.lastTime>=1000)
   {
     console.log("SAME SETTINGS");
    return;
-  } 
+  }
+  console.log("NOT SAME SETTINGS") ;
+  console.log(this.settings) ;
+
   this.storage.set("settings",this.settings);
   this.previousSearchSettings=this.userService.cloneSettings();
   this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
@@ -113,8 +116,11 @@ areSearchSettingTheSame():boolean
 
     if (this.settings.range &&  this.settings.range!=this.previousSearchSettings.range)
       return false;
+
+   if (this.settings.onlyShowPromotion!=this.previousSearchSettings.onlyShowPromotion)
+      return false;
    
-    
+  
     return true;
   }
 

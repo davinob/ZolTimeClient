@@ -15,6 +15,8 @@ import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/first';
 
 import { TranslateService } from '@ngx-translate/core';
+import { FcmService } from '../providers/fcm-service';
+import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 
 
 @Component({
@@ -30,8 +32,27 @@ export class MyApp {
 
   constructor(public translate: TranslateService,public platform: Platform, public authService: AuthService, 
     public userService: UserService,
-  private storage: Storage ) {
-    
+  private storage: Storage,fcm: FcmService, toastCtrl: ToastController ) {
+   
+
+
+                    // Get a FCM token
+                    fcm.getToken()
+
+                    // Listen to incoming messages
+                    fcm.listenToNotifications().subscribe(notif=>
+                       {
+                        // show a toast
+                        const toast = toastCtrl.create({
+                          message: notif.body,
+                          duration: 3000
+                        });
+                        toast.present();
+                      });                    
+                    
+              
+
+
            authService.getAuthState().subscribe(user=>
           {
            
@@ -75,7 +96,8 @@ export class MyApp {
    
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Find Products', component: 'ProductsPage' }
+      { title: 'Find Products', component: 'ProductsPage' },
+      { title: 'Favorites', component: 'FavoritesPage' },
     
     ];
     

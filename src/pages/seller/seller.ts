@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Seller, UserService, Product } from '../../providers/user-service';
 import { GlobalService } from '../../providers/global-service';
+import { Storage } from '@ionic/storage';
 
 /**
  * Generated class for the SellerPage page.
@@ -22,7 +23,9 @@ export class SellerPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
     public userService:UserService,
-    public globalService:GlobalService) {
+    public globalService:GlobalService,
+    public storage:Storage) {
+    
     this.seller=this.navParams.data.seller;
     if (!this.seller)
     {
@@ -34,8 +37,7 @@ export class SellerPage {
     console.log(this.seller);
     this.userService.fetchSellerProdsAndProms(this.seller);
     this.initSubCategories();
-  
-  }
+   }
 
 
 
@@ -117,5 +119,7 @@ export class SellerPage {
     return this.seller.products;
 
   }
+
+
 
 }

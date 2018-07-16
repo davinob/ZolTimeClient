@@ -25,13 +25,13 @@ import { UserService } from './../providers/user-service';
 import { AddressService } from './../providers/address-service';
 import { GlobalService } from './../providers/global-service';
 
-import {LaunchNavigator} from '@ionic-native/launch-navigator';
-
+import { Firebase } from '@ionic-native/firebase';
 
 import { Geolocation } from '@ionic-native/geolocation';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { FcmService } from '../providers/fcm-service';
 
 export const firebaseConfig = {
     apiKey: "AIzaSyCjWUCqcYx8lGtAKWI8Q-5H8V1rktUQjJc",
@@ -76,7 +76,7 @@ export function createTranslateLoader(http: HttpClient) {
     MyApp
   ],
   providers: [
-    LaunchNavigator,
+    
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
@@ -86,7 +86,10 @@ export function createTranslateLoader(http: HttpClient) {
     AlertAndLoadingService,
     Camera,
     Geolocation,
-    GlobalService
+    GlobalService,
+    Firebase,
+    FcmService
+    
     
     
   ]

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.zol.time" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.zol.time.client" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Zol Time App</name>
     <description>Zol Time App</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">DavidB</author>
-    <content original-src="index.html" src="http://192.168.1.2:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -78,8 +78,10 @@
     </platform>
     <allow-navigation href="http://192.168.1.2:8101" />
     <allow-navigation href="http://192.168.1.2:8100" />
+    <allow-navigation href="http://172.22.128.37:8101" />
     <engine name="android" spec="~6.3.0" />
     <engine name="windows" spec="^5.0.0" />
+    <engine name="browser" spec="~5.0.3" />
     <plugin name="cordova-plugin-googlemaps" spec="^2.1.1">
         <variable name="API_KEY_FOR_ANDROID" value="AIzaSyBmxI971QDou4stkeb_17cwj5zQRlN9KtQ" />
         <variable name="API_KEY_FOR_IOS" value="AIzaSyAjWA95pZuVvxzbhj0Q4NTU1shF0LQW1VU" />
@@ -101,4 +103,5 @@
     <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="^4.2.1">
         <variable name="OKHTTP_VERSION" value="3.+" />
     </plugin>
+    <plugin name="cordova-plugin-firebase" spec="^1.0.5" />
 </widget>

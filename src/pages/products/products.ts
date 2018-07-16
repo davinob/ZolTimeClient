@@ -45,13 +45,13 @@ export class ProductsPage {
   
 
  
- 
+  wentToSeller:boolean=false;
 
   
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    private userService:UserService, public alertAndLoadingService: AlertAndLoadingService
-    , public formBuilder: FormBuilder,
+    private userService:UserService ,
+     public formBuilder: FormBuilder,
    private elRef:ElementRef,
     public alertService: AlertAndLoadingService,
     private geolocation: Geolocation,
@@ -59,6 +59,7 @@ export class ProductsPage {
     public popoverCtrl: PopoverController,
      public storage:Storage,
     private globalSvc:GlobalService ) {
+      
      
   }
 
@@ -217,30 +218,27 @@ export class ProductsPage {
     });
   }
   
-  initSearchSettingsFromStorage() {
-    
-
-    this.storage.get("settings").then(val => {
-      if (val)
-      {
-       this.userService.userSearchSettings.hashgaha=val.hashgaha;
-       this.userService.userSearchSettings.onlyShowPromotion=val.onlyShowPromotion;
-       this.userService.userSearchSettings.range=val.range;
-      }
-        console.log(this.userService.userSearchSettings);
-     });
-
   
-  }
 
   shouldShowSeller(seller:Seller):boolean
   {
     return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
   }
+
   
-  ionViewDidLoad()
+  
+  ionViewDidEnter()
   {
-    this.initSearchSettingsFromStorage();
+    console.log("ION VIEW DID ENTER");
+    console.log(this.wentToSeller);
+    
+    
+    if (this.userService.doneLookingForSellersCompleteValue && !this.wentToSeller)//so we've been there at least once, sellers are already ready
+    {
+      this.filterSellersAndGetTheirProdsAndProms();
+    }
+
+    this.wentToSeller=false;
 
     this.userService.doneLookingForSellers.subscribe(doneLookingForSellers=>
       { 
@@ -253,6 +251,8 @@ export class ProductsPage {
 
       });
 
+    
+
     this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
      
@@ -262,8 +262,8 @@ export class ProductsPage {
         }
         else
         {
-          this.alertService.dismissLoading();
           this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
+          this.alertService.dismissLoading();
         }
       });
 
@@ -283,14 +283,7 @@ export class ProductsPage {
   }
 
  
-  filterSellersNewLocation()
-  {
-    this.categorySelected=null;
-    this.subCategorySelected=null;
-    this.filterSellersAndGetTheirProdsAndProms();
-  }
-
-    
+      
   filterSellersAndGetTheirProdsAndProms()
   {
     console.log(this.userService.userSearchSettings);
@@ -307,15 +300,23 @@ export class ProductsPage {
 
 
 
-goToSeller(seller:Seller)
+goToSeller(seller:Seller,event:MouseEvent)
 {
+  console.log(event);
+  console.log(event.srcElement.className);
+  if (event.srcElement.className.includes('sellerDistance')
+    ||event.srcElement.className.includes('star-outline')
+    ||event.srcElement.className.includes('star'))
+  return;
+
+  
   console.log("GO TO SELLER");
+  this.wentToSeller=true;
   this.navCtrl.push("SellerPage",{seller:seller});
 }
   
 
- 
- 
+
   
 
 

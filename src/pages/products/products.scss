@@ -253,18 +253,35 @@ ion-backdrop{
   opacity: 0.3 !important;	
 }
 
+a:-webkit-any-link
+{
+text-decoration: none;
+}
 
 .sellerName
 {
   font-weight: 800;
   font-size: 22px;
   color: #08073b;
+  width:80%
+}
+
+.star-outline{
+  width:20%;
+  font-size: 25px;
+  color:#3721a4;
+}
+
+.star{
+  width:20%;
+  font-size: 25px;
+  color:#3721a4;
 }
 
 .sellerPic
 {
   width: auto;
-  max-height: 65px;
+  max-height: 100px;
 }
 
 .sellerDescription

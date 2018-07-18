@@ -5,10 +5,10 @@ import { Nav, Platform} from 'ionic-angular';
 import { ProductsPage } from '../pages/products/products';
 
 import { TutorialPage } from '../pages/tutorial/tutorial';
-import { LoginPage } from '../pages/login/login';
+
 import { SearchSettingsPage } from '../pages/search-settings/search-settings';
 
-import { AuthService } from '../providers/auth-service';
+
 import { UserService } from '../providers/user-service';
 
 import { Storage } from '@ionic/storage';
@@ -17,6 +17,7 @@ import 'rxjs/add/operator/first';
 import { TranslateService } from '@ngx-translate/core';
 import { FcmService } from '../providers/fcm-service';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
+
 
 
 @Component({
@@ -30,82 +31,94 @@ export class MyApp {
   
   pages: Array<{title: string, component: any}>;
 
-  constructor(public translate: TranslateService,public platform: Platform, public authService: AuthService, 
+  constructor(public translate: TranslateService,public platform: Platform, 
     public userService: UserService,
   private storage: Storage,fcm: FcmService, toastCtrl: ToastController ) {
-   
+   platform.ready().then(()=>{
+    console.log(platform);
+    
+      // Get a FCM token
+     try{
 
+      fcm.getToken();
+      if (fcm.listenToNotifications()) // Listen to incoming messages
+        {                   
+        fcm.listenToNotifications().subscribe((notif)=>
+           {
+            console.log(notif);
 
-                    // Get a FCM token
-                    fcm.getToken()
+            if(notif.tap){
+              console.log("Received in background");
+              if (notif.key)
+              {
+                this.nav.setRoot("SellerPage",{sellerKey:notif.key});
+              }
 
-                    // Listen to incoming messages
-                    fcm.listenToNotifications().subscribe(notif=>
-                       {
-                        // show a toast
-                        const toast = toastCtrl.create({
-                          message: notif.body,
-                          duration: 3000
-                        });
-                        toast.present();
-                      });                    
-                    
+            } else {
+              console.log("Received in foreground");
+                 // show a toast
+               const toast = toastCtrl.create({
+              message: notif.body,
+              duration: 10000,
+              position: 'top'
               
-
-
-           authService.getAuthState().subscribe(user=>
-          {
-           
-            if (user)
-            {
-              this.userService.updateUserAuthConnected(true);
-              console.log("USER IS NOT CONNECTED");
-            }
-            else
-            {
-              this.userService.updateUserAuthConnected(false);
-              console.log("USER IS NOT CONNECTED");
+            });
+            toast.present();
             }
 
-          });
+         
+          });                    
+      
+        }
+      
+      }
+      catch(error)
+      {
+        console.log(error);
+      }
 
-           if (this.initTime)
-         {
-          console.log("REDIRECTING TO SIGNED PAGE")
-          
-              this.storage.get('tutoViewed').then(
-                viewed=>{
-                  console.log("VALUE");
-                  console.log(viewed);
-                  if(!viewed)
-                 {
-                  this.nav.setRoot('TutorialPage');
-                  }
-                  else
-                  {
-                    this.nav.setRoot('ProductsPage');
-                  }
-                }
-              ) ;
-       
-          }
-       
-        this.initTime=false;
-       
-    
-   
-    // used for an example of ngFor and navigation
-    this.pages = [
-      { title: 'Find Products', component: 'ProductsPage' },
-      { title: 'Favorites', component: 'FavoritesPage' },
-    
-    ];
-    
-    this.activePage=this.pages[0];
 
-    this.initTranslate();
+if (this.initTime)
+{
+console.log("REDIRECTING TO SIGNED PAGE")
 
-    this.initializeApp();
+  this.storage.get('tutoViewed').then(
+    viewed=>{
+      console.log("VALUE");
+      console.log(viewed);
+      if(!viewed)
+     {
+      this.nav.setRoot('TutorialPage');
+      }
+      else
+      {
+        this.nav.setRoot('ProductsPage');
+      }
+    }
+  ) ;
+
+}
+
+this.initTime=false;
+
+
+
+// used for an example of ngFor and navigation
+this.pages = [
+{ title: 'Find Products', component: 'ProductsPage' },
+{ title: 'Favorites', component: 'FavoritesPage' },
+
+];
+
+this.activePage=this.pages[0];
+
+this.initTranslate();
+
+this.initializeApp();
+
+   });
+
+              
 
   }
 
@@ -121,12 +134,6 @@ export class MyApp {
 
   }
 
-
-  
-  isUserAuthenticated():boolean
-  {
-    return this.userService.currentUser!=null && this.userService.currentUser.authenticated;
-  }
 
   initializeApp() {
     
@@ -150,12 +157,7 @@ export class MyApp {
   {
     return page == this.activePage;
   }
-  
-  logout()
-  {
-    this.authService.logoutUser();
-  }
-  
+
  
   
 }

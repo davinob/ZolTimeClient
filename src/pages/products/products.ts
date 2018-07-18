@@ -20,6 +20,8 @@ import { TextInput } from 'ionic-angular/components/input/input';
 import { Storage } from '@ionic/storage';
 import { Subscription } from 'rxjs/Subscription';
 import { GlobalService } from '../../providers/global-service';
+
+import { CallNumber } from '@ionic-native/call-number';
 /**
  * Generated class for the ProductsPage page.
  *
@@ -58,13 +60,18 @@ export class ProductsPage {
     public addressService:AddressService,
     public popoverCtrl: PopoverController,
      public storage:Storage,
-    private globalSvc:GlobalService ) {
+    private globalSvc:GlobalService,
+    private callNumber: CallNumber ) {
       
      
   }
 
   
 
+callTel(num:string)
+{
+  this.callNumber.callNumber(num, true);
+}
 
   getCategories()
   {
@@ -306,7 +313,8 @@ goToSeller(seller:Seller,event:MouseEvent)
   console.log(event.srcElement.className);
   if (event.srcElement.className.includes('sellerDistance')
     ||event.srcElement.className.includes('star-outline')
-    ||event.srcElement.className.includes('star'))
+    ||event.srcElement.className.includes('star')
+    ||event.srcElement.className.includes("sellerTelNo"))
   return;
 
   

@@ -113,6 +113,8 @@ export class AlertAndLoadingService {
   
   presentToast(error:any)
   {
+    console.log("TOAST:");
+    console.log(error);
     var errorMessage: string = error.message;
     let toast = this.toastCtrl.create({
       message: errorMessage,

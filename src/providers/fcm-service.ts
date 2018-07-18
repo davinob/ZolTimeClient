@@ -5,41 +5,45 @@ import { AngularFirestore } from 'angularfire2/firestore';
 
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+import { UserService } from './user-service';
 
 @Injectable()
 export class FcmService {
 
   constructor(
-    public firebaseNative: Firebase,
+    public fcm: Firebase,
     public afs: AngularFirestore,
     private platform: Platform,
+    private userService:UserService
     
   ) {}
-
-    currentMessage = new BehaviorSubject(null);
-
-
   
   async getToken() {
 
+    this.fcm.onTokenRefresh().subscribe(token => {
+      this.saveTokenToFirestore(token);
+    });
+
+
     let token;
-  
+
     if (this.platform.is('android')) {
-      token = await this.firebaseNative.getToken()
+      token = await this.fcm.getToken()
     } 
   
     if (this.platform.is('ios')) {
-      token = await this.firebaseNative.getToken();
-      await this.firebaseNative.grantPermission();
+      token = await this.fcm.getToken();
+      await this.fcm.grantPermission();
     } 
 
-   
-
+    
     
     return this.saveTokenToFirestore(token)
   }
 
   private saveTokenToFirestore(token) {
+    
     if (!token) return;
   
     const devicesRef = this.afs.collection('pushDevices')
@@ -47,18 +51,17 @@ export class FcmService {
     const docData = { 
       token
     }
-  
+    this.userService.userFCMToken=token;
+    console.log("TOKEN saved locally");
+    console.log(this.userService.userFCMToken);
     return devicesRef.doc(token).set(docData)
   }
   
 
-  listenToNotifications() {
-    
-    if (this.platform.is('ios')||this.platform.is('android'))
-    {
-      console.log(this.platform);
-      return this.firebaseNative.onNotificationOpen();
-    }
+  listenToNotifications(){
+      return this.fcm.onNotificationOpen();
   }
+
+
 
 }

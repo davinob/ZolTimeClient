@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { AngularFireAuth } from 'angularfire2/auth';
+
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/observable/of';
@@ -22,7 +22,7 @@ import {
   import { Subject } from 'rxjs/Subject';
   
 
-  import { AuthService } from './auth-service';
+
   
   import { GlobalService } from './global-service';
 
@@ -50,13 +50,7 @@ export interface Seller {
 
   }
 
-  export interface User {
-    email: string;
-    profileCompleted?:boolean;
-    authenticated?:boolean
-    }
-
-
+ 
 
 export interface Product{
   name: string,
@@ -101,14 +95,8 @@ export class UserService {
   
   usersCollection: AngularFirestoreCollection<Seller>;
   sellersCollectionRef: firebase.firestore.CollectionReference;
-  productsCollection:firebase.firestore.CollectionReference;
-  promotionsCollection:firebase.firestore.CollectionReference;
-  currentUser:User={email:"unset",
-                    authenticated:false};
-  userStatus:Subject<any>=new Subject<any>();
-   
-  currentUserObs:Observable<any>=null;
-  
+  favoritesCollectionRef: firebase.firestore.CollectionReference;
+ 
   userProducts:Array<any>=[];
   userPromotions:Array<any> = [];
   
@@ -127,8 +115,9 @@ export class UserService {
   myFavorites:Array<string>=null;
 
 
+  userFCMToken:string="";
 
-  constructor(private afs: AngularFirestore,public authService:AuthService,
+  constructor(private afs: AngularFirestore,
    private http: HttpClient,
     private globalService:GlobalService,
   private addressService:AddressService,
@@ -144,6 +133,7 @@ export class UserService {
       
       this.usersCollection = this.afs.collection('users'); 
         this.sellersCollectionRef = this.db.collection('sellers');
+        this.favoritesCollectionRef=this.db.collection('favorites');
      
         this.initFavoritesFromStorage();
         this.initSearchSettingsFromStorage();
@@ -180,7 +170,7 @@ export class UserService {
 
 
 
-    removeFromFavorites(seller:Seller)
+    async removeFromFavorites(seller:Seller)
     {
       if (!this.myFavorites)
         {
@@ -191,6 +181,9 @@ export class UserService {
         console.log(this.myFavorites);
         
         this.storage.set("favorites",this.myFavorites);
+        if (this.userFCMToken!="")
+        this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).delete();
+        console.log("REMOVE FROM FAVORITES");
         return;
     
     }
@@ -207,7 +200,11 @@ export class UserService {
     console.log(seller);
     console.log(this.myFavorites);
     
+    //FOR TESTS:
+    if (this.userFCMToken!="")
+    this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).set({token:this.userFCMToken});
     this.storage.set("favorites",this.myFavorites);
+    console.log("ADDED TO FAVORITES");
 }
 
 
@@ -272,29 +269,6 @@ isSellerFavorite(seller:Seller):boolean
         return null;
       }
 
-   public  updateUserAuthConnected(flag:boolean)
-   {
-    this.currentUser.authenticated=flag;
-
-   }
-
-
-   public initCurrentUser(userID:string):Observable<any>
-   {
-     console.log("init with userID:"+userID);
-         this.globalService.userID=userID;
-         
-         this.currentUserObs=this.usersCollection.doc(this.globalService.userID).valueChanges();
-         
-        this.currentUserObs.subscribe(data =>
-         { 
-           this.setCurrentUserData(data);
-         });
- 
-        
- 
-         return this.userStatus.asObservable().first(data=>data!=null);
-   }
 
    cloneSettings():SearchSettings
    {
@@ -313,14 +287,6 @@ isSellerFavorite(seller:Seller):boolean
    }
 
   
-
-  public setCurrentUserData(data:any)
-  {
-    this.currentUser=data;
-
-    
-  }
-
   filterSellersByKeysAndGetTheirProdsAndDeals(keys:Array<string>)
   {
     console.log(keys);
@@ -571,64 +537,8 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
   }
 
 
-   public getCurrentUser():User
-  {
-    return this.currentUser;
-  }
-
-  public getUserProducts():Array<any>
-  {
-    return this.userProducts;
-  }
-
-
-  public getUserProductsClone():Array<any>
-  {
-    return Object.assign([], this.userProducts);
-  }
-
-  public getUserPromotions():Array<any>
-  {
-    return this.userPromotions;
-  }
-  
  
-
-  public isProfileCompleted():boolean
-  {
-    if (this.currentUser==null)
-     return false;
-    return this.currentUser.profileCompleted==true;
-  }
-  
-  public createUser(userUID:string, email:string, restaurantName:string):Promise<any>
-  {
-  
-   let user:User={
-      email: email
-      
-    };
-   console.log("creating user on UID"+userUID);
-    
-     return new Promise<any>((resolve, reject) => {
-      let setUserPromise:Promise<void>=this.usersCollection.doc(userUID).set(user);
-      console.log("PROMISE launched");
-      setUserPromise.then( ()=>
-      {
-        console.log("PROMISE DONE");
-      }
-    ).catch( (error)=>
-    {
-      console.log(error);
-    });
-       resolve(setUserPromise);
-    
-  });
-
-}
-
-
-
+ 
 searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>):Promise<any>
 {
   return new Promise((resolve,reject)=>{
@@ -824,67 +734,4 @@ formT(num:number):string
 
 
 
-
-/*
-//readonly START_PROMOTION_URL = 'https://us-central1-zoltime-77973.cloudfunctions.net/startPromotion';
-//readonly STOP_PROMOTION_URL = 'https://us-central1-zoltime-77973.cloudfunctions.net/stopPromotion';
-public stopTodayPromotion():Promise<any>
-{
-
-  this.currentUser.promotionStartDateTime=null;
-  this.currentUser.promotionEndDateTime=null;
-  this.timerSubscription.unsubscribe();
-
-  return new Promise<any>((resolve, reject) => {
-    
-        let myHeaders = new HttpHeaders({'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-       let message={userID:this.globalService.userID};
-        console.log("STOP PROMOTION!!");
-        console.log(message);
-        let obsPost=this.http.post(this.STOP_PROMOTION_URL,message,{headers:myHeaders}).subscribe(
-          data => {
-          //  alert('ok');
-          },
-          error => {
-            console.log(error);
-          }
-        );
-    
-        resolve(obsPost);
-     
-      });
-
-
-}
-
-public startTodayPromotion():Promise<any>
-{
-  console.log("START PROMOTION");
-  this.startPromotionTimer();
-
-  return new Promise<any>((resolve, reject) => {
-
-    let myHeaders = new HttpHeaders({'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-    
-    console.log(this.currentUser.promotionStartDateTime);
-    console.log(this.currentUser.promotionEndDateTime);
-    
-    let message={userID:this.globalService.userID,
-                startDateTime: this.currentUser.promotionStartDateTime+"",
-                 endDateTime: this.currentUser.promotionEndDateTime+"" };
-    console.log("START PROMOTION!!");
-    console.log(message);
-    let obsPost=this.http.post(this.START_PROMOTION_URL,message,{headers:myHeaders}).subscribe(
-      data => {
-        //alert('ok');
-      },
-      error => {
-        console.log(error);
-      }
-    );
-
-    resolve(obsPost);
- 
-  });
-}*/
 }

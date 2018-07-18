@@ -146,10 +146,10 @@ width:10%;
 .card-md {
   margin-top: 10px;
   margin-bottom: 20px;
-  margin-left:0px;
   border-radius: 10px;
   width:100%;
   border-radius: 0;
+  margin-left: 0px;
 }
 
 .select-text
@@ -164,9 +164,9 @@ visibility: hidden
 
 
 .list-md {
-  max-width: 500px;
-    margin-left: 10px;
-    margin-right: 10px;
+  max-width: 95%;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
     margin-top: 20px;
 }
 
@@ -182,27 +182,10 @@ visibility: hidden
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
-  border-bottom: 1px solid white;
-    border-top: 1px solid white;
+  border-top: 1px solid white;
   color:white;
 }
 
-.scrolling-wrapperSubCategorySelected {
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
-  border-bottom: 2px solid white;
- color:white;
- height:28px;
-}
-
-.scrolling-wrapperSubCategory {
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
- color:white;
- height:28px;
-}
 
 
 .category {
@@ -212,26 +195,10 @@ visibility: hidden
   
 }
 
-.subCategory {
-  display: inline-block;
-  margin-top: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
 .categorySelected{
   display: inline-block;
   margin-top: 5px;
   padding-left: 20px;  
-  border-bottom: 4px solid #34b3e6;
-  
-}
-
-.subCategorySelected{
-  display: inline-block;
-  margin-top: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
   border-bottom: 4px solid #34b3e6;
   
 }

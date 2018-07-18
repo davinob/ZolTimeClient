@@ -36,11 +36,11 @@
             </div>
         </div>
     
-        <div  [ngClass]="categorySelected? 'scrolling-wrapperSubCategorySelected' : 'scrolling-wrapperSubCategory'">
+     <!--   <div  [ngClass]="categorySelected? 'scrolling-wrapperSubCategorySelected' : 'scrolling-wrapperSubCategory'">
             <div  *ngFor="let subCategory of getSubCategories(categorySelected)" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
                 <span class="categoryName">{{subCategory}}</span>
             </div>
-        </div>
+        </div> -->
 </ion-header>
 
 
@@ -62,8 +62,8 @@
                             <ion-col>
                                 <ion-row>
                                     <span class="sellerName"> {{seller.restaurantName}}</span> 
-                                    <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller)"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
-                                    <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller)"> <ion-icon class="star" name="star"></ion-icon></span>
+                                    <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'Added to favorites'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
+                                    <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'Removed from favorites'})"> <ion-icon class="star" name="star"></ion-icon></span>
                                 </ion-row>
                                 <ion-row>
 
@@ -83,7 +83,7 @@
 
                                 </ion-row>
 
-                                <ion-row>
+                                <ion-row (click)="callTel(seller.telNo)">
                                         <span class="sellerTelNo">
                                             <ion-icon name="call"></ion-icon>
                                             {{seller.telNo}}

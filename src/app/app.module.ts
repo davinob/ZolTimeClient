@@ -7,7 +7,6 @@ import { MyApp } from './app.component';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
-import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -20,18 +19,17 @@ import { HttpModule } from '@angular/http';
 import { IonicStorageModule } from '@ionic/storage';
 
 import { AlertAndLoadingService } from '../providers/alert-loading-service';
-import { AuthService } from './../providers/auth-service';
 import { UserService } from './../providers/user-service';
 import { AddressService } from './../providers/address-service';
 import { GlobalService } from './../providers/global-service';
-
-import { Firebase } from '@ionic-native/firebase';
 
 import { Geolocation } from '@ionic-native/geolocation';
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { FcmService } from '../providers/fcm-service';
+import { CallNumber } from '@ionic-native/call-number';
+import { Firebase } from '@ionic-native/firebase';
 
 export const firebaseConfig = {
     apiKey: "AIzaSyCjWUCqcYx8lGtAKWI8Q-5H8V1rktUQjJc",
@@ -56,7 +54,6 @@ export function createTranslateLoader(http: HttpClient) {
     BrowserModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule.enablePersistence(),
-    AngularFireAuthModule,
     HttpModule,
     HttpClientModule,
     IonicStorageModule.forRoot(),
@@ -80,7 +77,6 @@ export function createTranslateLoader(http: HttpClient) {
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    AuthService,
     UserService,
     AddressService,
     AlertAndLoadingService,
@@ -88,7 +84,9 @@ export function createTranslateLoader(http: HttpClient) {
     Geolocation,
     GlobalService,
     Firebase,
-    FcmService
+    FcmService,
+    CallNumber
+   
     
     
     

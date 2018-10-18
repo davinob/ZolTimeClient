@@ -31,6 +31,8 @@ import { FcmService } from '../providers/fcm-service';
 import { CallNumber } from '@ionic-native/call-number';
 import { Firebase } from '@ionic-native/firebase';
 
+
+
 export const firebaseConfig = {
     apiKey: "AIzaSyCjWUCqcYx8lGtAKWI8Q-5H8V1rktUQjJc",
     authDomain: "zoltime-77973.firebaseapp.com",

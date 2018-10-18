@@ -13,11 +13,13 @@ import { UserService } from '../providers/user-service';
 
 import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/first';
+import { timer } from 'rxjs/observable/timer';
 
 import { TranslateService } from '@ngx-translate/core';
 import { FcmService } from '../providers/fcm-service';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 
 @Component({
@@ -29,14 +31,20 @@ export class MyApp {
   activePage: any;
   initTime:boolean=true;
   
-  pages: Array<{title: string, component: any}>;
+  pages: Array<{title: string, component: any, icon: string}>;
 
   constructor(public translate: TranslateService,public platform: Platform, 
     public userService: UserService,
-  private storage: Storage,fcm: FcmService, toastCtrl: ToastController ) {
+  private storage: Storage,fcm: FcmService, 
+  toastCtrl: ToastController, public splashScreen:SplashScreen ) {
+     
    platform.ready().then(()=>{
     console.log(platform);
-    
+   //we want to let the splashScren for 5 secs:
+    timer(5000).subscribe(bal=>
+    {
+      this.splashScreen.hide();
+    });
       // Get a FCM token
      try{
 
@@ -105,8 +113,8 @@ this.initTime=false;
 
 // used for an example of ngFor and navigation
 this.pages = [
-{ title: 'Find Products', component: 'ProductsPage' },
-{ title: 'Favorites', component: 'FavoritesPage' },
+{ title: 'Find Products', component: 'ProductsPage', icon:'search' },
+{ title: 'Favorites', component: 'FavoritesPage', icon:'star' },
 
 ];
 

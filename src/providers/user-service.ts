@@ -127,8 +127,8 @@ export class UserService {
     this.userSearchSettings={
       position:{geoPoint:null,description:"",isAddress:true},
       hashgaha:"Any",
-      range:1,
-      onlyShowPromotion:true};
+      range:50,
+      onlyShowPromotion:false};
    
       
       this.usersCollection = this.afs.collection('users'); 

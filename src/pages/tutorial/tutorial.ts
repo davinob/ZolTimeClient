@@ -3,7 +3,7 @@ import { IonicPage, MenuController, NavController, Platform } from 'ionic-angula
 
 import { TranslateService } from '@ngx-translate/core';
 
-import { AuthService } from '../../providers/auth-service';
+
 import { Storage } from '@ionic/storage';
 
 

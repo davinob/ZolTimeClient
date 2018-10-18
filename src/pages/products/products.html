@@ -83,8 +83,8 @@
 
                                 </ion-row>
 
-                                <ion-row (click)="callTel(seller.telNo)">
-                                        <span class="sellerTelNo">
+                                <ion-row >
+                                        <span class="sellerTelNo" (click)="callTel(seller.telNo)">
                                             <ion-icon name="call"></ion-icon>
                                             {{seller.telNo}}
                                         </span>
@@ -117,7 +117,7 @@
             </ion-card>
         </ion-list>
 
-        <div class="noResult" *ngIf="!haveOrganizedSellers()" >
+        <div class="noResult" *ngIf="!haveOrganizedSellers() && userService.doneLookingForSellersCompleteValue" >
             <p>No result found for your search :(</p> 
             <p>Please search with a different address or search filter...</p>
         </div>

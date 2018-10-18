@@ -45,7 +45,7 @@ export class SearchAddressPage {
     private storage: Storage,
     private alertLoadingService:AlertAndLoadingService,
     private userService:UserService) {
-      this.settings=this.userService.cloneSettings();
+      this.settings=this.userService.userSearchSettings;
 
   }
 
@@ -59,13 +59,10 @@ export class SearchAddressPage {
   }
   
  
-loadSettings(){
 
 
-}
 
-
-  ionViewDidLoad() {
+  ionViewDidEnter() {
     this.settings.position.description="";
     this.tmpDescription="";
     console.log(this.settings.position);

@@ -1,7 +1,7 @@
 import { Component,ViewChild,ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, ToastController  } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { SearchSettings,UserService, User,Product, Seller } from '../../providers/user-service';
+import { SearchSettings,UserService, Seller } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 
 import { Camera,CameraOptions  } from '@ionic-native/camera';
@@ -13,6 +13,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import 'rxjs/Rx';
 import { Position,AddressService,Address } from '../../providers/address-service';
 
+import {Product} from "../../providers/user-service";
 
 import { PopoverController } from 'ionic-angular';
 import { SearchSettingsPage } from '../search-settings/search-settings';
@@ -218,6 +219,8 @@ callTel(num:string)
   {
     console.log("INIT POSITION");
     return this.geolocation.getCurrentPosition().then((resp) => {
+      console.log("INIT POSITION");
+      console.log(resp);
       this.userService.userSearchSettings.position=this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,"Current Location");
     
      }).catch((error) => {
@@ -231,6 +234,7 @@ callTel(num:string)
   {
     return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
   }
+
 
   
   

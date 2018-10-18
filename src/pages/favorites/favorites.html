@@ -83,7 +83,7 @@
             </ion-card>
         </ion-list>
 
-        <div class="noResult" [hidden]="haveOrganizedSellers()" >
+        <div class="noResult" [hidden]="haveOrganizedSellers() || !userService.doneLookingForSellersCompleteValue" >
             <p>No favorite :(</p> 
             <p>Please add favorites...</p>
         </div>

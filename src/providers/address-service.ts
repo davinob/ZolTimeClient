@@ -36,35 +36,41 @@ export class AddressService{
   
   key:string="AIzaSyDXH1P9t_7NbM4xKUptwQ47YjNYSosLi_k";
       
-  searchAddresses(searchTerm:string):Promise<any>
+  async searchAddresses(searchTerm:string)
   {
     let searchUrl:string="https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+searchTerm+"&types=geocode&components=country:il&language=iw&key="+this.key;
     
-    return new Promise((resolve,reject)=>{
+    
 
-      
+    console.log("SEARCH URL before timeout:"+searchUrl); 
       setTimeout(
         ()=>{
-        resolve([])
-        }, 15000);
+        return []
+        }, 150000);
+      
+        console.log("SEARCH URL:"+searchUrl);
+
+      let results=await this.http.get(searchUrl);
+      
       
 
-      this.http.get(searchUrl).map(res => res.json()).subscribe(data => {
-        let newAddresses=data.predictions.filter((address) => {
+      let data=await results.map(res => res.json()).first().toPromise();
+      
+      let newAddresses=data.predictions.filter((address) => {
           return address.description.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
         }).map(address=>{
           address.isAddress=true;
           return address;
       });
+
       console.log("SEARCHED ADDRESSES SERVICE");
       console.log(newAddresses);
-        resolve(newAddresses);
-       },
-      err=>{
-      console.log(err);
-      }
-      );
-    });
+        return newAddresses;
+    
+      console.log("newAddresses");
+      console.log(newAddresses);
+      return newAddresses;
+   
 
   }
   

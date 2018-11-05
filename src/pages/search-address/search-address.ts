@@ -29,7 +29,7 @@ export class SearchAddressPage {
 
   @ViewChild('address') addressInput:TextInput=null;
   searchAddress: string = '';
-  addresses: any;
+  addresses: any=[];
   addressesHistory: string[];
   searching:boolean=false;
   addressSelected:boolean=false;
@@ -106,7 +106,7 @@ clearAddressSearch(){
 
   lastStringTyped:string="";
 
-  setFilteredItems() {
+  async setFilteredItems() {
     console.log("FILTERING ADDRESSES");
     console.log(this.lastStringTyped);
     console.log(this.searchAddress);
@@ -114,7 +114,7 @@ clearAddressSearch(){
     )
     {
       this.addressSelected=false;
-      this.addresses=null;
+      this.addresses=[];
       console.log("NOT DOING SEARCH AGAIN!");
       return;
     }
@@ -127,11 +127,10 @@ clearAddressSearch(){
       let sellersNamesFiltered=this.userService.getAllSellersWithSearchTerm(this.searchAddress);
       this.addresses=sellersNamesFiltered;
       
-      this.userService.searchAddressesAndSellers(this.searchAddress,sellersNamesFiltered).then((listOfAddresses)=>
-      {
+      let listOfAddresses=await this.userService.searchAddressesAndSellers(this.searchAddress,sellersNamesFiltered);
          this.searching=false;
          this.addresses=listOfAddresses;
-      });
+    
 
   }
 
@@ -251,7 +250,7 @@ clearAddressSearch(){
   selectAddress(place:any)
   {
     console.log("SELECT ADDRESS" + place.description);
-    this.addresses=null;
+    this.addresses=[];
     this.searchAddress=place.description;
     this.lastStringTyped=this.searchAddress;
     this.addressSelected=true;

@@ -539,31 +539,21 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
 
  
  
-searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>):Promise<any>
+async searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>)
 {
-  return new Promise((resolve,reject)=>{
-
-    this.addressService.searchAddresses(searchTerm).then(addresses=>{
-      console.log("SEARCHED ADDRESSES");
+ 
+   let addresses=await this.addressService.searchAddresses(searchTerm);
+    
+   console.log("SEARCHED ADDRESSES");
+   console.log(addresses);
      
       let sellersAndAddresses=new Array();
 
       sellersAndAddresses=sellersAndAddresses.concat(sellersNames,addresses);
       console.log(sellersAndAddresses);
-        resolve(sellersAndAddresses);
-    });
     
-  
-  
-  
-    console.log(sellersNames);
-
-
-  });
-
-
-
-
+      return sellersAndAddresses;
+ 
 }
 
 getAllSellersWithSearchTerm(searchTerm:string)

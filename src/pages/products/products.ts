@@ -224,7 +224,7 @@ callTel(num:string)
 
       console.log("INIT POSITION");
       console.log(resp);
-      this.userService.userSearchSettings.position= await this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,null);
+      this.userService.userSearchSettings.position= await this.addressService.createPositionWithCurrentLocation(resp.coords.latitude,resp.coords.longitude);
       console.log("POSITION NEWW");
       console.log(this.userService.userSearchSettings.position);
      }

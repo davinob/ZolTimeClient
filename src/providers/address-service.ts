@@ -29,16 +29,17 @@ export class AddressService{
   constructor( public http: Http) {
   }
   
-  async createPosition(lat:number,lng:number,description:string):Promise<Position>
+  createPosition(lat:number,lng:number,description:string):Position
   {
-    if (!description)
-    {
-      description =await this.findAddressDescriptionFromLatLng(lat,lng);
+    return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
+  }
+
+  async createPositionWithCurrentLocation(lat:number,lng:number)
+  {
+    let description =await this.findAddressDescriptionFromLatLng(lat,lng);
       console.log("THE DESC RETRIEVED");
       console.log(description);
       return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
-    }
-    return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
   }
 
   async findAddressDescriptionFromLatLng(lat:number,lng:number):Promise<string>

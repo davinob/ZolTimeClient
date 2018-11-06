@@ -1,9 +1,3 @@
-<!--
-  Generated template for the ProductsPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
 
   <ion-navbar>
@@ -19,21 +13,9 @@
               <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'Added to favorites'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
               <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'Removed from favorites'})"> <ion-icon class="star" name="star"></ion-icon></span>
            </ion-row>
-          <ion-row>
-           <a href="https://maps.google.com/?q={{seller.address.description}}" target="_blank">
-            <span class="sellerDistance" >
-                <ion-icon name="navigate"></ion-icon>
-              {{seller.address.description}}
-            </span>
-          </a> 
-          </ion-row>
-          <ion-row (click)="callTel(seller.telNo)">
-            <span class="sellerTelNo">
-              <ion-icon name="call"></ion-icon>
-              {{seller.telNo}}
-            </span>
-          </ion-row>
-
+           <ion-row>
+              <span class="sellerDescription"> {{seller.description}}</span>
+            </ion-row>
         </ion-col>
         <ion-col col-4>
           <img class="sellerPic" src="{{seller.picture.url}}" />
@@ -42,21 +24,14 @@
     </ion-grid>
   </ion-navbar>
 
-  <ion-grid class="productsSeller">
-      <ion-row>
-        <span class="sellerDescription"> {{seller.description}}</span>
-      </ion-row>
-    </ion-grid>
-  <div class="scrolling-wrapper">
+   <div class="scrolling-wrapper">
     <div class="scrolling-wrapperSubCategorySelected">
-      <div *ngFor="let subCategory of getSubCategories()" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
+      <div [hidden]='!wasFiltered' *ngFor="let subCategory of getSubCategories()" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
         <span class="categoryName">{{subCategory}}</span>
       </div>
     </div>
   </div>
 </ion-header>
-<ion-header></ion-header>
-
 
 <ion-content class="global" padding>
 
@@ -96,7 +71,43 @@
 
 
   </div>
+ 
 
-
-
+  
 </ion-content>
+
+ <ion-footer class="">
+     
+    
+    <div (click)="callTel(seller.telNo)" class="footerButton">
+        
+        <div class="oneLine">  
+          <span class="footerIcon"><ion-icon name="call"></ion-icon></span>
+          <span class="footerLabel">  Call</span>
+        </div>
+        <div class="oneLine">  
+          <span class="sellerTelNo">
+                {{seller.telNo}}
+            </span>
+        </div>
+      </div>
+    
+      <div class="footerButton">
+        <a  href="https://maps.google.com/?q={{seller.address.description}}" target="_blank">
+          
+          
+            <div class="oneLine">  
+            <span class="footerIcon"> <ion-icon name="navigate"></ion-icon></span>
+                <span class="footerLabel"> Navigate</span>
+              </div> 
+              <div class="oneLine">  
+                <span class="sellerDistance" >
+                     {{seller.address.description}}
+                </span>
+              </div>
+           </a>
+      </div>
+       
+        
+    
+    </ion-footer>

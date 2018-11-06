@@ -181,14 +181,14 @@ export class UserService {
         console.log(this.myFavorites);
         
         this.storage.set("favorites",this.myFavorites);
-        if (this.userFCMToken!="")
-        this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).delete();
+        if (this.userFCMToken)
+           await this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).delete();
         console.log("REMOVE FROM FAVORITES");
         return;
     
     }
 
-    addToFavorites(seller:Seller)
+    async addToFavorites(seller:Seller)
 {
 
     if (!this.myFavorites)
@@ -200,9 +200,13 @@ export class UserService {
     console.log(seller);
     console.log(this.myFavorites);
     
-    //FOR TESTS:
-    if (this.userFCMToken!="")
-    this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).set({token:this.userFCMToken});
+    console.log(this.userFCMToken);
+
+    if (this.userFCMToken)
+    {
+     await this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).set({token:this.userFCMToken});
+    console.log("Favorites added : "+ this.favoritesCollectionRef+"seller.key");
+    }
     this.storage.set("favorites",this.myFavorites);
     console.log("ADDED TO FAVORITES");
 }

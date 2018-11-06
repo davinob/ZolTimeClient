@@ -29,12 +29,53 @@ export class AddressService{
   constructor( public http: Http) {
   }
   
-  createPosition(lat:number,lng:number,description:string):Position
+  async createPosition(lat:number,lng:number,description:string):Promise<Position>
   {
+    if (!description)
+    {
+      description =await this.findAddressDescriptionFromLatLng(lat,lng);
+      console.log("THE DESC RETRIEVED");
+      console.log(description);
+      return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
+    }
     return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
   }
+
+  async findAddressDescriptionFromLatLng(lat:number,lng:number):Promise<string>
+  {
+    let searchUrl:string="https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key="+this.key;
+    
+    console.log("SEARCH URL before timeout:"+searchUrl); 
+    setTimeout(
+      ()=>{
+      return "No location"
+      }, 150000);
+    
+      console.log("SEARCH URL:"+searchUrl);
+
+    let addressesResponse=await this.http.get(searchUrl);
+    
+    let addressResp= await addressesResponse.map(res => res.json()).first().toPromise();
+    
   
-  key:string="AIzaSyDXH1P9t_7NbM4xKUptwQ47YjNYSosLi_k";
+    console.log(addressResp);
+
+        let results=addressResp.results;
+        for(let j=0;j<results.length;j++)
+        {
+          if (results[j].formatted_address)
+          {
+            console.log(results[j].formatted_address);
+            return results[j].formatted_address
+          }
+        }
+  
+
+    
+
+  }
+  
+  key:string="AIzaSyBrurdvN-JkU18waDg-_TidMJNKd75p3Ls";
       
   async searchAddresses(searchTerm:string)
   {
@@ -67,11 +108,7 @@ export class AddressService{
       console.log(newAddresses);
         return newAddresses;
     
-      console.log("newAddresses");
-      console.log(newAddresses);
-      return newAddresses;
-   
-
+    
   }
   
   

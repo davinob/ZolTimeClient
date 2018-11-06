@@ -29,7 +29,36 @@ page-seller{
      
     }
 
+    .footer
+    {
+      background-color: #1f1e4d;
+      text-align: center;
+    }
 
+    a {
+      color: #1f1e4d;
+  }
+
+   
+
+    .footerButton
+    {
+      width: 48%;
+      background-color: white;
+      color: #1f1e4d;
+      font-size: 14px;
+      font-weight: bolder;
+      font-size: 18px;
+      float: left;
+      margin: 1%;
+      height: 47px;
+      
+    }
+
+    .footerIcon
+    {
+      margin-right: 3px;
+    }
     
 
     .searchBoxInner
@@ -192,7 +221,7 @@ page-seller{
       white-space: nowrap;
       border-top: 1px solid #08073b;
       color:white;
-      background-color: #486ff1;
+      background-color: #27386f;
     }
     
     .scrolling-wrapperSubCategorySelected {
@@ -284,20 +313,22 @@ page-seller{
     
     .sellerDescription
     {
-      color: #4676f0;
+      color: #193888;
       font-weight: 500;
     }
     
     .sellerDistance
     {
-      color: #4676f0;
+      color: #31356f;
       font-weight: 700;
+      font-size: 14px;
     }
     
     .sellerTelNo
     {
-      color: #4676f0;
+      color: #31356f;
       font-weight: 700;
+      font-size: 14px;
     }
     
     .scrolling-products {
@@ -368,7 +399,7 @@ page-seller{
     .sellerName
 {
   font-weight: 800;
-  font-size: 22px;
+  font-size: 17px;
   color: #08073b;
   width: 80%;
 }
@@ -426,6 +457,12 @@ background-color: white;
      
     }
     
+
+    .oneLine
+    {
+      width:100%;
+      text-align: center;
+    }
     
     
     }

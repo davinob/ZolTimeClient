@@ -118,7 +118,7 @@ export class AlertAndLoadingService {
     var errorMessage: string = error.message;
     let toast = this.toastCtrl.create({
       message: errorMessage,
-      duration: 3000,
+      duration: 5000,
       position: 'bottom'
     });
     toast.present();

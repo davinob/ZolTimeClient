@@ -279,7 +279,7 @@ isSellerFavorite(seller:Seller):boolean
      let newSettings:SearchSettings=Object.assign({},this.userSearchSettings);
      if (this.userSearchSettings.position.geoPoint!=null)
      {
-       newSettings.position=this.addressService.createPosition(
+       newSettings.position= this.addressService.createPosition(
          this.userSearchSettings.position.geoPoint.latitude,this.userSearchSettings.position.geoPoint.longitude,this.userSearchSettings.position.description);
      }
      else

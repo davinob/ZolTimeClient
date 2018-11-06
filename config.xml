@@ -104,6 +104,9 @@
     <plugin name="mx.ferreyra.callnumber" spec="~0.0.2" />
     <plugin name="cordova-plugin-firebase" spec="^1.0.5" />
     <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
+    <allow-navigation href="http://10.100.102.5:8109" sessionid="f1f5345f" />
+    <allow-navigation href="http://10.100.102.5:8113" sessionid="9423243c" />
+    <allow-navigation href="http://10.100.102.5:8115" sessionid="57bd4417" />
     <engine name="windows" spec="^5.0.0" />
     <engine name="browser" spec="~5.0.3" />
     <engine name="android" spec="^6.4.0" />

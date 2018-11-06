@@ -20,6 +20,7 @@ export class FcmService {
   ) {}
   
   async getToken() {
+    console.log("GETTING TOKEN");
 
     this.fcm.onTokenRefresh().subscribe(token => {
       this.saveTokenToFirestore(token);

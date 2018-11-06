@@ -15,7 +15,7 @@
                 <ion-row>
                     <ion-col col-10>
 
-                        <ion-input clearInput [(ngModel)]="userService.userSearchSettings.position.description" class="position" type="text" placeholder="Current Location"
+                        <ion-input clearInput [(ngModel)]="userService.userSearchSettings.position.description" class="position" type="text" placeholder="..."
                             (ionFocus)="goToSearchAddessPage()">
                             <ion-icon class='white' name="navigate"></ion-icon>
                         </ion-input>
@@ -67,12 +67,12 @@
                                 </ion-row>
                                 <ion-row>
 
-                                        <a href="https://maps.google.com/?q={{seller.address.description}}" target="_blank">
+                                        <span>
                                             <span class="sellerDistance" >
                                                 <ion-icon name="navigate"></ion-icon>
                                               {{seller.address.description}}
                                             </span>
-                                          </a> 
+                                          </span> 
                                  
     
                                     </ion-row>
@@ -83,24 +83,13 @@
 
                                 </ion-row>
 
-                                <ion-row >
-                                        <span class="sellerTelNo" (click)="callTel(seller.telNo)">
-                                            <ion-icon name="call"></ion-icon>
-                                            {{seller.telNo}}
-                                        </span>
-    
-                                    </ion-row>
-
-
                             </ion-col>
                             <ion-col align-self-end>
                                 <img class="sellerPic" src="{{seller.picture.url}}" />
                             </ion-col>
                         </ion-row>
 
-                        <ion-row>
-                            <span class="sellerDescription"> {{seller.description}}</span>
-                        </ion-row>
+ 
             </ion-grid>
                  
                             <div class="scrolling-products" >
@@ -128,3 +117,4 @@
 
 
 </ion-content>
+

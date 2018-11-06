@@ -49,7 +49,7 @@ export class ProductsPage {
 
  
   wentToSeller:boolean=false;
-
+  noLocationStr:string="NO LOCATION";
   
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -137,7 +137,7 @@ callTel(num:string)
     this.navCtrl.push('SearchAddressPage');
   }
 
-  public ;
+ 
 
   presentPopover(myEvent) {
     let popover = this.popoverCtrl.create('SearchSettingsPage',{},{cssClass:"popOverClass"});
@@ -215,24 +215,33 @@ callTel(num:string)
   }
 
 
-  initPosition():Promise<any>
+  async initPosition()
   {
     console.log("INIT POSITION");
-    return this.geolocation.getCurrentPosition().then((resp) => {
+    
+    try{
+    let resp= await this.geolocation.getCurrentPosition();
+
       console.log("INIT POSITION");
       console.log(resp);
-      this.userService.userSearchSettings.position=this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,"Current Location");
-    
-     }).catch((error) => {
-      this.alertService.showToast({message:"Error getting location"});
-    });
+      this.userService.userSearchSettings.position= await this.addressService.createPosition(resp.coords.latitude,resp.coords.longitude,null);
+      console.log("POSITION NEWW");
+      console.log(this.userService.userSearchSettings.position);
+     }
+     catch(error) 
+     {
+       console.log("ERROR FOR GEOLOCATION");
+     this.userService.userSearchSettings.position= await this.addressService.createPosition(0,0,this.noLocationStr);
+  
+      this.alertService.showToast({message:"Error getting location, please allow geolocation or type address..."});
+    }
   }
   
   
 
   shouldShowSeller(seller:Seller):boolean
   {
-    return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
+  return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
   }
 
 
@@ -242,29 +251,22 @@ callTel(num:string)
   {
     console.log("ION VIEW DID ENTER");
     console.log(this.wentToSeller);
-    
-    
     if (this.userService.doneLookingForSellersCompleteValue && !this.wentToSeller)//so we've been there at least once, sellers are already ready
     {
       this.filterSellersAndGetTheirProdsAndProms();
     }
 
     this.wentToSeller=false;
-
-    this.userService.doneLookingForSellers.subscribe(doneLookingForSellers=>
+     this.userService.doneLookingForSellers.subscribe(doneLookingForSellers=>
       { 
         console.log("DONE LOOKING SELLERS");
         console.log(doneLookingForSellers);
-        console.log(this.userService.allSellersFiltered);
+     console.log(this.userService.allSellersFiltered);
         
         if (doneLookingForSellers)
         this.filterSellersAndGetTheirProdsAndProms();
 
-      });
-
-    
-
-    this.userService.lookingForProducts.subscribe(isLookingforProds=>
+      this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
      
         if  (isLookingforProds)
@@ -277,10 +279,9 @@ callTel(num:string)
           this.alertService.dismissLoading();
         }
       });
-
-      
-
+    });
   }
+
 
   getSellerProducts(seller:Seller):Array<Product>
   {
@@ -291,18 +292,21 @@ callTel(num:string)
     {
       return product.bestPromo;
     }).filter((val,index)=>{return index<5});
+
   }
 
  
       
-  filterSellersAndGetTheirProdsAndProms()
+  async filterSellersAndGetTheirProdsAndProms()
   {
     console.log(this.userService.userSearchSettings);
     console.log("GETTING SELLERS");
-    if ((this.userService.userSearchSettings.position.geoPoint==null)&&((this.userService.userSearchSettings.position.description=="Current Location")||(this.userService.userSearchSettings.position.description=="")))
-  {
-    this.initPosition().then(val=>{this.getFilteredSellersProdsAndDeals()});
-    this.userService.userSearchSettings.position.description="Current Location";
+    if ((this.userService.userSearchSettings.position.geoPoint==null)&&((this.userService.userSearchSettings.position.description==this.noLocationStr)||(this.userService.userSearchSettings.position.description=="")))
+ {
+      console.log(this.userService.userSearchSettings);
+    await this.initPosition();
+    this.getFilteredSellersProdsAndDeals();
+ 
   }
   else
     this.getFilteredSellersProdsAndDeals();

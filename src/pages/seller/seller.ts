@@ -59,8 +59,23 @@ export class SellerPage {
 
   subCategories:any[]=new Array();
   
+  wasFiltered:boolean=false;
+  
   getSubCategories():any[]{
-  return this.subCategories;
+  
+    if (!this.wasFiltered)
+    {
+      if (this.seller.productsPerCategory)
+      {
+      this.subCategories=this.subCategories.filter(subCatego=>
+        {
+          return this.seller.productsPerCategory[subCatego];
+  
+        });
+        this.wasFiltered=true;
+      }
+    }
+    return this.subCategories;
   }
 
   getSubCategoriesForShow():any[]
@@ -80,10 +95,12 @@ export class SellerPage {
   initSubCategories(){
     let category=null;
 
+    console.log("SUB CATEGO FILTERING");
     for (const key in this.globalService.categories) {
       category=this.globalService.categories[key];
       if (category.name==this.seller.category)
         {
+          console.log(category.subCategories);
           this.subCategories=category.subCategories;
           return;
         }

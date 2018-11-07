@@ -24,10 +24,10 @@
       
      </ion-list>
 
-     <div *ngIf="!searchAddress && addressesHistory && addressesHistory.length>0">
+     <div *ngIf="!searchAddress && addressService.addressesHistory && addressService.addressesHistory.length>0">
         <span class="historyHeader">SEARCH HISTORY</span>
      <ion-list   class="addressesList">
-        <ion-item class="addressItem" *ngFor="let place of addressesHistory" (click)="selectAddressFromHistory(place)">
+        <ion-item class="addressItem" *ngFor="let place of addressService.addressesHistory" (click)="selectAddressFromHistory(place)">
             <span *ngIf="!place.isAddress">  <ion-icon name="basket"></ion-icon><span class="sellerName"> {{place.description}}</span><span class="sellerAddress"> {{place.address}}</span></span>
             <span *ngIf="place.isAddress" class="placeAddress" ><ion-icon name="pin"></ion-icon> {{place.description}}</span>
             

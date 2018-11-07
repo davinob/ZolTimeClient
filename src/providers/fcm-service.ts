@@ -4,8 +4,7 @@ import { Platform } from 'ionic-angular';
 import { AngularFirestore } from 'angularfire2/firestore';
 
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
+
 import { UserService } from './user-service';
 
 @Injectable()

@@ -42,8 +42,12 @@ export class FavoritesPage {
   }
 
   
+  pageIsShown:boolean;
 
-
+  ionViewDidLeave()
+  {
+    this.pageIsShown=false;
+  }
   
 
   filterSellersByKeysAndGetTheirProdsAndProms(){
@@ -71,9 +75,14 @@ export class FavoritesPage {
 
   
   
+  lookingForSellerSubscribed:boolean=false;
+  lookingForProdsSubscribed:boolean=false;
+
+
   
   ionViewDidEnter()
   {
+    this.pageIsShown=true;
     console.log("ION VIEW DID ENTER");
     console.log(this.wentToSeller);
     
@@ -84,21 +93,31 @@ export class FavoritesPage {
 
     this.wentToSeller=false;
 
+    if (!this.lookingForSellerSubscribed)
+    {
     this.userService.doneLookingForSellers.subscribe(doneLookingForSellers=>
       { 
+        this.lookingForSellerSubscribed=true;
+        if (!this.pageIsShown)
+        return;
+
         console.log("DONE LOOKING SELLERS");
         console.log(doneLookingForSellers);
         console.log(this.userService.allSellersFiltered);
         
-        if (doneLookingForSellers)
+        if (doneLookingForSellers && this.pageIsShown)
         this.filterSellersByKeysAndGetTheirProdsAndProms();
 
       });
-
+    }
     
-
+    if (!this.lookingForProdsSubscribed)
+    {
     this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
+        this.lookingForProdsSubscribed=true;
+        if (!this.pageIsShown)
+        return;
      
         if  (isLookingforProds)
         {
@@ -111,7 +130,7 @@ export class FavoritesPage {
         }
       });
 
-      
+    }
 
   }
 

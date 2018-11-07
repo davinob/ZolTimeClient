@@ -2,24 +2,18 @@ import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform} from 'ionic-angular';
 
 
-import { ProductsPage } from '../pages/products/products';
-
-import { TutorialPage } from '../pages/tutorial/tutorial';
-
-import { SearchSettingsPage } from '../pages/search-settings/search-settings';
-
-
 import { UserService } from '../providers/user-service';
 
 import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/first';
-import { timer } from 'rxjs/observable/timer';
+
 
 import { TranslateService } from '@ngx-translate/core';
 import { FcmService } from '../providers/fcm-service';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { timer } from 'rxjs';
 
 
 @Component({

@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Http  } from '@angular/http';
-import 'rxjs/add/operator/map';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+
+
 import * as firebase from 'firebase/app';
 import { firestore } from 'firebase/app';
+import { Subject, Observable } from 'rxjs';
+
+import { map,first } from 'rxjs/operators';
+import { Storage } from '@ionic/storage';
 
 
 export interface Address{
@@ -25,8 +28,10 @@ export interface Position{
 export class AddressService{
   
  
+  addressesHistory: string[];
 
-  constructor( public http: Http) {
+
+  constructor( public http: Http,private storage: Storage) {
   }
   
   createPosition(lat:number,lng:number,description:string):Position
@@ -39,7 +44,12 @@ export class AddressService{
     let description =await this.findAddressDescriptionFromLatLng(lat,lng);
       console.log("THE DESC RETRIEVED");
       console.log(description);
-      return {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
+      let position:Position= {geoPoint:new firebase.firestore.GeoPoint(lat,lng),description:description,isAddress:true};
+
+      this.addAddressToHistory(position);
+
+      return position;
+
   }
 
   async findAddressDescriptionFromLatLng(lat:number,lng:number):Promise<string>
@@ -56,7 +66,7 @@ export class AddressService{
 
     let addressesResponse=await this.http.get(searchUrl);
     
-    let addressResp= await addressesResponse.map(res => res.json()).first().toPromise();
+    let addressResp= await addressesResponse.pipe(map(res => res.json())).pipe(first()).toPromise();
     
   
     console.log(addressResp);
@@ -93,11 +103,15 @@ export class AddressService{
         console.log("SEARCH URL:"+searchUrl);
 
       let results=await this.http.get(searchUrl);
+      console.log("THE RESULTS");
+      console.log(results);
       
       
 
-      let data=await results.map(res => res.json()).first().toPromise();
-      
+      let data=await results.pipe(map(res => res.json())).pipe(first()).toPromise();
+      console.log("THE DATA");
+      console.log(data);
+
       let newAddresses=data.predictions.filter((address) => {
           return address.description.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
         }).map(address=>{
@@ -118,7 +132,7 @@ export class AddressService{
     let searchUrl:string="https://maps.googleapis.com/maps/api/place/details/json?placeid="+placeID+"&key="+this.key;
     let addressPos:Subject<any>=new Subject<any>();
 
-     this.http.get(searchUrl).map(res => res.json()).subscribe(data => {
+     this.http.get(searchUrl).pipe(map(res => res.json())).subscribe(data => {
       let address:Address=<Address>{};
       
      for (let addressComp of data.result.address_components) {
@@ -258,5 +272,110 @@ isGeoPointNotSoFar(geoPoint1:firestore.GeoPoint,geoPoint2:firestore.GeoPoint,max
 
   return this.distance(geoPoint1,geoPoint2)<=maxDistance;
 }
+
+
+
+loadHistory()
+{
+  this.getAddressesHistory().then(val=>{
+   console.log("ADDRESSES HIST");
+   console.log(val);
+   this.addressesHistory=val;
+  });
+}
+
+
+clearAddressesHistory()
+{
+ 
+      console.log("CLEARING HISTORY");
+      this.storage.set('locations',new Array());
+      this.addressesHistory=new Array();
+  
+}
+
+
+
+addAddressToHistory(position:any)
+{
+  console.log("POSITION");
+  console.log(position);
+  let posToSave:any={};
+  posToSave={
+    description:position.description,
+  };
+
+  if (!position.isAddress)
+  {
+    posToSave["address"]=position.address;
+    posToSave["key"]=position.key;
+    posToSave["isAddress"]=false;
+  }
+else
+{
+  posToSave["lat"]=position.geoPoint.latitude;
+  posToSave["lng"]=position.geoPoint.longitude;
+  posToSave["isAddress"]=true;
+
+}
+
+console.log("POS BEING SAVED");
+console.log(posToSave);
+
+// Or to get a key/value pair
+this.getAddressesHistory().then((placesFromHistory) => {
+  if(!placesFromHistory)
+ placesFromHistory=new Array<any>();
+ 
+ console.log("history from storage");
+ console.log(placesFromHistory);
+ console.log(posToSave);
+
+//if same address already in the list, we won't add it:
+if (posToSave.isAddress)
+{
+  for (let index = 0; index < placesFromHistory.length; index++) {
+    const place = placesFromHistory[index];
+    if ((place.description==posToSave.description)||(place.lat==posToSave.lat)&&(place.lng==posToSave.lng))
+    {
+      console.log("NO NEED TO SAVE");
+      //no need to save the place
+      return;
+    }
+  }  
+}  
+else
+{
+  for (let index = 0; index < placesFromHistory.length; index++) {
+    const place = placesFromHistory[index];
+    if (place.key==posToSave.key)
+    {
+      console.log("NO NEED TO SAVE");
+      //no need to save the place
+      return;
+    }
+  }  
+}
+
+
+
+ 
+placesFromHistory.unshift(posToSave);
+if (placesFromHistory.length>=10)
+  placesFromHistory.pop();
+this.storage.set('locations',placesFromHistory );
+});
+}
+
+
+
+
+getAddressesHistory():Promise<any[]>
+{
+  return this.storage.get('locations');
+  
+}
+
+
  
 }

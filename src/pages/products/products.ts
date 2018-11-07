@@ -1,28 +1,29 @@
 import { Component,ViewChild,ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, ToastController  } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform  } from 'ionic-angular';
 import { TranslateModule } from '@ngx-translate/core';
-import { SearchSettings,UserService, Seller } from '../../providers/user-service';
+import { UserService, Seller } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 
-import { Camera,CameraOptions  } from '@ionic-native/camera';
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs/Observable';
 
-import { Geolocation } from '@ionic-native/geolocation';
 
-import 'rxjs/Rx';
+import { Geolocation,Geoposition } from '@ionic-native/geolocation';
+
+
 import { Position,AddressService,Address } from '../../providers/address-service';
 
 import {Product} from "../../providers/user-service";
 
 import { PopoverController } from 'ionic-angular';
-import { SearchSettingsPage } from '../search-settings/search-settings';
-import { TextInput } from 'ionic-angular/components/input/input';
-import { Storage } from '@ionic/storage';
-import { Subscription } from 'rxjs/Subscription';
-import { GlobalService } from '../../providers/global-service';
 
-import { CallNumber } from '@ionic-native/call-number';
+import { Storage } from '@ionic/storage';
+
+import { GlobalService } from '../../providers/global-service';
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
+
+
 /**
  * Generated class for the ProductsPage page.
  *
@@ -48,7 +49,7 @@ export class ProductsPage {
   
 
  
-  wentToSeller:boolean=false;
+  justWentToSeller:boolean=false;
   noLocationStr:string="NO LOCATION";
   
 
@@ -62,17 +63,14 @@ export class ProductsPage {
     public popoverCtrl: PopoverController,
      public storage:Storage,
     private globalSvc:GlobalService,
-    private callNumber: CallNumber ) {
+    public diagnostic: Diagnostic,
+    public locationAccuracy: LocationAccuracy,
+    public platform: Platform ) {
       
      
   }
 
   
-
-callTel(num:string)
-{
-  this.callNumber.callNumber(num, true);
-}
 
   getCategories()
   {
@@ -154,7 +152,7 @@ callTel(num:string)
 
 
   haveOrganizedSellers():boolean{
-  return this.sellersFiltered!=null && this.sellersFiltered.length>0;
+  return this.sellersFiltered && this.sellersFiltered.length>0;
 
   }
 
@@ -175,7 +173,8 @@ callTel(num:string)
   filterPerCategoryAndSubCategory(sellers:Array<any>)
   {
     this.sellersFiltered=new Array();
-
+    console.log("FILTER PER CATEGO AND SUB CATEGO");
+    console.log(sellers);
     sellers.forEach((seller,index)=>
     {
       if (seller && seller.products && seller.products.length>0)
@@ -187,7 +186,7 @@ callTel(num:string)
     if (!this.categorySelected)
     return;
 
-   
+    console.log(this.sellersFiltered);
     
     this.sellersFiltered=this.sellersFiltered.filter(seller=>
       {
@@ -218,24 +217,102 @@ callTel(num:string)
   async initPosition()
   {
     console.log("INIT POSITION");
-    
+    this.userService.userSearchSettings.position= this.addressService.createPosition(0,0,this.noLocationStr);
+   
     try{
-    let resp= await this.geolocation.getCurrentPosition();
+  
+    
+    let resp= await this.getUserPosition();
 
       console.log("INIT POSITION");
       console.log(resp);
-      this.userService.userSearchSettings.position= await this.addressService.createPositionWithCurrentLocation(resp.coords.latitude,resp.coords.longitude);
+      console.log("AFTER GETTING POSITION");
+    
+      this.userService.userSearchSettings.position=await this.addressService.createPositionWithCurrentLocation(resp.coords.latitude,resp.coords.longitude);
       console.log("POSITION NEWW");
       console.log(this.userService.userSearchSettings.position);
+
+      
      }
      catch(error) 
      {
        console.log("ERROR FOR GEOLOCATION");
-     this.userService.userSearchSettings.position= await this.addressService.createPosition(0,0,this.noLocationStr);
+     this.userService.userSearchSettings.position=this.addressService.createPosition(0,0,this.noLocationStr);
   
-      this.alertService.showToast({message:"Error getting location, please allow geolocation or type address..."});
     }
+   
   }
+
+
+  getUserPosition():Promise<any> {
+    return new Promise(resolve => {
+      const HIGH_ACCURACY = 'high_accuracy';
+      if (this.platform.is('cordova')) {
+        this.platform.ready().then(() => {
+          this.diagnostic.isLocationEnabled().then(enabled => {
+            if (enabled) {
+              if (this.platform.is('android')) {
+                this.diagnostic.getLocationMode().then(locationMode => {
+                  if (locationMode === HIGH_ACCURACY) {
+                    this.geolocation.getCurrentPosition({timeout: 30000, maximumAge: 0, enableHighAccuracy: true}).then(pos => {
+                      resolve({
+                        coords: {
+                          latitude: pos.coords.latitude,
+                          longitude: pos.coords.longitude
+                        }
+                      });
+                    }).catch(error => resolve(error));
+                  } else {
+                    this.askForHighAccuracy().then(available => {
+                      if (available) {
+                        this.getUserPosition().then(a => resolve(a), e => resolve(e));
+                      }
+                    }, error => resolve(error));
+                  }
+                });
+              } else {
+                this.geolocation.getCurrentPosition({timeout: 30000, maximumAge: 0, enableHighAccuracy: true}).then(pos => {
+                  resolve({
+                    coords: {
+                      latitude: pos.coords.latitude,
+                      longitude: pos.coords.longitude
+                    }
+                  });
+                }).catch(error => resolve(error));
+              }
+            } else {
+              this.locationAccuracy.request(1).then(result => {
+                if (result) {
+                  this.getUserPosition().then(result => resolve(result), error => resolve(error));
+                }
+              }, error => {
+                resolve(error)
+              });
+            }
+          }, error => {
+            resolve(error)
+          });
+        });
+      } else {
+        resolve('Cordova is not available');
+      }
+    });
+  }
+
+  askForHighAccuracy(): Promise<Geoposition> {
+    return new Promise(resolve => {
+      this.locationAccuracy
+        .request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() => {
+        this.geolocation.getCurrentPosition({timeout: 30000}).then(
+          position => {
+            resolve(position);
+          }, error => resolve(error)
+        );
+      }, error => resolve(error));
+    });
+  }
+
+
   
   
 
@@ -244,42 +321,83 @@ callTel(num:string)
   return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
   }
 
+ pageIsShown:boolean;
 
+  ionViewDidLeave()
+  {
+    this.pageIsShown=false;
+  }
   
-  
+  alreadyShownAfterFirstEnter:boolean;
+
+  lookingForSellerSubscribed:boolean=false;
+  lookingForProdsSubscribed:boolean=false;
+
   ionViewDidEnter()
   {
+    console.log("HAS SUBSCRIBED TO FETCH SELLERS?");
+    console.log(this.lookingForSellerSubscribed);
+    this.pageIsShown=true;
     console.log("ION VIEW DID ENTER");
-    console.log(this.wentToSeller);
-    if (this.userService.doneLookingForSellersCompleteValue && !this.wentToSeller)//so we've been there at least once, sellers are already ready
+    this.alreadyShownAfterFirstEnter=false;
+    if (this.justWentToSeller)
     {
-      this.filterSellersAndGetTheirProdsAndProms();
+      this.justWentToSeller=false;
+      return;
     }
 
-    this.wentToSeller=false;
+    if (this.userService.doneLookingForSellersCompleteValue)
+    {
+      console.log("FILTERING HERE");
+      this.filterSellersAndGetTheirProdsAndProms();
+     }
+
+    this.justWentToSeller=false;
+
+    if (!this.lookingForSellerSubscribed)
+    {
      this.userService.doneLookingForSellers.subscribe(doneLookingForSellers=>
       { 
+        this.lookingForSellerSubscribed=true;
+        if (!this.pageIsShown)
+        return;
+        console.log("IN THE SUBSCRIBE doneLookingForSellers2");
         console.log("DONE LOOKING SELLERS");
         console.log(doneLookingForSellers);
      console.log(this.userService.allSellersFiltered);
         
-        if (doneLookingForSellers)
+        if (doneLookingForSellers && this.pageIsShown)
         this.filterSellersAndGetTheirProdsAndProms();
+    
+      });
+    }
 
+    if (!this.lookingForProdsSubscribed)
+    {
       this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
-     
+        this.lookingForProdsSubscribed=true;
+        if (!this.pageIsShown)
+        return;
+        console.log("IN THE SUBSCRIBE isLookingforProds2");
+
         if  (isLookingforProds)
         {
         this.alertService.showLoading();
         }
         else
         {
+          console.log("ABOUT TO FILTER PER CATEGO AND SUB CATEGO:");
+          console.log(this.userService.allSellersFiltered);
+
           this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
           this.alertService.dismissLoading();
         }
       });
-    });
+  
+    }
+
+
   }
 
 
@@ -301,10 +419,26 @@ callTel(num:string)
   {
     console.log(this.userService.userSearchSettings);
     console.log("GETTING SELLERS");
-    if ((this.userService.userSearchSettings.position.geoPoint==null)&&((this.userService.userSearchSettings.position.description==this.noLocationStr)||(this.userService.userSearchSettings.position.description=="")))
- {
+    console.log(this.userService.userSearchSettings.position.description);
+
+    if   (this.hasNoLocationFound()) {
       console.log(this.userService.userSearchSettings);
-    await this.initPosition();
+
+      this.alertService.showLoading();
+
+      let initPromise= this.initPosition();
+
+      let timeOutPromise=new Promise((resolve)=>{
+        setTimeout(resolve,15000)});
+
+      await Promise.race([initPromise, timeOutPromise]);
+
+      if   (this.hasNoLocationFound()&&!this.alreadyShownAfterFirstEnter) {
+      this.alertService.showToastNoDismiss({message:"Error getting location, please allow geolocation or type address..."});
+      this.alreadyShownAfterFirstEnter=true;
+
+     }
+     
     this.getFilteredSellersProdsAndDeals();
  
   }
@@ -312,22 +446,23 @@ callTel(num:string)
     this.getFilteredSellersProdsAndDeals();
 }
 
-
+hasNoLocationFound():boolean
+{
+  return !this.userService.userSearchSettings.position.description ||this.userService.userSearchSettings.position.description==this.noLocationStr;
+}
 
 
 goToSeller(seller:Seller,event:MouseEvent)
 {
   console.log(event);
   console.log(event.srcElement.className);
-  if (event.srcElement.className.includes('sellerDistance')
-    ||event.srcElement.className.includes('star-outline')
-    ||event.srcElement.className.includes('star')
-    ||event.srcElement.className.includes("sellerTelNo"))
+  if (event.srcElement.className.includes('star-outline')
+    ||event.srcElement.className.includes('star'))
   return;
 
   
   console.log("GO TO SELLER");
-  this.wentToSeller=true;
+  this.justWentToSeller=true;
   this.navCtrl.push("SellerPage",{seller:seller});
 }
   

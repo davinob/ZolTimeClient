@@ -1,15 +1,17 @@
-import { Component,ViewChild,ElementRef } from '@angular/core';
+import { Component,ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { TextInput } from 'ionic-angular/components/input/input';
-import { Position,Address, AddressService } from '../../providers/address-service';
-import { Observable } from 'rxjs/Observable';
+import { AddressService } from '../../providers/address-service';
 
-import { Geolocation } from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 import { firestore } from 'firebase/app';
 import { UserService, SearchSettings } from '../../providers/user-service';
+import { fromEvent, interval } from 'rxjs';
+
+import { debounceTime } from 'rxjs/operators';
+
 
 /**
  * Generated class for the SearchAddressPage page.
@@ -30,7 +32,7 @@ export class SearchAddressPage {
   @ViewChild('address') addressInput:TextInput=null;
   searchAddress: string = '';
   addresses: any=[];
-  addressesHistory: string[];
+ 
   searching:boolean=false;
   addressSelected:boolean=false;
   
@@ -40,25 +42,26 @@ export class SearchAddressPage {
   settings:SearchSettings;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
-    private geolocation: Geolocation,
     public addressService:AddressService,
-    private storage: Storage,
+    
     private alertLoadingService:AlertAndLoadingService,
     private userService:UserService) {
       this.settings=this.userService.userSearchSettings;
 
   }
 
-  loadHistory()
+
+  clearAddressesHistory()
   {
-    this.getAddressesHistory().then(val=>{
-     console.log("ADDRESSES HIST");
-     console.log(val);
-     this.addressesHistory=val;
-    });
+    this.alertLoadingService.showChoice('Are you sure you want to remove all search address history?',"NO","YES").then(val=>
+      {
+        if (val)
+        {
+          this.addressService.clearAddressesHistory();
+        }
+      });
+
   }
-  
- 
 
 
 
@@ -71,7 +74,7 @@ export class SearchAddressPage {
   console.log("addressInput");
   console.log(this.addressInput);
 
-  this.loadHistory();
+  this.addressService.loadHistory();
   
 
     
@@ -79,16 +82,14 @@ export class SearchAddressPage {
   {
     
     
-  Observable
-  .fromEvent(this.addressInput.getNativeElement(), 'keyup')
-  .map((x:any) => x.currentTarget.value)
-  .debounceTime(400).subscribe((x:any) => {
+  fromEvent(this.addressInput.getNativeElement(), 'keyup')
+  .map((x:any) => x.currentTarget.value).pipe(
+  debounceTime(400)).subscribe((x:any) => {
     this.setFilteredItems();}
   );
   }
 
-  Observable
-  .interval(200)
+  interval(200)
   .subscribe(x=>
     {
       this.addressInput.setFocus();
@@ -102,6 +103,7 @@ clearAddressSearch(){
   this.searchAddress="";
   this.addresses=new Array();
   this.searching=false;
+  this.alertLoadingService.dismissLoading();
 }
 
   lastStringTyped:string="";
@@ -121,110 +123,39 @@ clearAddressSearch(){
     
 
     this.lastStringTyped=this.searchAddress;
+    
       this.searching=true;
       this.addressSelected=false;
 
       let sellersNamesFiltered=this.userService.getAllSellersWithSearchTerm(this.searchAddress);
       this.addresses=sellersNamesFiltered;
       
-      let listOfAddresses=await this.userService.searchAddressesAndSellers(this.searchAddress,sellersNamesFiltered);
-         this.searching=false;
+      try{
+
+
+      let promSearch=this.userService.searchAddressesAndSellers(this.searchAddress,sellersNamesFiltered);
+      
+      
+      let timeOutPromise=new Promise((resolve)=>{
+        setTimeout(resolve,150000,[])});
+
+        let listOfAddresses=await Promise.race([promSearch,timeOutPromise]);
+
          this.addresses=listOfAddresses;
-    
-
-  }
-
-  getAddressesHistory():Promise<any[]>
-  {
-    return this.storage.get('locations');
-    
-  }
-
-  addAddressToHistory(position:any)
-  {
-    console.log("POSITION");
-    console.log(position);
-    let posToSave:any={};
-    posToSave={
-      description:position.description,
-    };
-
-    if (!position.isAddress)
-    {
-      posToSave["address"]=position.address;
-      posToSave["key"]=position.key;
-      posToSave["isAddress"]=false;
-    }
-  else
-  {
-    posToSave["lat"]=position.geoPoint.latitude;
-    posToSave["lng"]=position.geoPoint.longitude;
-    posToSave["isAddress"]=true;
-
-  }
-
-  console.log("POS BEING SAVED");
-  console.log(posToSave);
-
-  // Or to get a key/value pair
-  this.getAddressesHistory().then((placesFromHistory) => {
-    if(!placesFromHistory)
-   placesFromHistory=new Array<any>();
-   
-   console.log("history from storage");
-   console.log(placesFromHistory);
-   console.log(posToSave);
-
-  //if same address already in the list, we won't add it:
-  if (posToSave.isAddress)
-  {
-    for (let index = 0; index < placesFromHistory.length; index++) {
-      const place = placesFromHistory[index];
-      if ((place.lat==posToSave.lat)&&(place.lng==posToSave.lng))
-      {
-        console.log("NO NEED TO SAVE");
-        //no need to save the place
-        return;
       }
-    }  
-  }  
-  else
-  {
-    for (let index = 0; index < placesFromHistory.length; index++) {
-      const place = placesFromHistory[index];
-      if (place.key==posToSave.key)
+      catch(error)
       {
-        console.log("NO NEED TO SAVE");
-        //no need to save the place
-        return;
+        console.log(error);
+        this.alertLoadingService.showToast({message:"Error getting address, please check your network..."});
+        this.searching=false;
       }
-    }  
-  }
+      this.searching=false;
 
-  
-
-   
-  placesFromHistory.unshift(posToSave);
-  if (placesFromHistory.length>=10)
-    placesFromHistory.pop();
-  this.storage.set('locations',placesFromHistory );
-  });
   }
 
 
-  clearAddressesHistory()
-  {
-    this.alertLoadingService.showChoice('Are you sure you want to remove all search address history?',"NO","YES").then(val=>
-    {
-      if (val)
-      {
-        console.log("CLEARING HISTORY");
-        this.storage.set('locations',new Array());
-        this.addressesHistory=new Array();
-      }
-    });
-  }
 
+ 
 
   selectAddressFromHistory(position:any)
   {
@@ -237,12 +168,14 @@ clearAddressSearch(){
     console.log(position);
     this.settings.position.description=position.description;
     this.settings.position.geoPoint=new firestore.GeoPoint(position.lat,position.lng);
-    this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
+    this.userService.userSearchSettings=this.settings;
+  
     this.navCtrl.pop();
     }
     else
     {
-      this.navCtrl.setRoot("SellerPage",{sellerKey:position.key});
+      this.navCtrl.pop();
+      this.navCtrl.push("SellerPage",{sellerKey:position.key});
     }
     
   }
@@ -264,14 +197,14 @@ clearAddressSearch(){
     
         this.settings.position.geoPoint=address.geoPoint;
         this.settings.position.description=address.description;
-        this.addAddressToHistory(this.settings.position); 
+        this.addressService.addAddressToHistory(this.settings.position); 
         this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
         this.navCtrl.pop();
     });
   }
   else
   {
-    this.addAddressToHistory(place);
+    this.addressService.addAddressToHistory(place);
     this.navCtrl.setRoot("SellerPage",{sellerKey:place.key});
   }
 

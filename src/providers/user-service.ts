@@ -1,35 +1,19 @@
 
 
 import { Injectable } from '@angular/core';
-import { HttpHeaders } from '@angular/common/http';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/map';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/observable/of';
-import { Subscription } from 'rxjs/Subscription';
+
+
 import {
   AngularFirestore,
-  AngularFirestoreCollection,
-  AngularFirestoreDocument} from 'angularfire2/firestore';
+  AngularFirestoreCollection} from 'angularfire2/firestore';
   import { Position, Address, AddressService } from './address-service';
   
   import * as firebase from 'firebase/app';
   
-  
-
-  import { Subject } from 'rxjs/Subject';
-  
-
-
-  
-  import { GlobalService } from './global-service';
-
-  import { HttpClient, HttpParams } from '@angular/common/http';
-
-  import { from } from 'rxjs/observable/from';
+   
 import { Storage } from '@ionic/storage';
+import { Subject } from 'rxjs';
 
   
   
@@ -118,8 +102,6 @@ export class UserService {
   userFCMToken:string="";
 
   constructor(private afs: AngularFirestore,
-   private http: HttpClient,
-    private globalService:GlobalService,
   private addressService:AddressService,
   private storage:Storage) {
 
@@ -392,6 +374,21 @@ isSellerFavorite(seller:Seller):boolean
       
       });
 
+    
+      //sorting per distance:
+      this.allSellersFiltered=this.allSellersFiltered.sort((seller1,seller2)=>{
+        console.log("SELLERS COMPARISON");
+        console.log(seller1.distanceFromPosition);
+        console.log(seller2.distanceFromPosition);
+        if (seller1.distanceFromPosition>seller2.distanceFromPosition)
+        return 1;
+        else
+        return -1;
+        
+      });
+
+    
+
   }
 
 
@@ -582,7 +579,7 @@ getAllSellersWithSearchTerm(searchTerm:string)
 calculatePromotionMessage(promo:Promotion):any
 {
       let nowDate=new Date();
-      let promotionHasStarted=false;
+ 
       let datesCalculated=this.calculatePromoStartEndDates(promo,false);
       let startDate:Date=datesCalculated.startDate;
       let endDate:Date=datesCalculated.endDate;
@@ -599,7 +596,7 @@ calculatePromotionMessage(promo:Promotion):any
       let timeDiffInSec=timeDiffInSecBeforeStart;
       if (timeDiffInSecBeforeStart<=0)
       {
-        promotionHasStarted=true;
+    
         timeDiffInSec=Math.round( (endDate.valueOf()-nowDate.valueOf())/1000);
         
         if (timeDiffInSec<0)

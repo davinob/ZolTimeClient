@@ -31,6 +31,9 @@ import { FcmService } from '../providers/fcm-service';
 import { CallNumber } from '@ionic-native/call-number';
 import { Firebase } from '@ionic-native/firebase';
 
+import { Diagnostic } from '@ionic-native/diagnostic';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
+
 
 
 export const firebaseConfig = {
@@ -87,7 +90,9 @@ export function createTranslateLoader(http: HttpClient) {
     GlobalService,
     Firebase,
     FcmService,
-    CallNumber
+    CallNumber,
+    LocationAccuracy,
+    Diagnostic
    
     
     

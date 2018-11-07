@@ -95,9 +95,6 @@
         <variable name="PHOTO_LIBRARY_USAGE_DESCRIPTION" value="To choose photos" />
     </plugin>
     <plugin name="cordova-plugin-datepicker" spec="~0.9.3" />
-    <plugin name="cordova-plugin-geolocation" spec="~4.0.1">
-        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
-    </plugin>
     <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="~4.2.1">
         <variable name="OKHTTP_VERSION" value="3.+" />
     </plugin>
@@ -107,7 +104,19 @@
     <allow-navigation href="http://10.100.102.5:8109" sessionid="f1f5345f" />
     <allow-navigation href="http://10.100.102.5:8113" sessionid="9423243c" />
     <allow-navigation href="http://10.100.102.5:8115" sessionid="57bd4417" />
-    <engine name="windows" spec="^5.0.0" />
+    <allow-navigation href="http://10.100.102.5:8119" sessionid="4b4428e0" />
+    <allow-navigation href="http://10.100.102.5:8120" sessionid="0f0fe740" />
+    <allow-navigation href="http://10.100.102.5:8121" sessionid="b6af7709" />
+    <allow-navigation href="http://10.100.102.5:8122" sessionid="f9b56c4d" />
+    <allow-navigation href="http://10.100.102.5:8123" sessionid="990fa0f7" />
+    <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
+        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
+    </plugin>
+    <plugin name="cordova-plugin-request-location-accuracy" spec="^2.2.3" />
+    <plugin name="cordova.plugins.diagnostic" spec="^4.0.10" />
+    <allow-navigation href="http://10.100.102.5:8136" sessionid="5ba495e8" />
+    <allow-navigation href="http://10.100.102.5:8137" sessionid="ba801e2e" />
+    <engine name="windows" spec="^6.0.1" />
     <engine name="browser" spec="~5.0.3" />
-    <engine name="android" spec="^6.4.0" />
+    <engine name="android" spec="^7.1.1" />
 </widget>

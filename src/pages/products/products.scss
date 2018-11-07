@@ -191,22 +191,27 @@ visibility: hidden
 .category {
   display: inline-block;
   margin-top: 5px;
-  padding-left: 20px;  
+  margin-left: 10px;
+  margin-right: 10px; 
   
 }
 
 .categorySelected{
   display: inline-block;
   margin-top: 5px;
-  padding-left: 20px;  
-  border-bottom: 4px solid #34b3e6;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-bottom: 3px solid #34b0e4;
+  color: #34b0e4;
   
 }
 
 
 
 .categoryName{
-  float:left
+  float: left;
+  font-size: 19px;
+  font-weight: bolder;
 }
 
 .categoryPic{

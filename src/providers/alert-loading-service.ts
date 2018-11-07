@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/map';
+
 import {AlertController,LoadingController, Loading } from 'ionic-angular';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject } from 'rxjs/Subject';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 
+import { take } from 'rxjs/operators';
 
 /*
   Generated class for the AlertProvider provider.
@@ -19,40 +16,75 @@ import { ToastController } from 'ionic-angular/components/toast/toast-controller
 export class AlertAndLoadingService {
   
     public loading:Loading=null;
+
+    
    
   constructor(public translateService: TranslateService,public alertCtrl: AlertController,
-    public loadingCtrl: LoadingController,public toastCtrl:ToastController
+    private loadingCtrl: LoadingController,private toastCtrl:ToastController
      ) {  }
   
 
    
     
    
-    
+    wasDismissed:boolean=false;
  
 
 
-  showLoading()
+  async showLoading()
   {
+    try{
     if (this.loading)
     return;
 
     this.loading = this.loadingCtrl.create({
       spinner:"dots",
-      dismissOnPageChange: true,
-      
+      dismissOnPageChange: false
     });
+    this.wasDismissed=false;
+
+    this.loading.onDidDismiss(() => {
+      console.log('Dismissed loading');
+      this.wasDismissed=true;
+    });
+
     this.loading.present();
+    console.log("LOADING LOADED?");
+   
+    setTimeout(()=>{
+      if (this.loading && !this.wasDismissed)
+      {
+      this.loading.dismiss();
+      this.loading=null; 
+      }
+    },20000);
+
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
   }
   
-  dismissLoading()
+  async dismissLoading()
   {
-    if (this.loading)
+    try
     {
-    console.log("DISMISS LOADING");
-      this.loading.dismiss();
-      this.loading=null;
+       
+        console.log("DISMISS LOADING");
+         
+          if (this.loading && !this.wasDismissed)
+          {
+          this.loading.dismiss();
+          this.loading=null;
+        
+        }
     }
+  catch(error)
+  {
+    console.log(error);
+  }
+
   }
  
   showAlert(error:any)
@@ -93,11 +125,12 @@ export class AlertAndLoadingService {
 
   showToast(error:any)
   {
+    try{
     this.translateService.get(error.message).subscribe(
       value => {
         // value is our translated string
         error.message=value;
-        if (this.loading!=null)
+        if (this.loading)
         {
           this.loading.dismiss().then( () => {
               this.presentToast(error);
@@ -109,6 +142,30 @@ export class AlertAndLoadingService {
       }
     }
     )
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
+  }
+
+  showToastNoDismiss(error:any)
+  {
+    try{
+    this.translateService.get(error.message).subscribe(
+      value => {
+        // value is our translated string
+        error.message=value;
+      
+        this.presentToast(error);
+      
+    }
+    );
+  }
+  catch(error)
+  {
+    console.log(error);
+  }
   }
   
   presentToast(error:any)
@@ -122,6 +179,7 @@ export class AlertAndLoadingService {
       position: 'bottom'
     });
     toast.present();
+   
   }
 
  
@@ -130,13 +188,13 @@ export class AlertAndLoadingService {
   {
     return new Promise<any>((resolve, reject) => {
 
-    let sus1=this.translateService.get(message).take(1).subscribe(
+    this.translateService.get(message).pipe(take(1)).subscribe(
       (value) => {
         message=value
-        let sus2= this.translateService.get(choice1).subscribe(
+        this.translateService.get(choice1).subscribe(
             value => {
             choice1=value;
-            let sus3=this.translateService.get(choice2).subscribe(
+            this.translateService.get(choice2).subscribe(
                  value => {
                  choice2=value;
         if (this.loading!=null)

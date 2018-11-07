@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Storage } from '@ionic/storage';
 
 
-import 'rxjs/add/operator/debounceTime';
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export interface Slide {

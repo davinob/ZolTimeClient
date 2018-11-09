@@ -27,13 +27,16 @@
        
             </ion-grid>
         </ion-title>
+     
     </ion-navbar>
+    <ion-toolbar>
     <div class="scrolling-wrapper">
-            <div *ngFor="let category of getCategories()" (click)="selectCategory(category)" [ngClass]="isCategorySelected(category)? 'categorySelected' :'category' ">
-               
-                <span class="categoryName">{{category.description}}</span>
-            </div>
+        <div *ngFor="let category of getCategories()" (click)="selectCategory(category)" [ngClass]="isCategorySelected(category)? 'categorySelected' :'category' ">
+           
+            <span class="categoryName">{{category.description}}</span>
         </div>
+    </div>
+</ion-toolbar>
     
      <!--   <div  [ngClass]="categorySelected? 'scrolling-wrapperSubCategorySelected' : 'scrolling-wrapperSubCategory'">
             <div  *ngFor="let subCategory of getSubCategories(categorySelected)" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
@@ -66,19 +69,23 @@
                                 </ion-row>
                                 <ion-row>
 
-                                        <span>
+                                       
                                             <span class="sellerDistance" >
                                                 <ion-icon name="navigate"></ion-icon>
                                               {{seller.address.description}}
                                             </span>
-                                          </span> 
+                                    
                                  
     
                                     </ion-row>
-                                <ion-row>
-                                    <span class="sellerDistance" >
-                                        {{seller.distanceFromPosition}} Km
-                                    </span>
+                                <ion-row class="sellerDistance" >
+                                   
+
+                                <span > <img class="iconPic" src="assets/icon/walking.png" /></span>
+                                <span class="distanceText"> {{seller.distanceFromPosition}} Km
+                                </span>
+                                       
+                                   
 
                                 </ion-row>
 

@@ -206,6 +206,17 @@ visibility: hidden
   
 }
 
+.distanceText
+{
+  align-self: flex-end;
+}
+
+.iconPic
+{
+  max-height: 30px;
+  width: auto;
+  margin-left: -6px;
+}
 
 
 .categoryName{
@@ -253,7 +264,7 @@ text-decoration: none;
 .sellerPic
 {
   width: auto;
-  max-height: 100px;
+  max-height: 70px;
 }
 
 .sellerDescription
@@ -266,6 +277,7 @@ text-decoration: none;
 {
   color: #31356f;
   font-weight: 700;
+  font-size: 15px;
 }
 
 .sellerTelNo

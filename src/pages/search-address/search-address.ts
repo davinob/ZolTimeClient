@@ -1,5 +1,5 @@
 import { Component,ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams,ViewController } from 'ionic-angular';
 
 import { TextInput } from 'ionic-angular/components/input/input';
 import { AddressService } from '../../providers/address-service';
@@ -43,7 +43,7 @@ export class SearchAddressPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
     public addressService:AddressService,
-    
+    private viewCtrl:ViewController,
     private alertLoadingService:AlertAndLoadingService,
     private userService:UserService) {
       this.settings=this.userService.userSearchSettings;
@@ -174,8 +174,16 @@ clearAddressSearch(){
     }
     else
     {
-      this.navCtrl.pop();
-      this.navCtrl.push("SellerPage",{sellerKey:position.key});
+      this.navCtrl.push("SellerPage",{sellerKey:position.key}).then(()=>
+      {
+        console.log("REMOVING ADDRES VIEW");
+        // first we find the index of the current view controller:
+        const index = this.viewCtrl.index;
+        console.log(index);
+        // then we remove it from the navigation stack
+        this.navCtrl.remove(index);
+
+      });
     }
     
   }
@@ -205,7 +213,16 @@ clearAddressSearch(){
   else
   {
     this.addressService.addAddressToHistory(place);
-    this.navCtrl.setRoot("SellerPage",{sellerKey:place.key});
+    this.navCtrl.push("SellerPage",{sellerKey:place.key,cameFromAddressSearch:true}).then(()=>
+    {
+      console.log("REMOVING ADDRES VIEW");
+      // first we find the index of the current view controller:
+      const index = this.viewCtrl.index;
+      console.log(index);
+      // then we remove it from the navigation stack
+      this.navCtrl.remove(index);
+
+    });
   }
 
    this.addressInput.setFocus();

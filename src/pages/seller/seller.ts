@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams,ViewController} from 'ionic-angular';
 import { Seller, UserService, Product } from '../../providers/user-service';
 import { GlobalService } from '../../providers/global-service';
 import { Storage } from '@ionic/storage';
@@ -28,7 +28,8 @@ export class SellerPage {
     public globalService:GlobalService,
     public storage:Storage,
     private callNumber: CallNumber,
-    public alertService: AlertAndLoadingService ) {
+    public alertService: AlertAndLoadingService
+    ) {
     
     this.seller=this.navParams.data.seller;
     if (!this.seller)
@@ -36,6 +37,8 @@ export class SellerPage {
       let sellerKey=this.navParams.data.sellerKey;
       this.seller=this.userService.getSellerOfKey(sellerKey);
     }
+
+    
 
     console.log("MY SELLER is:");
     console.log(this.seller);

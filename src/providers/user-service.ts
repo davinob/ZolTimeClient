@@ -392,10 +392,16 @@ isSellerFavorite(seller:Seller):boolean
   }
 
 
-fetchSellerProdsAndProms(seller:any):Promise<any>
+async fetchSellerProdsAndProms(seller:any)
 {
   console.log("SELLER before return PROMISE");
-let promiseProducts:Promise<any>=this.sellersCollectionRef.doc(seller.key).collection("products").get().then(
+  let promiseProducts:Promise<any>=new Promise(resolve=>{resolve()});
+  let promisePromotions:Promise<any>=new Promise(resolve=>{resolve()});
+  
+
+  if (!seller.productsAlreadyFetched)
+  {
+    promiseProducts=this.sellersCollectionRef.doc(seller.key).collection("products").get().then(
     productsInfo =>
     { 
       seller.products=new Array();
@@ -404,10 +410,14 @@ let promiseProducts:Promise<any>=this.sellersCollectionRef.doc(seller.key).colle
         productsInfo.forEach(product=>{
           seller.products.push(product.data());
         });
+        seller.productsAlreadyFetched=true;
         
       });
+    }
 
-  let promisePromotions=this.sellersCollectionRef.doc(seller.key).collection("promotions").get().then(
+    if (!seller.promsAlreadyFetched)
+    {
+  promisePromotions=this.sellersCollectionRef.doc(seller.key).collection("promotions").get().then(
           promotionsInfo =>
           { 
             seller.promotions=new Array();
@@ -416,14 +426,17 @@ let promiseProducts:Promise<any>=this.sellersCollectionRef.doc(seller.key).colle
               promotionsInfo.forEach(promotion=>{
                 seller.promotions.push(promotion.data());
               });
+              seller.promsAlreadyFetched=true
+  
           });
+    }
 
-      return Promise.all([promiseProducts,promisePromotions]).then(()=>
-        {
-          console.log("SELLER before return PROMISE 1");
+      await Promise.all([promiseProducts,promisePromotions]);
+      
+      console.log("SELLER before return PROMISE 1");
           this.findAndSetBestPromoForAllProductsOfSeller(seller);
           console.log("SELLER before return PROMISE 2");
-        });
+      
 }
 
 

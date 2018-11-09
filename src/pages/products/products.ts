@@ -15,7 +15,7 @@ import { Position,AddressService,Address } from '../../providers/address-service
 
 import {Product} from "../../providers/user-service";
 
-import { PopoverController } from 'ionic-angular';
+import { PopoverController,Content  } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
 
@@ -46,7 +46,7 @@ export class ProductsPage {
   @ViewChild('categoriesInput') categoriesInput;
   @ViewChild('hashgahaInput') hashgahaInput;
   @ViewChild('rangeInput') rangeInput;
-  
+  @ViewChild(Content) content: Content;
 
  
   justWentToSeller:boolean=false;
@@ -335,6 +335,11 @@ export class ProductsPage {
 
   ionViewDidEnter()
   {
+
+    if (this.content)
+    {
+      this.content.resize();
+    }
     console.log("HAS SUBSCRIBED TO FETCH SELLERS?");
     console.log(this.lookingForSellerSubscribed);
     this.pageIsShown=true;

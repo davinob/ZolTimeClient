@@ -121,11 +121,8 @@ width:10%;
 }
 
 .products_enabled{
-  opacity:1;
-  left: 0;
-  position: absolute;
-  width:100%;
-
+  max-width: 1000px;
+  margin: auto;
 }
 
 .buttonPromotion
@@ -217,6 +214,8 @@ visibility: hidden
   width: auto;
   margin-left: -6px;
 }
+
+
 
 
 .categoryName{

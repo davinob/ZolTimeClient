@@ -172,11 +172,8 @@ page-seller{
     }
     
     .products_enabled{
-      opacity:1;
-      left: 0;
-      position: absolute;
-      width:100%;
-    
+      max-width: 1000px;
+      margin: auto;
     }
     
     .buttonPromotion

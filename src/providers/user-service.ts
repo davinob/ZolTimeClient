@@ -377,9 +377,9 @@ isSellerFavorite(seller:Seller):boolean
     
       //sorting per distance:
       this.allSellersFiltered=this.allSellersFiltered.sort((seller1,seller2)=>{
-        console.log("SELLERS COMPARISON");
-        console.log(seller1.distanceFromPosition);
-        console.log(seller2.distanceFromPosition);
+      //  console.log("SELLERS COMPARISON");
+       // console.log(seller1.distanceFromPosition);
+        //console.log(seller2.distanceFromPosition);
         if (seller1.distanceFromPosition>seller2.distanceFromPosition)
         return 1;
         else
@@ -398,6 +398,8 @@ async fetchSellerProdsAndProms(seller:any)
   let promiseProducts:Promise<any>=new Promise(resolve=>{resolve()});
   let promisePromotions:Promise<any>=new Promise(resolve=>{resolve()});
   
+  console.log(seller.products);
+  console.log(seller.promotions);
 
   if (!seller.productsAlreadyFetched)
   {
@@ -444,11 +446,15 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
   console.log("findAndSetBestPromoForAllProducts:")
  
 
-  
+    console.log(seller);
     let hasFoundOnePromo=false;
+    if (!seller)
+    return;
+
+
     seller.products.forEach((product, indexProd)=>
     {
-      
+      console.log("IN THE EACH");
       
       let lastGoodPromo=null;
 
@@ -457,6 +463,8 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
       { 
         return;
       }
+
+      console.log("IN THE EACH2");
       for(let i=0; i<seller.promotions.length;i++)
       {
         let promo=seller.promotions[i];
@@ -466,12 +474,16 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
           continue;
         }
 
+        console.log("IN THE EACH3");
+
         let promoTimes=this.calculatePromotionMessage(promo);
         if (promoTimes.notValid)
         {
           continue;
         }
         
+        console.log("IN THE EACH4");
+
         for (let prodKey in promo.products)
         {
           let prodPromo=promo.products[prodKey];
@@ -502,6 +514,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
           } 
         }
       }
+      console.log("IN THE EACH5 ");
       seller.products[indexProd].bestPromo=lastGoodPromo;
       });
 
@@ -521,8 +534,9 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
 
       seller.productsPerCategory=this.caculateProductsGroupedByCategory(seller);
 
-      seller.promotions=null;
+     // seller.promotions=null;
       seller.hasAtLeastOnePromo=hasFoundOnePromo;
+    
  
   }
 

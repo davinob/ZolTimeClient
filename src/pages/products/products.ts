@@ -309,6 +309,7 @@ export class ProductsPage {
 
   shouldShowSeller(seller:Seller):boolean
   {
+    console.log(seller);
   return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
   }
 
@@ -464,7 +465,25 @@ goToSeller(seller:Seller,event:MouseEvent)
   
 
 
-  
+  getSearchDetails()
+  {
+    let searchDetails="";
+    searchDetails+=" Range:"+this.userService.userSearchSettings.range+" Km";
+   
+    if (this.userService.userSearchSettings.hashgaha!="Any")
+    {
+      searchDetails+=", "+ this.userService.userSearchSettings.hashgaha;
+    }
+    
+
+    if (this.userService.userSearchSettings.onlyShowPromotion)
+    {
+      searchDetails+=", deals only";
+    }
+
+    return searchDetails;
+
+  }
 
 
 

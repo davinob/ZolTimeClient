@@ -24,10 +24,17 @@
                             <ion-row><ion-icon (click)="presentPopover($event)" name="options"></ion-icon></ion-row>
                     </ion-col>
                 </ion-row>
-       
+             <ion-row>
+
+                <div class="searchDetails">
+                    {{getSearchDetails()}}
+                </div>
+                
+             </ion-row>
+             
             </ion-grid>
         </ion-title>
-     
+        
     </ion-navbar>
     <ion-toolbar>
     <div class="scrolling-wrapper">

@@ -5,13 +5,13 @@ import { UserService, Seller } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 
 
 import { Geolocation,Geoposition } from '@ionic-native/geolocation';
 
 
-import { Position,AddressService,Address } from '../../providers/address-service';
+import { AddressService } from '../../providers/address-service';
 
 import {Product} from "../../providers/user-service";
 
@@ -19,18 +19,10 @@ import { PopoverController,Content  } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
 
-import { GlobalService } from '../../providers/global-service';
+import * as globalConstants from '../../providers/globalConstants'; 
+
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
-
-
-/**
- * Generated class for the ProductsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 
 
 @IonicPage()
@@ -62,7 +54,6 @@ export class ProductsPage {
     public addressService:AddressService,
     public popoverCtrl: PopoverController,
      public storage:Storage,
-    private globalSvc:GlobalService,
     public diagnostic: Diagnostic,
     public locationAccuracy: LocationAccuracy,
     public platform: Platform ) {
@@ -74,7 +65,7 @@ export class ProductsPage {
 
   getCategories()
   {
-    return this.globalSvc.categories;
+    return globalConstants.categories;
   }
 
   categorySelected:any=null;

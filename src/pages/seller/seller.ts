@@ -1,17 +1,12 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams,ViewController} from 'ionic-angular';
+import { Component,ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams,Content} from 'ionic-angular';
 import { Seller, UserService, Product } from '../../providers/user-service';
 import { GlobalService } from '../../providers/global-service';
 import { Storage } from '@ionic/storage';
 import { CallNumber } from '@ionic-native/call-number';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
+import * as globalConstants from '../../providers/globalConstants'; 
 
-/**
- * Generated class for the SellerPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -19,6 +14,9 @@ import { AlertAndLoadingService } from '../../providers/alert-loading-service';
   templateUrl: 'seller.html',
 })
 export class SellerPage {
+
+
+  @ViewChild(Content) content: Content;
 
   seller:Seller=null;
   subCategorySelected:string=null;
@@ -56,8 +54,16 @@ export class SellerPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SellerPage'); 
-  
-    
+       
+  }
+
+  ionViewDidEnter()
+  {
+    console.log('ionViewDidEnter SellerPage'); 
+    if (this.content)
+    {
+      this.content.resize();
+    }
   }
 
   subCategories:any[]=new Array();
@@ -99,8 +105,8 @@ export class SellerPage {
     let category=null;
 
     console.log("SUB CATEGO FILTERING");
-    for (const key in this.globalService.categories) {
-      category=this.globalService.categories[key];
+    for (const key in globalConstants.categories) {
+      category=globalConstants.categories[key];
       if (category.name==this.seller.category)
         {
           console.log(category.subCategories);

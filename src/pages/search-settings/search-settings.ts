@@ -39,7 +39,7 @@ export class SearchSettingsPage {
 
     hashgahot:string[]=["Any","Kosher","Lemehadrin"];
     rangeMin:number=0;
-    rangeMax:number=50;
+    rangeMax:number=10;
     
 
 

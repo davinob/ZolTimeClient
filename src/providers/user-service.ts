@@ -109,7 +109,7 @@ export class UserService {
     this.userSearchSettings={
       position:{geoPoint:null,description:"",isAddress:true},
       hashgaha:"Any",
-      range:50,
+      range:10,
       onlyShowPromotion:false};
    
       

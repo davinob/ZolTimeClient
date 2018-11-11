@@ -21,7 +21,8 @@ import { IonicStorageModule } from '@ionic/storage';
 import { AlertAndLoadingService } from '../providers/alert-loading-service';
 import { UserService } from './../providers/user-service';
 import { AddressService } from './../providers/address-service';
-import { GlobalService } from './../providers/global-service';
+
+import * as fbConfig from './../providers/fbConfig'; 
 
 import { Geolocation } from '@ionic-native/geolocation';
 
@@ -33,17 +34,9 @@ import { Firebase } from '@ionic-native/firebase';
 
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
+import { GlobalService } from './../providers/global-service';
 
 
-
-export const firebaseConfig = {
-    apiKey: "AIzaSyCjWUCqcYx8lGtAKWI8Q-5H8V1rktUQjJc",
-    authDomain: "zoltime-77973.firebaseapp.com",
-    databaseURL: "https://zoltime-77973.firebaseio.com",
-    projectId: "zoltime-77973",
-    storageBucket: "zoltime-77973.appspot.com",
-    messagingSenderId: "1026370061265"
-  };
 
   // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -51,13 +44,16 @@ export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
   
+
+
+
 @NgModule({
   declarations: [
     MyApp
   ],
   imports: [
     BrowserModule,
-    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireModule.initializeApp(fbConfig.firebaseConfig),
     AngularFirestoreModule.enablePersistence(),
     HttpModule,
     HttpClientModule,
@@ -87,12 +83,12 @@ export function createTranslateLoader(http: HttpClient) {
     AlertAndLoadingService,
     Camera,
     Geolocation,
-    GlobalService,
     Firebase,
     FcmService,
     CallNumber,
     LocationAccuracy,
-    Diagnostic
+    Diagnostic,
+    GlobalService
    
     
     

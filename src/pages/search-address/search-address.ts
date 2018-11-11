@@ -10,15 +10,8 @@ import { firestore } from 'firebase/app';
 import { UserService, SearchSettings } from '../../providers/user-service';
 import { fromEvent, interval } from 'rxjs';
 
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime,map } from 'rxjs/operators';
 
-
-/**
- * Generated class for the SearchAddressPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -83,7 +76,7 @@ export class SearchAddressPage {
     
     
   fromEvent(this.addressInput.getNativeElement(), 'keyup')
-  .map((x:any) => x.currentTarget.value).pipe(
+  .pipe(map((x:any) => x.currentTarget.value)).pipe(
   debounceTime(400)).subscribe((x:any) => {
     this.setFilteredItems();}
   );

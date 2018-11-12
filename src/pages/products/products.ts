@@ -164,8 +164,8 @@ export class ProductsPage {
   filterPerCategoryAndSubCategory(sellers:Array<any>)
   {
     this.sellersFiltered=new Array();
-    console.log("FILTER PER CATEGO AND SUB CATEGO");
-    console.log(sellers);
+  //  console.log("FILTER PER CATEGO AND SUB CATEGO");
+  //  console.log(sellers);
     sellers.forEach((seller,index)=>
     {
       if (seller && seller.products && seller.products.length>0)
@@ -358,19 +358,16 @@ export class ProductsPage {
         this.lookingForSellerSubscribed=true;
         if (!this.pageIsShown)
         return;
-        console.log("IN THE SUBSCRIBE doneLookingForSellers2");
-        console.log("DONE LOOKING SELLERS");
-        console.log(doneLookingForSellers);
-     console.log(this.userService.allSellersFiltered);
+      //  console.log("IN THE SUBSCRIBE doneLookingForSellers2");
+      //  console.log("DONE LOOKING SELLERS");
+     //   console.log(doneLookingForSellers);
+    // console.log(this.userService.allSellersFiltered);
         
         if (doneLookingForSellers && this.pageIsShown)
         this.filterSellersAndGetTheirProdsAndProms();
     
       });
-    }
-
-    if (!this.lookingForProdsSubscribed)
-    {
+    
       this.userService.lookingForProducts.subscribe(isLookingforProds=>
       {
         this.lookingForProdsSubscribed=true;
@@ -391,6 +388,11 @@ export class ProductsPage {
           this.alertService.dismissLoading();
         }
       });
+
+      this.userService.allSellersHasBeenUpdated.subscribe(()=>
+        {
+          this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
+        });
   
     }
 

@@ -5,8 +5,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MyApp } from './app.component';
 
 
-import { AngularFireModule } from 'angularfire2';
-import { AngularFirestoreModule } from 'angularfire2/firestore';
+
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -36,6 +35,7 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { GlobalService } from './../providers/global-service';
 
+import * as firebase from "firebase";
 
 
   // The translate loader needs to know where to load i18n files
@@ -45,6 +45,7 @@ export function createTranslateLoader(http: HttpClient) {
 }
   
 
+firebase.initializeApp(fbConfig.firebaseConfig);
 
 
 @NgModule({
@@ -53,8 +54,6 @@ export function createTranslateLoader(http: HttpClient) {
   ],
   imports: [
     BrowserModule,
-    AngularFireModule.initializeApp(fbConfig.firebaseConfig),
-    AngularFirestoreModule.enablePersistence(),
     HttpModule,
     HttpClientModule,
     IonicStorageModule.forRoot(),

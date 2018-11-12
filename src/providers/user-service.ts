@@ -4,9 +4,6 @@ import { Injectable } from '@angular/core';
 
 
 
-import {
-  AngularFirestore,
-  AngularFirestoreCollection} from 'angularfire2/firestore';
   import { Position, Address, AddressService } from './address-service';
   
   import * as firebase from 'firebase/app';
@@ -14,6 +11,8 @@ import {
    
 import { Storage } from '@ionic/storage';
 import { Subject } from 'rxjs';
+
+import { merge  } from 'rxjs/operators';
 
   
   
@@ -77,7 +76,7 @@ export class UserService {
 
   db=firebase.firestore();
   
-  usersCollection: AngularFirestoreCollection<Seller>;
+  
   sellersCollectionRef: firebase.firestore.CollectionReference;
   favoritesCollectionRef: firebase.firestore.CollectionReference;
  
@@ -86,6 +85,8 @@ export class UserService {
   
   allSellers:Array<any>=[];
   allSellersFiltered:Array<any>=[];
+
+  allSellersHasBeenUpdated:Subject<boolean>=new Subject();
 
   userSearchSettings:SearchSettings;
 
@@ -101,8 +102,7 @@ export class UserService {
 
   userFCMToken:string="";
 
-  constructor(private afs: AngularFirestore,
-  private addressService:AddressService,
+  constructor(private addressService:AddressService,
   private storage:Storage) {
 
 
@@ -113,7 +113,7 @@ export class UserService {
       onlyShowPromotion:false};
    
       
-      this.usersCollection = this.afs.collection('users'); 
+  
         this.sellersCollectionRef = this.db.collection('sellers');
         this.favoritesCollectionRef=this.db.collection('favorites');
      
@@ -361,7 +361,7 @@ isSellerFavorite(seller:Seller):boolean
         let distance=this.addressService.distance(seller.address.geoPoint,this.userSearchSettings.position.geoPoint);
         distance=Math.round(distance*100)/100;
         console.log("DISTANCE:" +distance);
-       seller.distanceFromPosition=distance;
+       seller.distanceFromPosition=Math.round(distance*16);
    
       this.fetchSellerProdsAndProms(seller).then(()=>
       {
@@ -395,49 +395,75 @@ isSellerFavorite(seller:Seller):boolean
 async fetchSellerProdsAndProms(seller:any)
 {
   console.log("SELLER before return PROMISE");
-  let promiseProducts:Promise<any>=new Promise(resolve=>{resolve()});
-  let promisePromotions:Promise<any>=new Promise(resolve=>{resolve()});
+
   
   console.log(seller.products);
   console.log(seller.promotions);
 
   if (!seller.productsAlreadyFetched)
   {
-    promiseProducts=this.sellersCollectionRef.doc(seller.key).collection("products").get().then(
-    productsInfo =>
-    { 
+    let sellerProdsObserable:Subject<boolean>=new Subject();
+    let sellerPromsObserable:Subject<boolean>=new Subject();
+
+
+    this.sellersCollectionRef.doc(seller.key).collection("products").onSnapshot(
+    snapshot =>
+    {
+      if (!snapshot)
+      return;
+
       seller.products=new Array();
 
         console.log("PRODUCTS");
-        productsInfo.forEach(product=>{
-          seller.products.push(product.data());
-        });
-        seller.productsAlreadyFetched=true;
-        
-      });
-    }
-
-    if (!seller.promsAlreadyFetched)
-    {
-  promisePromotions=this.sellersCollectionRef.doc(seller.key).collection("promotions").get().then(
-          promotionsInfo =>
-          { 
-            seller.promotions=new Array();
-              console.log("PROMOTIONSSS");
-           
-              promotionsInfo.forEach(promotion=>{
-                seller.promotions.push(promotion.data());
-              });
-              seller.promsAlreadyFetched=true
-  
-          });
-    }
-
-      await Promise.all([promiseProducts,promisePromotions]);
       
+
+        snapshot.forEach(product=>{
+             seller.products.push(product.data());
+        });
+
+        console.log(seller.products);
+        seller.productsAlreadyFetched=true;
+
+       sellerProdsObserable.next(true);
+      });
+
+     
+     this.sellersCollectionRef.doc(seller.key).collection("promotions").onSnapshot(
+              promotionsInfo =>
+              { 
+                seller.promotions=new Array();
+                  console.log("PROMOTIONSSS");
+               
+                  promotionsInfo.forEach(promotion=>{
+                    seller.promotions.push(promotion.data());
+                  });
+      
+                  sellerPromsObserable.next(true);
+              });
+        
+              sellerProdsObserable.pipe(merge(sellerPromsObserable)).subscribe(()=>
+         {
+             console.log("DOING UPDATE OF PRODS/PROMS");
+                this.findAndSetBestPromoForAllProductsOfSeller(seller);
+                this.allSellersHasBeenUpdated.next(true);
+          }
+          );
+
+              
+
+    }
+    else
+    {
+
       console.log("SELLER before return PROMISE 1");
-          this.findAndSetBestPromoForAllProductsOfSeller(seller);
-          console.log("SELLER before return PROMISE 2");
+      this.findAndSetBestPromoForAllProductsOfSeller(seller);
+      console.log("SELLER before return PROMISE 2");
+    }
+   
+
+     
+      
+    
       
 }
 
@@ -454,7 +480,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
 
     seller.products.forEach((product, indexProd)=>
     {
-      console.log("IN THE EACH");
+     
       
       let lastGoodPromo=null;
 
@@ -464,7 +490,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
         return;
       }
 
-      console.log("IN THE EACH2");
+ 
       for(let i=0; i<seller.promotions.length;i++)
       {
         let promo=seller.promotions[i];
@@ -474,7 +500,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
           continue;
         }
 
-        console.log("IN THE EACH3");
+      
 
         let promoTimes=this.calculatePromotionMessage(promo);
         if (promoTimes.notValid)
@@ -482,7 +508,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
           continue;
         }
         
-        console.log("IN THE EACH4");
+       
 
         for (let prodKey in promo.products)
         {
@@ -514,7 +540,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
           } 
         }
       }
-      console.log("IN THE EACH5 ");
+  
       seller.products[indexProd].bestPromo=lastGoodPromo;
       });
 

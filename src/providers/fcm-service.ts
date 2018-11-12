@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Firebase } from '@ionic-native/firebase';
 import { Platform } from 'ionic-angular';
-import { AngularFirestore } from 'angularfire2/firestore';
-
 
 
 import { UserService } from './user-service';
 
+import * as firebase from 'firebase/app';
+
 @Injectable()
 export class FcmService {
 
+  db=firebase.firestore();
+
   constructor(
     public fcm: Firebase,
-    public afs: AngularFirestore,
     private platform: Platform,
     private userService:UserService
     
@@ -46,7 +47,7 @@ export class FcmService {
     
     if (!token) return;
   
-    const devicesRef = this.afs.collection('pushDevices')
+    const devicesRef = this.db.collection('pushDevices')
   
     const docData = { 
       token

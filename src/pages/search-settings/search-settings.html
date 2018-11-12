@@ -5,8 +5,8 @@
         <div class="listTitle">Search Range</div>
         <ion-item>
                 <ion-range min="{{rangeMin}}" max="{{rangeMax}}" [(ngModel)]="settings.range"  (ionChange)="updateStorageAndSearch()">
-                  <ion-label  class="rangeLeft" range-left>{{rangeMin}} Km</ion-label>
-                  <ion-label class="rangeRight" range-right>{{settings.range}} Km</ion-label>
+                  <ion-label  class="rangeLeft" range-left>{{rangeMin}} min</ion-label>
+                  <ion-label class="rangeRight" range-right>{{settings.range}} min</ion-label>
                 </ion-range>
               </ion-item>
           </ion-list>

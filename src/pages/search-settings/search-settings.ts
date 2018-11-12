@@ -29,8 +29,7 @@ export class SearchSettingsPage {
   previousSearchSettings:SearchSettings=null;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public storage:Storage,
-    private userService:UserService,
-  private addressService:AddressService) {
+    private userService:UserService) {
     console.log('constructore SearchSettingsPage');
     this.settings=this.userService.cloneSettings();
     this.previousSearchSettings=this.userService.cloneSettings();
@@ -39,7 +38,7 @@ export class SearchSettingsPage {
 
     hashgahot:string[]=["Any","Kosher","Lemehadrin"];
     rangeMin:number=0;
-    rangeMax:number=10;
+    rangeMax:number=60;
     
 
 

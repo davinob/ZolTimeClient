@@ -236,17 +236,26 @@ export class ProductsPage {
 
 
   getUserPosition():Promise<any> {
-    return new Promise(resolve => {
+    return new Promise((resolve)=> {
       const HIGH_ACCURACY = 'high_accuracy';
       if (this.platform.is('cordova')) {
-        this.platform.ready().then(() => {
-          this.diagnostic.isLocationEnabled().then(enabled => {
+        this.platform.ready().then(async () => {
+          
+          let enabled=await this.diagnostic.isLocationEnabled();
+
+         
+            console.log("GETUSERPOS1");
             if (enabled) {
               if (this.platform.is('android')) {
+                console.log("GETUSERPOS2");
                 this.diagnostic.getLocationMode().then(locationMode => {
+                  console.log("GETUSERPOS3");
                   if (locationMode === HIGH_ACCURACY) {
+                    console.log("GETUSERPOS4");
                     this.geolocation.getCurrentPosition({timeout: 30000, maximumAge: 0, enableHighAccuracy: true}).then(pos => {
-                      resolve({
+                     
+                      console.log("GETUSERPOS5");
+                       resolve({
                         coords: {
                           latitude: pos.coords.latitude,
                           longitude: pos.coords.longitude
@@ -254,15 +263,19 @@ export class ProductsPage {
                       });
                     }).catch(error => resolve(error));
                   } else {
-                    this.askForHighAccuracy().then(available => {
-                      if (available) {
-                        this.getUserPosition().then(a => resolve(a), e => resolve(e));
-                      }
-                    }, error => resolve(error));
+                    console.log("GETUSERPOS6");
+                    this.geolocation.getCurrentPosition({timeout: 30000,enableHighAccuracy:false}).then(
+                      position => {
+                        console.log("GETUSERPOS6.1");
+                        console.log(position);
+                        resolve(position);
+                      }, error => resolve(error)
+                    );
                   }
                 });
               } else {
                 this.geolocation.getCurrentPosition({timeout: 30000, maximumAge: 0, enableHighAccuracy: true}).then(pos => {
+                  console.log("GETUSERPOS8");
                   resolve({
                     coords: {
                       latitude: pos.coords.latitude,
@@ -272,17 +285,29 @@ export class ProductsPage {
                 }).catch(error => resolve(error));
               }
             } else {
+              console.log("GETUSERPOS9.1");
               this.locationAccuracy.request(1).then(result => {
+                console.log("GETUSERPOS9");
+                console.log(result);
                 if (result) {
+                  console.log("GETUSERPOS10");
+                  this.geolocation.getCurrentPosition({timeout: 30000,enableHighAccuracy:false}).then(
+                    position => {
+                      console.log("GETUSERPOS11");
+                      console.log(position);
+                      resolve(position);
+                    }, error => resolve(error)
+                  );
+                }
+                else
+                {
                   this.getUserPosition().then(result => resolve(result), error => resolve(error));
                 }
               }, error => {
                 resolve(error)
               });
             }
-          }, error => {
-            resolve(error)
-          });
+       
         });
       } else {
         resolve('Cordova is not available');
@@ -294,7 +319,7 @@ export class ProductsPage {
     return new Promise(resolve => {
       this.locationAccuracy
         .request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() => {
-        this.geolocation.getCurrentPosition({timeout: 30000}).then(
+        this.geolocation.getCurrentPosition({timeout: 300000}).then(
           position => {
             resolve(position);
           }, error => resolve(error)
@@ -470,7 +495,7 @@ goToSeller(seller:Seller,event:MouseEvent)
   getSearchDetails()
   {
     let searchDetails="";
-    searchDetails+=" Range:"+this.userService.userSearchSettings.range+" Km";
+    searchDetails+=" Range:"+this.userService.userSearchSettings.range+" min";
    
     if (this.userService.userSearchSettings.hashgaha!="Any")
     {

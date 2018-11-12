@@ -102,6 +102,8 @@ export class UserService {
 
   userFCMToken:string="";
 
+  nbMinPerKm=16;
+
   constructor(private addressService:AddressService,
   private storage:Storage) {
 
@@ -109,7 +111,7 @@ export class UserService {
     this.userSearchSettings={
       position:{geoPoint:null,description:"",isAddress:true},
       hashgaha:"Any",
-      range:10,
+      range:60,
       onlyShowPromotion:false};
    
       
@@ -319,7 +321,7 @@ isSellerFavorite(seller:Seller):boolean
 
 
 
-  filterSellersAndGetTheirProdsAndDeals(settings:SearchSettings)
+  async filterSellersAndGetTheirProdsAndDeals(settings:SearchSettings)
 {
   this.userSearchSettings=settings;
 
@@ -342,7 +344,7 @@ isSellerFavorite(seller:Seller):boolean
          validSeller=validSeller && seller.hashgaha[this.userSearchSettings.hashgaha];
       }
 
-      validSeller=validSeller && this.addressService.isGeoPointNotSoFar(seller.address.geoPoint,this.userSearchSettings.position.geoPoint,this.userSearchSettings.range);
+      validSeller=validSeller && this.addressService.isGeoPointNotSoFar(seller.address.geoPoint,this.userSearchSettings.position.geoPoint,this.userSearchSettings.range/this.nbMinPerKm);
     
       return validSeller;
 
@@ -355,19 +357,19 @@ isSellerFavorite(seller:Seller):boolean
       return;
     }
 
-    this.allSellersFiltered.forEach(seller=>{
+     await this.allSellersFiltered.forEach(async seller=>{
       this.lookingForProducts.next(true);
     
         let distance=this.addressService.distance(seller.address.geoPoint,this.userSearchSettings.position.geoPoint);
         distance=Math.round(distance*100)/100;
         console.log("DISTANCE:" +distance);
-       seller.distanceFromPosition=Math.round(distance*16);
+       seller.distanceFromPosition=Math.round(distance*this.nbMinPerKm);
    
-      this.fetchSellerProdsAndProms(seller).then(()=>
+       await this.fetchSellerProdsAndProms(seller).then(()=>
       {
         console.log("SELLER IN PROMISE");
         console.log(seller);
-        this.lookingForProducts.next(false);
+       
         
       });
  
@@ -386,6 +388,7 @@ isSellerFavorite(seller:Seller):boolean
         return -1;
         
       });
+      this.lookingForProducts.next(false);
 
     
 
@@ -446,6 +449,7 @@ async fetchSellerProdsAndProms(seller:any)
              console.log("DOING UPDATE OF PRODS/PROMS");
                 this.findAndSetBestPromoForAllProductsOfSeller(seller);
                 this.allSellersHasBeenUpdated.next(true);
+               
           }
           );
 

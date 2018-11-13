@@ -41,6 +41,7 @@ page-products{
   font-size: 15px;
   color: #2a418e;
   font-weight: bold;
+  direction: rtl;
 }
 
 
@@ -217,7 +218,7 @@ visibility: hidden
 {
   max-height: 30px;
   width: auto;
-  margin-left: -6px;
+  margin-right: -6px;
 }
 
 
@@ -247,22 +248,24 @@ text-decoration: none;
 
 .sellerName
 {
-  font-weight: 800;
-  font-size: 17px;
-  color: #08073b;
-  width:80%
+  font-weight: 700;
+    color: #327fa5;
+    width: 80%;
+    font-size: 21px;
 }
 
 .star-outline{
-  width:20%;
+  padding-left: 10px;
   font-size: 25px;
   color:#3721a4;
+  margin-right: -3px;
 }
 
 .star{
-  width:20%;
+  padding-left: 10px;
   font-size: 25px;
   color:#3721a4;
+  margin-right: -3px;
 }
 
 .sellerPic
@@ -391,6 +394,10 @@ del{
 }
 
 
+.searchGrid
+{
+  direction:rtl;
+}
 
 
 

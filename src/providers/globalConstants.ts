@@ -2,35 +2,44 @@
 export const  categories=
    [
     {
-      name: "Boulangerie",
-      description:"Boulangerie",
+      name: "מאפיה",
+      description:"מאפיה",
       icon: "bread.svg",
-      subCategories: ["Bread", "Cake", "Borekas", "Salad", "Sandwich","Drinks","Desserts"]
+      subCategories: ["זולטעים","לחם", "עוגה", "בורקס", "סלט", "כריך","שתייה"]
     },
     {
-      name: "Sandwich",
-      description:"Sandwich",
+      name: "מזון מהיר",
+      description:"מזון מהיר",
       icon: "sandwich.svg",
-      subCategories: ["Sandwich","Drinks","Desserts"]
+      subCategories: ["זולטעים","כריך", "סלט","שתייה","קינוח"]
     },
     {
-       name: "American",
-       description:"American",
+       name: "בשרים",
+       description:"בשרים",
        icon: "hamburger.svg",
-       subCategories: ["Hamburger", "Fries", "Hot-Dog", "Salad","Drinks","Desserts"]
+       subCategories: ["זולטעים","המבורגר", "שניצל", "נקניקיות", "סלט", "כריך","שתייה","קינוח"]
      },
      {
-       name: "Italian",
-       description:"Italian",
+       name: "איטלקי",
+       description:"איטלקי",
        icon: "italian.svg",
-       subCategories: ["Pizza", "Lasagna", "Pasta", "Salad","Drinks","Desserts"]
+       subCategories: ["פיצה","פסטה","לזניה", "סלט", "שתייה","קינוח"]
      },
       {
-       name: "Israeli",
-       description:"Israeli",
+       name: "ישראלי",
+       description:"ישראלי",
        icon: "falafel.png",
-       subCategories: ["Shawarma", "Falafel", "Fries", "Shnitzel", "Humus", "Salad","Drinks","Desserts"]
-     }
+       subCategories: ["זולטעים","פלאפל", "חומוס", "שקשוקה", "שווארמה", "שניצל","שתייה","קינוח"]
+     },
+     {
+      name: "אסייתי",
+      description:"אסייתי",
+      icon: "falafel.png",
+      subCategories: ["זולטעים","סושי", "נודלס", "דים סאם", "קארי", "שתייה","קינוח"]
+    }
      
     
     ];
+
+
+    export const hashgahot:string[]=["ללא","כשר","למהדרין"];

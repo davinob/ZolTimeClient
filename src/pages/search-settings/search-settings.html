@@ -1,27 +1,14 @@
 <ion-content>
     <div class="listContent">
     
-         <ion-list>
-        <div class="listTitle">Search Range</div>
-        <ion-item>
-                <ion-range min="{{rangeMin}}" max="{{rangeMax}}" [(ngModel)]="settings.range"  (ionChange)="updateStorageAndSearch()">
-                  <ion-label  class="rangeLeft" range-left>{{rangeMin}} min</ion-label>
-                  <ion-label class="rangeRight" range-right>{{settings.range}} min</ion-label>
-                </ion-range>
-              </ion-item>
-          </ion-list>
-        
-     
-      
-      
-      <ion-list *ngIf="hashgahot" no-border radio-group [(ngModel)]="settings.hashgaha" (ionChange)="updateStorageAndSearch()">
+      <ion-list *ngIf="getHashgahot()" no-border radio-group [(ngModel)]="settings.hashgaha" (ionChange)="updateStorageAndSearch()">
   
      
-          <div class="listTitle">Hashgaha</div>
+          <div class="listTitle">כשרות</div>
       
   
 
-      <ion-item *ngFor="let hashga of hashgahot" >
+      <ion-item *ngFor="let hashga of getHashgahot()" >
           <ion-label>{{hashga}}</ion-label>
           <ion-radio value="{{hashga}}"></ion-radio>
         </ion-item>
@@ -29,7 +16,7 @@
     </ion-list>
 
   <ion-item  >
-        <ion-label>Deals only</ion-label>
+        <ion-label class="listTitle">רק מבצעים</ion-label>
      <ion-checkbox  item-right [(ngModel)]="settings.onlyShowPromotion" (ionChange)="updateStorageAndSearch()"></ion-checkbox>
   </ion-item>
 

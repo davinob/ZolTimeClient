@@ -107,8 +107,8 @@ this.initTime=false;
 
 // used for an example of ngFor and navigation
 this.pages = [
-{ title: 'Find Products', component: 'ProductsPage', icon:'search' },
-{ title: 'Favorites', component: 'FavoritesPage', icon:'star' },
+{ title: 'חיפוש', component: 'ProductsPage', icon:'search' },
+{ title: 'מועדפים', component: 'FavoritesPage', icon:'star' },
 
 ];
 

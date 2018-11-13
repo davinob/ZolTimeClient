@@ -139,7 +139,7 @@ clearAddressSearch(){
       catch(error)
       {
         console.log(error);
-        this.alertLoadingService.showToast({message:"Error getting address, please check your network..."});
+        this.alertLoadingService.showToast({message:"בעיה בהשגת הכתובת, נו לבדוק את החיבור לרשת."});
         this.searching=false;
       }
       this.searching=false;

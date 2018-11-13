@@ -75,7 +75,7 @@ page-seller{
 
     .listOfProds
     {
-        margin-right:22px;
+      //  margin-right:22px;
     }
     
     .productPromo
@@ -161,6 +161,10 @@ page-seller{
       font-weight:bold;
     }
     
+    .productsSeller 
+    {
+      direction:rtl;
+    }
     
     
     .products_disabled{
@@ -240,7 +244,8 @@ page-seller{
         font-size: 18px;
     font-weight: bold;
         color:white;
-        margin-left: 5px;
+        margin-right: 10px;
+        margin-top: 10px;
       }
 
     .category {
@@ -396,10 +401,10 @@ page-seller{
     
     .sellerName
 {
-  font-weight: 800;
-  font-size: 17px;
-  color: #08073b;
-  width: 80%;
+  font-weight: 700;
+    color: #327fa5;
+    width: 80%;
+    font-size: 21px;
 }
 
 .one{

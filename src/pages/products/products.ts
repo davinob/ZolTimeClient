@@ -42,13 +42,12 @@ export class ProductsPage {
 
  
   justWentToSeller:boolean=false;
-  noLocationStr:string="NO LOCATION";
+  noLocationStr:string="אין מיקום";
   
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private userService:UserService ,
      public formBuilder: FormBuilder,
-   private elRef:ElementRef,
     public alertService: AlertAndLoadingService,
     private geolocation: Geolocation,
     public addressService:AddressService,
@@ -458,7 +457,7 @@ export class ProductsPage {
       await Promise.race([initPromise, timeOutPromise]);
 
       if   (this.hasNoLocationFound()&&!this.alreadyShownAfterFirstEnter) {
-      this.alertService.showToastNoDismiss({message:"Error getting location, please allow geolocation or type address..."});
+      this.alertService.showToastNoDismiss({message:" מיקום לא אותר, נא להדליק את מקלט הGPS או להכניס כתובת חיפוש."});
       this.alreadyShownAfterFirstEnter=true;
 
      }
@@ -495,7 +494,6 @@ goToSeller(seller:Seller,event:MouseEvent)
   getSearchDetails()
   {
     let searchDetails="";
-    searchDetails+=" Range:"+this.userService.userSearchSettings.range+" min";
    
     if (this.userService.userSearchSettings.hashgaha!="Any")
     {

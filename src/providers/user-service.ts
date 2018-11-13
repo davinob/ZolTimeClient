@@ -110,7 +110,7 @@ export class UserService {
 
     this.userSearchSettings={
       position:{geoPoint:null,description:"",isAddress:true},
-      hashgaha:"Any",
+      hashgaha:"ללא",
       range:200, //max 200mn for search range
       onlyShowPromotion:false};
    
@@ -342,7 +342,7 @@ isSellerFavorite(seller:Seller):boolean
   this.allSellersFiltered=this.allSellers.filter((seller) => {
       let validSeller:boolean=true;
 
-      if (this.userSearchSettings.hashgaha != "Any") {
+      if (this.userSearchSettings.hashgaha != "ללא") {
          validSeller=validSeller && seller.hashgaha[this.userSearchSettings.hashgaha];
       }
 

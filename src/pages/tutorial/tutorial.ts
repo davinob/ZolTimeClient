@@ -36,7 +36,6 @@ export class TutorialPage {
     private storage: Storage
     ) 
   {
-    this.dir = platform.dir();
     translate.get(["TUTORIAL_SLIDE1_TITLE",
       "TUTORIAL_SLIDE1_DESCRIPTION",
       "TUTORIAL_SLIDE2_TITLE",

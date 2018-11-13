@@ -82,7 +82,7 @@ export class MyApp {
 
 if (this.initTime)
 {
-console.log("REDIRECTING TO SIGNED PAGE")
+console.log("REDIRECTING TO SIGNED PAGE");
 
   this.storage.get('tutoViewed').then(
     viewed=>{

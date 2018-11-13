@@ -7,19 +7,22 @@
     
     <ion-grid class="productsSeller">
       <ion-row>
-        <ion-col align-self-center col-8>
+          <ion-col col-4>
+              <img class="sellerPic" src="{{seller.picture.url}}" />
+            </ion-col>
+
+        <ion-col col-8>
           <ion-row>
-              <span class="sellerName"> {{seller.restaurantName}}</span>
               <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'הוסף למועדפים'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
               <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'הוסר מהמועדפים'})"> <ion-icon class="star" name="star"></ion-icon></span>
+               <span class="sellerName"> {{seller.restaurantName}}</span>
+            
            </ion-row>
            <ion-row>
               <span class="sellerDescription"> {{seller.description}}</span>
             </ion-row>
         </ion-col>
-        <ion-col col-4>
-          <img class="sellerPic" src="{{seller.picture.url}}" />
-        </ion-col>
+       
       </ion-row>
     </ion-grid>
   </ion-navbar>
@@ -57,7 +60,7 @@
                     <ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span>
                   <span class="productName">{{product.name}}</span>
                   <span class="productDescription">{{product.description}}</span>
-                  <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
+                  <span *ngIf="showPromoQty(product)" class="productQty"> רק {{product.bestPromo.quantity}} נשארים...</span>
 
             </ion-col>
 
@@ -83,7 +86,7 @@
         
         <div class="oneLine">  
           <span class="footerIcon"><ion-icon name="call"></ion-icon></span>
-          <span class="footerLabel">  להתקשר</span>
+          <span class="footerLabel">  חייג</span>
         </div>
         <div class="oneLine">  
           <span class="sellerTelNo">
@@ -98,7 +101,7 @@
           
             <div class="oneLine">  
             <span class="footerIcon"> <ion-icon name="navigate"></ion-icon></span>
-                <span class="footerLabel"> לנווט</span>
+                <span class="footerLabel"> נווט</span>
               </div> 
               <div class="oneLine">  
                 <span class="sellerDistance" >

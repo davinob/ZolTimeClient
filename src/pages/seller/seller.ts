@@ -66,6 +66,12 @@ export class SellerPage {
     }
   }
 
+
+  showPromoQty(product:Product)
+  {
+    return product.bestPromo && product.quantity>0;
+  }
+
   subCategories:any[]=new Array();
   
   wasFiltered:boolean=false;

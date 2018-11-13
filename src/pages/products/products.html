@@ -63,10 +63,10 @@
                 
                     <ion-grid class="productsSeller" >
                         <ion-row>
-                           <ion-col col-2>
+                           <ion-col col-4>
                                         <img class="sellerPic" src="{{seller.picture.url}}" />
                                     </ion-col>
-                            <ion-col col-10> 
+                            <ion-col col-8> 
                                 <ion-row>
                                         <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'הוסף למועדפים'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
                                         <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'הוסר מהמועדפים'})"> <ion-icon class="star" name="star"></ion-icon></span>
@@ -108,7 +108,7 @@
                                             <span class="prodPicBox"><img class="productPic" src="{{product.picture.url}}" /></span>
                                         <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
                                         <span class="productName">{{product.name}}</span>
-                                        <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
+                                        <span *ngIf="showPromoQty(product)" class="productQty"> רק {{product.bestPromo.quantity}} נשארים...</span>
                                     </div>
                                     <div class="seeOthers"><p class="cardText" >...</p></div>
                                 </div>

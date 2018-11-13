@@ -61,6 +61,16 @@ export class ProductsPage {
   }
 
   
+  showPromoQty(product:Product)
+  {
+    if (product.bestPromo)
+      {
+        console.log(product.bestPromo);
+        console.log(product.bestPromo.quantity);
+        console.log(product.bestPromo && product.bestPromo.quantity>0);
+      }
+    return product.bestPromo && product.bestPromo.quantity>0;
+  }
 
   getCategories()
   {
@@ -447,7 +457,7 @@ export class ProductsPage {
     if   (this.hasNoLocationFound()) {
       console.log(this.userService.userSearchSettings);
 
-      this.alertService.showLoading();
+      this.alertService.showLoading(); 
 
       let initPromise= this.initPosition();
 
@@ -495,15 +505,15 @@ goToSeller(seller:Seller,event:MouseEvent)
   {
     let searchDetails="";
    
-    if (this.userService.userSearchSettings.hashgaha!="Any")
+    if (this.userService.userSearchSettings.hashgaha!="ללא")
     {
-      searchDetails+=", "+ this.userService.userSearchSettings.hashgaha;
+      searchDetails+= this.userService.userSearchSettings.hashgaha;
     }
     
 
     if (this.userService.userSearchSettings.onlyShowPromotion)
     {
-      searchDetails+=", deals only";
+      searchDetails+=", רק מבצעים";
     }
 
     return searchDetails;

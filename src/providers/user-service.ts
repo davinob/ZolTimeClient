@@ -57,7 +57,7 @@ export interface Promotion{
   promotionStartTime:string,
   promotionEndTime:string,
   days?:{},
-  date?:Date,
+  date?:any,
   key?:string,
   uID?:string,
   isActivated:boolean
@@ -111,22 +111,24 @@ export class UserService {
     this.userSearchSettings={
       position:{geoPoint:null,description:"",isAddress:true},
       hashgaha:"Any",
-      range:60,
+      range:200, //max 200mn for search range
       onlyShowPromotion:false};
    
       
-  
+       const settings = {timestampsInSnapshots: true};
+        this.db.settings(settings);
+
         this.sellersCollectionRef = this.db.collection('sellers');
         this.favoritesCollectionRef=this.db.collection('favorites');
      
         this.initFavoritesFromStorage();
-        this.initSearchSettingsFromStorage();
+        //this.initSearchSettingsFromStorage();
         this.getAllSellers();
         
       }
 
 
-      initSearchSettingsFromStorage() {
+     /* initSearchSettingsFromStorage() {
     
 
         this.storage.get("settings").then(val => {
@@ -141,7 +143,7 @@ export class UserService {
     
       
       }
-
+*/
 
       initFavoritesFromStorage()
       {
@@ -332,7 +334,7 @@ isSellerFavorite(seller:Seller):boolean
   console.log("queryAllBasedOnFilters");
   if (!this.userSearchSettings.position.geoPoint)
   {
-    console.log("NO LOCATION");
+    console.log("אין מיקום");
     this.lookingForProducts.next(false);
     return;
   }
@@ -736,8 +738,14 @@ calculatePromoStartEndDates(promo:Promotion, checkForNext:boolean):any
   }
   else
   {
-    startDate=new Date(promo.date);
-    endDate=new Date(promo.date);
+    let promoDate=promo.date;
+    if (!(promo.date instanceof Date))
+    {
+      promoDate=promoDate.toDate();
+    }
+
+    startDate=new Date(promoDate);
+    endDate=new Date(promoDate);
   }
     
    

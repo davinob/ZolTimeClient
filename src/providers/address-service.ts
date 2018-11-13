@@ -59,7 +59,7 @@ export class AddressService{
     console.log("SEARCH URL before timeout:"+searchUrl); 
     setTimeout(
       ()=>{
-      return "No location"
+      return "אין מיקום";
       }, 150000);
     
       console.log("SEARCH URL:"+searchUrl);

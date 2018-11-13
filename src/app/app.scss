@@ -196,7 +196,16 @@
 ion-app.md [padding] .scroll-content
 {
     padding:0px;
+   
  
+}
+
+body{
+    direction: rtl;
+}
+
+ion-navbar.toolbar{
+direction: ltr;
 }
 
 

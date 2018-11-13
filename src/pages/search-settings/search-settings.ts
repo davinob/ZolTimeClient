@@ -2,8 +2,7 @@ import { Component} from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { SearchSettings, UserService } from '../../providers/user-service';
-import { AddressService } from '../../providers/address-service';
-
+import * as globalConstants from '../../providers/globalConstants'; 
 
 /**
  * Generated class for the SearchSettingsPage page.
@@ -30,13 +29,13 @@ export class SearchSettingsPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public storage:Storage,
     private userService:UserService) {
-    console.log('constructore SearchSettingsPage');
+    console.log('constructor SearchSettingsPage');
     this.settings=this.userService.cloneSettings();
     this.previousSearchSettings=this.userService.cloneSettings();
   
   }
 
-    hashgahot:string[]=["Any","Kosher","Lemehadrin"];
+    
     rangeMin:number=0;
     rangeMax:number=60;
     
@@ -50,6 +49,10 @@ export class SearchSettingsPage {
    }
 
  
+   getHashgahot()
+   {
+     return globalConstants.hashgahot;
+   }
 
   
 lastTime:number=0;

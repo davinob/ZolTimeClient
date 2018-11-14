@@ -40,7 +40,7 @@ export class SellerPage {
 
     console.log("MY SELLER is:");
     console.log(this.seller);
-    this.userService.fetchSellerProdsAndProms(this.seller);
+    this.userService.fetchSellerProdsAndPromsReturnNeedsToWait(this.seller);
     this.initSubCategories();
    }
 

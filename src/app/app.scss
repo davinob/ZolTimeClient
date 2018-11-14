@@ -17,9 +17,16 @@
 
 
 
+
+
 .popOverClass{
     left:0px;
-    width:500px;
+    width: 100%;
+  }
+
+  .popover-md .popover-content
+  {
+    max-width: 160px;
   }
 
   

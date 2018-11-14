@@ -1,6 +1,6 @@
 import { Component,ViewChild,ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform  } from 'ionic-angular';
-import { TranslateModule } from '@ngx-translate/core';
+ 
 import { UserService, Seller } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 
@@ -63,12 +63,6 @@ export class ProductsPage {
   
   showPromoQty(product:Product)
   {
-    if (product.bestPromo)
-      {
-        console.log(product.bestPromo);
-        console.log(product.bestPromo.quantity);
-        console.log(product.bestPromo && product.bestPromo.quantity>0);
-      }
     return product.bestPromo && product.bestPromo.quantity>0;
   }
 

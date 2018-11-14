@@ -25,8 +25,6 @@ import * as fbConfig from './../providers/fbConfig';
 
 import { Geolocation } from '@ionic-native/geolocation';
 
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { FcmService } from '../providers/fcm-service';
 import { CallNumber } from '@ionic-native/call-number';
 import { Firebase } from '@ionic-native/firebase';
@@ -38,11 +36,6 @@ import { GlobalService } from './../providers/global-service';
 import * as firebase from "firebase";
 
 
-  // The translate loader needs to know where to load i18n files
-// in Ionic's static asset pipeline.
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
   
 
 firebase.initializeApp(fbConfig.firebaseConfig);
@@ -57,13 +50,6 @@ firebase.initializeApp(fbConfig.firebaseConfig);
     HttpModule,
     HttpClientModule,
     IonicStorageModule.forRoot(),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [HttpClient]
-      }
-    }),
     IonicModule.forRoot(MyApp)
     
     

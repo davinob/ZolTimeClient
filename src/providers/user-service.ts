@@ -277,7 +277,7 @@ isSellerFavorite(seller:Seller):boolean
    }
 
   
-  filterSellersByKeysAndGetTheirProdsAndDeals(keys:Array<string>)
+  async filterSellersByKeysAndGetTheirProdsAndDeals(keys:Array<string>)
   {
     console.log(keys);
     console.log(this.allSellers);
@@ -304,21 +304,20 @@ isSellerFavorite(seller:Seller):boolean
         return;
       }
   
-      this.allSellersFiltered.forEach(seller=>{
-        this.lookingForProducts.next(true);
-     
-        this.fetchSellerProdsAndProms(seller).then(()=>
-        {
+      let toWait=false;
+
+      await this.allSellersFiltered.forEach(async seller=>{
+       toWait=await this.fetchSellerProdsAndPromsReturnNeedsToWait(seller);
           console.log("SELLER IN PROMISE");
           console.log(seller);
-          this.lookingForProducts.next(false);
-          
-        });
-   
-        
-        });
-  
+         });
+
+    if (!toWait)
+    {
+      console.log("STOP LOOKING FOR PRODS FROM METHOD 2");
+      this.lookingForProducts.next(false);
     }
+}
 
 
 
@@ -359,45 +358,44 @@ isSellerFavorite(seller:Seller):boolean
       return;
     }
 
+    let toWait=false;
      await this.allSellersFiltered.forEach(async seller=>{
-      this.lookingForProducts.next(true);
     
         let distance=this.addressService.distance(seller.address.geoPoint,this.userSearchSettings.position.geoPoint);
         distance=Math.round(distance*100)/100;
         console.log("DISTANCE:" +distance);
        seller.distanceFromPosition=Math.round(distance*this.nbMinPerKm);
    
-       await this.fetchSellerProdsAndProms(seller).then(()=>
-      {
+       toWait= await this.fetchSellerProdsAndPromsReturnNeedsToWait(seller);
+
+   
         console.log("SELLER IN PROMISE");
         console.log(seller);
-       
-        
-      });
- 
-      
       });
 
     
       //sorting per distance:
       this.allSellersFiltered=this.allSellersFiltered.sort((seller1,seller2)=>{
-      //  console.log("SELLERS COMPARISON");
-       // console.log(seller1.distanceFromPosition);
-        //console.log(seller2.distanceFromPosition);
         if (seller1.distanceFromPosition>seller2.distanceFromPosition)
         return 1;
         else
         return -1;
         
       });
-      this.lookingForProducts.next(false);
+
+      if (!toWait)
+      {
+        console.log("STOP LOOKING FOR PROD FROM METHOD 1");
+        this.lookingForProducts.next(false);
+      }
+     
 
     
 
   }
 
 
-async fetchSellerProdsAndProms(seller:any)
+async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
 {
   console.log("SELLER before return PROMISE");
 
@@ -446,16 +444,18 @@ async fetchSellerProdsAndProms(seller:any)
                   sellerPromsObserable.next(true);
               });
         
-              sellerProdsObserable.pipe(merge(sellerPromsObserable)).subscribe(()=>
+      sellerProdsObserable.pipe(merge(sellerPromsObserable)).subscribe(()=>
          {
              console.log("DOING UPDATE OF PRODS/PROMS");
                 this.findAndSetBestPromoForAllProductsOfSeller(seller);
                 this.allSellersHasBeenUpdated.next(true);
+                console.log("STOP LOOKING FOR PROD FROM OBS");
+                this.lookingForProducts.next(false);
                
           }
           );
 
-              
+         return true;     
 
     }
     else
@@ -464,12 +464,10 @@ async fetchSellerProdsAndProms(seller:any)
       console.log("SELLER before return PROMISE 1");
       this.findAndSetBestPromoForAllProductsOfSeller(seller);
       console.log("SELLER before return PROMISE 2");
+    
+      return false;
     }
    
-
-     
-      
-    
       
 }
 

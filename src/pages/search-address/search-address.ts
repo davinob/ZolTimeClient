@@ -192,7 +192,7 @@ clearAddressSearch(){
   
   if (place.isAddress) 
   {
-    this.addressService.getPositionAddress(place.place_id).first().subscribe((address)=>
+    this.addressService.getPositionAddress(place).first().subscribe((address)=>
     {
         console.log(address);
     

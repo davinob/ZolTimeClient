@@ -8,7 +8,7 @@ import { Storage } from '@ionic/storage';
 import 'rxjs/add/operator/first';
 
 
-import { TranslateService } from '@ngx-translate/core';
+ 
 import { FcmService } from '../providers/fcm-service';
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 
@@ -27,7 +27,7 @@ export class MyApp {
   
   pages: Array<{title: string, component: any, icon: string}>;
 
-  constructor(public translate: TranslateService,public platform: Platform, 
+  constructor(public platform: Platform, 
     public userService: UserService,
   private storage: Storage,fcm: FcmService, 
   toastCtrl: ToastController, public splashScreen:SplashScreen ) {
@@ -114,7 +114,6 @@ this.pages = [
 
 this.activePage=this.pages[0];
 
-this.initTranslate();
 
 this.initializeApp();
 
@@ -124,17 +123,7 @@ this.initializeApp();
 
   }
 
-  initTranslate() {
-    // Set the default language for translation strings, and the current language.
-    this.translate.setDefaultLang('he');
-
-//    if (this.translate.getBrowserLang() !== undefined) {
-  //    this.translate.use(this.translate.getBrowserLang());
-    //} else {
-      //this.translate.use('he'); // Set your language here
-    //}
-
-  }
+ 
 
 
   initializeApp() {

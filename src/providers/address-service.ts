@@ -115,6 +115,18 @@ export class AddressService{
       let newAddresses=data.predictions.filter((address) => {
           return address.description.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
         }).map(address=>{
+          let descTmp="";
+         for (let i=0; i<address.terms.length-1;i++)
+         {
+          console.log(address.terms[i]);
+          if (i==address.terms.length-2 && i>0)
+          descTmp+=", ";
+          descTmp+=address.terms[i].value+" ";
+          
+
+      
+         }
+         address.description=descTmp;
           address.isAddress=true;
           return address;
       });
@@ -127,14 +139,18 @@ export class AddressService{
   }
   
   
-  getPositionAddress(placeID:string):Observable<Address>
+  getPositionAddress(place):Observable<Address>
   {
+    let placeID=place.place_id;
+    
     let searchUrl:string="https://maps.googleapis.com/maps/api/place/details/json?placeid="+placeID+"&key="+this.key;
     let addressPos:Subject<any>=new Subject<any>();
 
      this.http.get(searchUrl).pipe(map(res => res.json())).subscribe(data => {
       let address:Address=<Address>{};
-      
+
+      console.log("POSITION OF ADDRESS AND OTHER INFO");
+      console.log(data);
      for (let addressComp of data.result.address_components) {
        if (addressComp.types[0]=="street_number")
          address.streetNumber=addressComp.long_name;
@@ -152,7 +168,7 @@ export class AddressService{
       console.log("GEO POINT FROM ADDRESS");
       console.log(address.geoPoint);
 
-      this.setAddressDescription(address);
+      address.description=place.description;
 
       addressPos.next(address);
       
@@ -167,29 +183,7 @@ export class AddressService{
   }
 
 
-  setAddressDescription(address:Address)
-  {
-    let description:string="";
-
-    if (address.street)
-    description+=address.street;
-
-    if (address.streetNumber)
-      {
-        if (description!="")
-          description+=" ";
-        description+=address.streetNumber+" ";
-      }
-
-    if (address.city)
-    {
-      if (description!="")
-        description+=", ";
-      description+=address.city;
-    }
-
-    address.description=description;
-  }
+ 
 
 
  

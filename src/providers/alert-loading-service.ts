@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import {AlertController,LoadingController, Loading } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
+ 
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 
 import { take } from 'rxjs/operators';
@@ -19,7 +19,7 @@ export class AlertAndLoadingService {
 
     
    
-  constructor(public translateService: TranslateService,public alertCtrl: AlertController,
+  constructor(public alertCtrl: AlertController,
     private loadingCtrl: LoadingController,private toastCtrl:ToastController
      ) {  }
   
@@ -89,10 +89,7 @@ export class AlertAndLoadingService {
  
   showAlert(error:any)
   {
-    this.translateService.get(error.message).subscribe(
-      value => {
-        // value is our translated string
-        error.message=value;
+    
         if (this.loading!=null)
         {
           this.loading.dismiss().then( () => {
@@ -103,8 +100,7 @@ export class AlertAndLoadingService {
       {
         this.presentAlert(error);
       }
-    }
-    )
+    
   }
   
   presentAlert(error:any)
@@ -125,12 +121,7 @@ export class AlertAndLoadingService {
 
   showToast(error:any)
   {
-    try{
-    this.translateService.get(error.message).subscribe(
-      value => {
-        // value is our translated string
-        error.message=value;
-        if (this.loading)
+    if (this.loading)
         {
           this.loading.dismiss().then( () => {
               this.presentToast(error);
@@ -140,32 +131,13 @@ export class AlertAndLoadingService {
       {
         this.presentToast(error);
       }
-    }
-    )
-  }
-  catch(error)
-  {
-    console.log(error);
-  }
+
   }
 
   showToastNoDismiss(error:any)
   {
-    try{
-    this.translateService.get(error.message).subscribe(
-      value => {
-        // value is our translated string
-        error.message=value;
-      
         this.presentToast(error);
-      
-    }
-    );
-  }
-  catch(error)
-  {
-    console.log(error);
-  }
+ 
   }
   
   presentToast(error:any)
@@ -188,15 +160,7 @@ export class AlertAndLoadingService {
   {
     return new Promise<any>((resolve, reject) => {
 
-    this.translateService.get(message).pipe(take(1)).subscribe(
-      (value) => {
-        message=value
-        this.translateService.get(choice1).subscribe(
-            value => {
-            choice1=value;
-            this.translateService.get(choice2).subscribe(
-                 value => {
-                 choice2=value;
+    
         if (this.loading!=null)
         {
           this.loading.dismiss().then( () => {
@@ -207,10 +171,7 @@ export class AlertAndLoadingService {
       {
         resolve(this.presentChoice(message,choice1,choice2));
       }
-            });
-        });
-    });
-
+   
   });
 
  

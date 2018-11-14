@@ -89,6 +89,11 @@ export class TutorialPage {
    }
 
 
+   getURL(url:string)
+   {
+     return 'url(' + url + ')';
+   }
+
 
   
 

@@ -71,6 +71,11 @@ export class ProductsPage {
     return globalConstants.categories;
   }
 
+  getURL(url:string)
+  {
+    return 'url(' + url + ')';
+  }
+
   categorySelected:any=null;
   subCategorySelected:string=null;
 

@@ -17,7 +17,15 @@
 
 
 
-
+.picPic {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+  
 
 .popOverClass{
     left:0px;

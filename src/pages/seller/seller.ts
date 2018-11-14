@@ -67,6 +67,11 @@ export class SellerPage {
   }
 
 
+  getURL(url:string)
+  {
+    return 'url(' + url + ')';
+  }
+
   showPromoQty(product:Product)
   {
     return product.bestPromo && product.quantity>0;

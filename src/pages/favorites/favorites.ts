@@ -49,6 +49,10 @@ export class FavoritesPage {
     this.pageIsShown=false;
   }
   
+  getURL(url:string)
+  {
+    return 'url(' + url + ')';
+  }
 
   filterSellersByKeysAndGetTheirProdsAndProms(){
    this.userService.filterSellersByKeysAndGetTheirProdsAndDeals(this.userService.myFavorites);

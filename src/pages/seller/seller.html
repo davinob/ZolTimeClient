@@ -8,17 +8,19 @@
     <ion-grid class="productsSeller">
       <ion-row>
           <ion-col col-4>
-              <img class="sellerPic" src="{{seller.picture.url}}" />
+    
+              <div class="picPic" [style.backgroundImage]="getURL(seller.picture.url)"></div>
+         
             </ion-col>
 
         <ion-col col-8>
-          <ion-row>
+          <ion-row class="sellerDetails">
               <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'הוסף למועדפים'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
               <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'הוסר מהמועדפים'})"> <ion-icon class="star" name="star"></ion-icon></span>
                <span class="sellerName"> {{seller.restaurantName}}</span>
             
            </ion-row>
-           <ion-row>
+           <ion-row class="sellerDetails">
               <span class="sellerDescription"> {{seller.description}}</span>
             </ion-row>
         </ion-col>
@@ -51,7 +53,8 @@
           <ion-row class="product" *ngFor="let product of categoProducts, let i=index"  [ngClass]="i%2==0? 'product one' :'product two'">
             <ion-col col-4> 
               <span class="prodPicBox">
-                <img class="productPic" src="{{product.picture.url}}" />
+                <div class="picPic" [style.backgroundImage]="getURL(product.picture.url)"></div>
+                      
               </span>
             </ion-col>
 

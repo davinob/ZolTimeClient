@@ -54,7 +54,7 @@ export class AddressService{
 
   async findAddressDescriptionFromLatLng(lat:number,lng:number):Promise<string>
   {
-    let searchUrl:string="https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key="+this.key;
+    let searchUrl:string="https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&language=iw&key=" +this.key;
     
     console.log("SEARCH URL before timeout:"+searchUrl); 
     setTimeout(
@@ -76,8 +76,27 @@ export class AddressService{
         {
           if (results[j].formatted_address)
           {
-            console.log(results[j].formatted_address);
-            return results[j].formatted_address
+
+            let address_components=results[j].address_components;
+            let address="",streetNumber="",street="",city="";
+            address_components.forEach(addressComp => {
+              
+              if (addressComp.types[0]=="street_number")
+              streetNumber=addressComp.long_name;
+        
+            if (addressComp.types[0]=="route")
+              street=addressComp.long_name;
+           
+            if (addressComp.types[0]=="locality")
+              city=addressComp.long_name;
+
+            });
+           
+         
+            address=street+" "+streetNumber+" "+city ;
+            console.log(address);
+
+            return address;
           }
         }
   

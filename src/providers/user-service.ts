@@ -339,6 +339,9 @@ isSellerFavorite(seller:Seller):boolean
   }
 
   this.allSellersFiltered=this.allSellers.filter((seller) => {
+    if (!seller ||!seller.address||!seller.enabled||!seller.profileCompleted)
+    return false;
+
       let validSeller:boolean=true;
 
       if (this.userSearchSettings.hashgaha != "ללא") {

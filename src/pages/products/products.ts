@@ -60,6 +60,9 @@ export class ProductsPage {
      
   }
 
+
+
+  
   
   showPromoQty(product:Product)
   {

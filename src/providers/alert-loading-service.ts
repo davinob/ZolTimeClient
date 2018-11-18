@@ -4,14 +4,7 @@ import {AlertController,LoadingController, Loading } from 'ionic-angular';
  
 import { ToastController } from 'ionic-angular/components/toast/toast-controller';
 
-import { take } from 'rxjs/operators';
 
-/*
-  Generated class for the AlertProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class AlertAndLoadingService {
   

@@ -18,8 +18,16 @@
               <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'הוסף למועדפים'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
               <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'הוסר מהמועדפים'})"> <ion-icon class="star" name="star"></ion-icon></span>
                <span class="sellerName"> {{seller.restaurantName}}</span>
-            
-           </ion-row>
+               <span *ngIf="seller.hashgahaDescription" class="sellerKosher" >
+                  {{seller.hashgahaDescription}}
+            </span>
+      </ion-row>
+      <ion-row >
+              <span [ngClass]="userService.openHours(seller).open? 'sellerOpen' : 'sellerClose'" >
+                      {{userService.openHours(seller).message}}
+              </span>
+      </ion-row>
+         
            <ion-row class="sellerDetails">
               <span class="sellerDescription"> {{seller.description}}</span>
             </ion-row>

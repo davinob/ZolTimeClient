@@ -22,6 +22,7 @@ page-products{
 {
   font-weight: bolder;
   font-size: larger;
+  margin: auto
   
 }
 
@@ -134,6 +135,7 @@ width:10%;
 .products_enabled{
   max-width: 1000px;
   margin: auto;
+  width:98%
 }
 
 .buttonPromotion
@@ -157,7 +159,7 @@ width:10%;
   border-radius: 10px;
   width:100%;
   border-radius: 0;
-  margin-left: 0px;
+  margin-right: 0px;
 }
 
 .select-text
@@ -255,8 +257,8 @@ text-decoration: none;
 {
   font-weight: 700;
     color: #327fa5;
-    width: 80%;
     font-size: 21px;
+    margin-left:5px;
 }
 
 
@@ -294,6 +296,11 @@ text-decoration: none;
   font-weight: 700;
   font-size: 15px;
 }
+
+
+
+
+
 
 .sellerTelNo
 {
@@ -362,8 +369,6 @@ text-decoration: none;
 {
   background-color: white;
   position: relative;
-  margin-bottom: -25px;
-  margin-left: 1px;
   width: max-content;
   color: #f41111;
   line-height: 20px;
@@ -373,6 +378,7 @@ text-decoration: none;
   padding-right: 8px;
   border: solid 2px;
   border-radius: 10px;
+  margin: auto;
   
 }
 

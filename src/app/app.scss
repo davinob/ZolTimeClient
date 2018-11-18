@@ -18,8 +18,8 @@
 
 
 .picPic {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
     display: inline-block;
     background-repeat: no-repeat;
     background-size: cover;
@@ -27,6 +27,51 @@
     margin: auto;
   }
   
+
+  .sellerOpen
+{
+ 
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid #09b125;
+ 
+  padding-right: 4px;
+  padding-left: 4px;
+  margin-bottom: 6px;
+  color: #09b125;
+  text-align: center;
+}
+
+.sellerClose
+{
+  
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid #ff0000;
+  /* border-radius: 10%; */
+  padding-right: 4px;
+  padding-left: 4px;
+  margin-bottom: 6px;
+  color: #ff0000;
+  text-align: center;
+}
+
+
+.sellerKosher
+{
+ 
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid #074256;
+  border-radius: 10%;
+  padding-right: 4px;
+  padding-left: 4px;
+  margin-bottom: 6px;
+  color: #318f9d;
+  text-align: center;
+}
+
+
 
 .popOverClass{
     left:0px;

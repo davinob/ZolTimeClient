@@ -92,8 +92,13 @@ export class AddressService{
 
             });
            
-         
-            address=street+" "+streetNumber+" "+city ;
+            if (streetNumber)
+            address=street+" "+streetNumber+", "+city ;
+            else if (street)
+            address=street+", "+city ;
+            else
+            address=city ;
+
             console.log(address);
 
             return address;
@@ -168,8 +173,8 @@ export class AddressService{
      this.http.get(searchUrl).pipe(map(res => res.json())).subscribe(data => {
       let address:Address=<Address>{};
 
-      console.log("POSITION OF ADDRESS AND OTHER INFO");
-      console.log(data);
+     // console.log("POSITION OF ADDRESS AND OTHER INFO");
+    //  console.log(data);
      for (let addressComp of data.result.address_components) {
        if (addressComp.types[0]=="street_number")
          address.streetNumber=addressComp.long_name;
@@ -182,10 +187,10 @@ export class AddressService{
       }
       
       address.geoPoint=new firebase.firestore.GeoPoint(data.result.geometry.location.lat,data.result.geometry.location.lng);
-      console.log(data.result.geometry.location.lat);
-      console.log(data.result.geometry.location.lng);
-      console.log("GEO POINT FROM ADDRESS");
-      console.log(address.geoPoint);
+    //  console.log(data.result.geometry.location.lat);
+   //   console.log(data.result.geometry.location.lng);
+    // console.log("GEO POINT FROM ADDRESS");
+    // console.log(address.geoPoint);
 
       address.description=place.description;
 
@@ -277,11 +282,11 @@ boundingBoxCoordinates(center:firestore.GeoPoint, radius:number):any {
 
 isGeoPointNotSoFar(geoPoint1:firestore.GeoPoint,geoPoint2:firestore.GeoPoint,maxDistance:any):boolean
 {
-  console.log("CHECK DISTANCE CORRECT");
-  console.log(geoPoint1);
-  console.log(geoPoint2);
-  console.log(this.distance(geoPoint1,geoPoint2));
-  console.log(maxDistance);
+ // console.log("CHECK DISTANCE CORRECT");
+ // console.log(geoPoint1);
+ // console.log(geoPoint2);
+ // console.log(this.distance(geoPoint1,geoPoint2));
+ // console.log(maxDistance);
 
   return this.distance(geoPoint1,geoPoint2)<=maxDistance;
 }
@@ -291,8 +296,8 @@ isGeoPointNotSoFar(geoPoint1:firestore.GeoPoint,geoPoint2:firestore.GeoPoint,max
 loadHistory()
 {
   this.getAddressesHistory().then(val=>{
-   console.log("ADDRESSES HIST");
-   console.log(val);
+  // console.log("ADDRESSES HIST");
+ //  console.log(val);
    this.addressesHistory=val;
   });
 }
@@ -301,7 +306,7 @@ loadHistory()
 clearAddressesHistory()
 {
  
-      console.log("CLEARING HISTORY");
+     // console.log("CLEARING HISTORY");
       this.storage.set('locations',new Array());
       this.addressesHistory=new Array();
   
@@ -311,8 +316,8 @@ clearAddressesHistory()
 
 addAddressToHistory(position:any)
 {
-  console.log("POSITION");
-  console.log(position);
+ // console.log("POSITION");
+ // console.log(position);
   let posToSave:any={};
   posToSave={
     description:position.description,

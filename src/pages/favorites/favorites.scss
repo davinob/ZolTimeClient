@@ -17,7 +17,7 @@ page-favorites {
     {
       font-weight: bolder;
       font-size: larger;
-      
+      margin: auto
     }
     
     .productDescription {
@@ -123,6 +123,7 @@ page-favorites {
     .products_enabled{
       max-width: 1000px;
       margin: auto;
+      width:98%
     }
     
     .buttonPromotion
@@ -143,7 +144,7 @@ page-favorites {
     .card-md {
       margin-top: 10px;
       margin-bottom: 20px;
-      margin-left:0px;
+      margin-right:0px;
       border-radius: 10px;
       width:100%;
       border-radius: 0;
@@ -189,10 +190,10 @@ page-favorites {
     
     .sellerName
     {
-      font-weight: 800;
-      font-size: 17px;
-      color: #08073b;
-      width:80%
+      font-weight: 700;
+        color: #327fa5;
+        font-size: 21px;
+        margin-left:5px;
     }
     
     
@@ -297,8 +298,7 @@ page-favorites {
     {
       background-color: white;
       position: relative;
-      margin-bottom: -25px;
-      margin-left: 1px;
+      margin: auto;
       width: max-content;
       color: #f41111;
       line-height: 20px;

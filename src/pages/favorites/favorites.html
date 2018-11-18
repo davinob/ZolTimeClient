@@ -34,6 +34,14 @@
                                 <ion-row>
                                         <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller)"> <ion-icon class="star" name="star"></ion-icon></span>
                                     <span class="sellerName"> {{seller.restaurantName}}</span> 
+                                    <span *ngIf="seller.hashgahaDescription" class="sellerKosher" >
+                                            {{seller.hashgahaDescription}}
+                                      </span>
+                                </ion-row>
+                                <ion-row >
+                                        <span [ngClass]="userService.openHours(seller).open? 'sellerOpen' : 'sellerClose'" >
+                                                {{userService.openHours(seller).message}}
+                                        </span>
                                 </ion-row>
                                 <ion-row>
 

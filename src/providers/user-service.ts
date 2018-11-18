@@ -21,8 +21,8 @@ export interface Seller {
   address?:Address;
   profileCompleted?:boolean;
   products?:Array<Product>;
-  productsPerCategory?:{};
   promotions?:Array<Promotion>;
+  productsPerCategory?:{};
   restaurantName:string;
   description:string;
   telNo:string;
@@ -30,6 +30,9 @@ export interface Seller {
   hasAtLeastOnePromo:boolean;
   key:string;
   category:string;
+  hashgaha?:any;
+  hashgahaDescription?:any;
+  days?:any;
 
   }
 
@@ -68,7 +71,7 @@ export interface SearchSettings {
   position:Position;
   hashgaha: string;
   range:number;
-  onlyShowPromotion:boolean
+  onlyShowPromotion:boolean;
   }
 
 @Injectable()
@@ -155,6 +158,24 @@ export class UserService {
       }
 
 
+     setSellerHashgahaDescription(seller:any)
+      {
+        console.log(seller.hashgaha);
+        console.log(seller);
+        if (!seller.hashgaha)
+        return;
+
+        if (seller.hashgaha["למהדרין"]) {
+          seller.hashgahaDescription= "למהדרין";
+          return;
+       }
+
+       if (seller.hashgaha["כשר"]) {
+        seller.hashgahaDescription= "כשר";
+        return;
+     }
+    }
+
 
     async removeFromFavorites(seller:Seller)
     {
@@ -227,6 +248,8 @@ isSellerFavorite(seller:Seller):boolean
               let uid=doc.id;
             let seller=doc.data();  
             seller.key=uid;
+            this.setSellerHashgahaDescription(seller);
+            console.log(seller);
 
              this.allSellers.push(seller);
              this.allSellersFiltered.push(seller);
@@ -396,6 +419,50 @@ isSellerFavorite(seller:Seller):boolean
     
 
   }
+
+  openHours(seller:Seller):any
+  {
+    let date=new Date();
+    let dayIndex=new Date().getDay();
+    
+    //console.log(dayIndex);
+    if (!seller.days || seller.days.length==0)
+      return {open:false, message:""};
+      
+    //console.log(seller.days[dayIndex]);
+    let timeH=date.getHours();
+    let timeM=date.getMinutes();
+
+    let sellerStartTime=seller.days[dayIndex].startTime;
+    let sellerEndTime=seller.days[dayIndex].endTime;
+
+    let startH=Number.parseInt(sellerStartTime.substr(0,2));
+    let startM=Number.parseInt(sellerStartTime.substr(3,2));
+    let endH=Number.parseInt(sellerEndTime.substr(0,2));
+    let endM=Number.parseInt(sellerEndTime.substr(3,2));
+  
+      if ( 
+        (timeH>startH ||(timeH==startH && timeM>startM))
+        &&
+        (timeH<endH || (timeH==endH && timeM<endM))
+      )
+      {
+      return {open:true, message: "פתוח היום עד "+sellerEndTime};
+    }
+    else
+    if (sellerStartTime==sellerEndTime) //closed today
+    {
+      return {open:false, message: "סגור היום"};
+    }
+    else
+    
+      return {open:false, message: "שעות פתיחה היום: "+sellerStartTime+ " - "+ sellerEndTime};
+    
+    
+
+
+  }
+
 
 
 async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)

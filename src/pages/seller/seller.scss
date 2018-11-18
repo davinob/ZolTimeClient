@@ -19,6 +19,7 @@ page-seller{
       font-size: larger;
       width: 100%;
     display: inline-block;
+    margin: auto
       
     }
     
@@ -420,12 +421,13 @@ page-seller{
     }
     
     .sellerName
-{
-  font-weight: 700;
-    color: #327fa5;
-    width: 80%;
-    font-size: 21px;
-}
+    {
+      font-weight: 700;
+        color: #327fa5;
+        font-size: 21px;
+        margin-left:5px;
+    }
+    
 
 .one{
 background-color: white;
@@ -439,7 +441,7 @@ background-color: white;
     {
       color: #f41111;
       font-weight: bolder;
- 
+      margin: auto;
     font-size: 15px;
     display:inline-block;
     width:100%;

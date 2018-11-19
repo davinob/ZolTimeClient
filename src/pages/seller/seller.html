@@ -8,9 +8,9 @@
     <ion-grid class="productsSeller">
       <ion-row>
           <ion-col col-4>
-    
+              <div class="prodPicBox">
               <div class="picPic" [style.backgroundImage]="getURL(seller.picture.url)"></div>
-         
+              </div> 
             </ion-col>
 
         <ion-col col-8>
@@ -60,10 +60,10 @@
 
           <ion-row class="product" *ngFor="let product of categoProducts, let i=index"  [ngClass]="i%2==0? 'product one' :'product two'">
             <ion-col col-4> 
-              <span class="prodPicBox">
+              <div class="prodPicBox">
                 <div class="picPic" [style.backgroundImage]="getURL(product.picture.url)"></div>
                       
-              </span>
+              </div>
             </ion-col>
 
             <ion-col col-6>

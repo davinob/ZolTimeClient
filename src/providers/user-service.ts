@@ -126,7 +126,7 @@ export class UserService {
      
         this.initFavoritesFromStorage();
         //this.initSearchSettingsFromStorage();
-        this.getAllSellers();
+       
         
       }
 
@@ -235,7 +235,7 @@ isSellerFavorite(seller:Seller):boolean
       public getAllSellers()
       {
         this.doneLookingForSellers.next(false);
-        this.sellersCollectionRef.get().then(sellersInfos =>
+        return this.sellersCollectionRef.get().then(sellersInfos =>
           {
 
             if (!sellersInfos || sellersInfos.empty)

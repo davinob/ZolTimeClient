@@ -5,8 +5,9 @@ import { Nav, Platform} from 'ionic-angular';
 import { UserService } from '../providers/user-service';
 
 import { Storage } from '@ionic/storage';
-import 'rxjs/add/operator/first';
 
+
+import { first } from 'rxjs/operators';
 
  
 import { FcmService } from '../providers/fcm-service';
@@ -14,6 +15,7 @@ import { ToastController } from 'ionic-angular/components/toast/toast-controller
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { timer } from 'rxjs';
+import { AlertAndLoadingService } from '../providers/alert-loading-service';
 
 
 @Component({
@@ -25,67 +27,63 @@ export class MyApp {
   activePage: any;
   initTime:boolean=true;
   
-  pages: Array<{title: string, component: any, icon: string}>;
+  pages: Array<{title: string, component: any, icon: string}>=[
+  { title: 'חיפוש', component: 'ProductsPage', icon:'search' },
+  { title: 'מועדפים', component: 'FavoritesPage', icon:'star' },
+  
+  ];
+  
 
   constructor(public platform: Platform, 
     public userService: UserService,
-  private storage: Storage,fcm: FcmService, 
-  toastCtrl: ToastController, public splashScreen:SplashScreen ) {
-     
-   platform.ready().then(()=>{
-    console.log(platform);
-   //we want to let the splashScren for 5 secs:
-    timer(5000).subscribe(bal=>
-    {
-      this.splashScreen.hide();
-    });
-      // Get a FCM token
-     try{
+  private storage: Storage, public fcm: FcmService, 
+  public toastCtrl: ToastController, public splashScreen:SplashScreen, public alertSvc:AlertAndLoadingService ) {
 
-      fcm.getToken();
-      if (fcm.listenToNotifications()) // Listen to incoming messages
-        {                   
-        fcm.listenToNotifications().subscribe((notif)=>
-           {
-            console.log(notif);
+    this.initApp();
+  }
 
-            if(notif.tap){
-              console.log("Received in background");
-              if (notif.key)
-              {
-                this.nav.setRoot("SellerPage",{sellerKey:notif.key});
-              }
+  async initApp(){
 
-            } else {
-              console.log("Received in foreground");
-                 // show a toast
-               const toast = toastCtrl.create({
-              message: notif.body,
-              duration: 10000,
-              position: 'top'
-              
-            });
-            toast.present();
-            }
 
-         
-          });                    
-      
-        }
-      
-      }
-      catch(error)
+    if (this.initTime)
+  {
+    await this.userService.getAllSellers();
+    console.log("REDIRECTING TO SIGNED PAGE");
+
+    this.fcm.getToken();
+
+    let stillWaiting=true;
+    let cameFromNotif=false;
+
+    let firstNotifPrmise=this.fcm.listenToNotifications().pipe(first()).toPromise().then(notif=>
       {
-        console.log(error);
+      if (stillWaiting)
+      {
+        this.transferToPageWithNotif(notif);
+        cameFromNotif=true;
       }
 
+      });
+    
+    
 
-if (this.initTime)
-{
-console.log("REDIRECTING TO SIGNED PAGE");
+    let promiseWait = new Promise((resolve, reject) => {
+    let wait = setTimeout(() => {
+        clearTimeout(wait);
+        resolve('Promise A win!');
+      }, 1000)
+    });
 
-  this.storage.get('tutoViewed').then(
-    viewed=>{
+    await Promise.race([
+      promiseWait,
+      firstNotifPrmise
+    ]);
+    stillWaiting=false;
+
+    if (!cameFromNotif)
+    {
+      let viewed=await this.storage.get('tutoViewed');
+   
       console.log("VALUE");
       console.log(viewed);
       if(!viewed)
@@ -97,45 +95,66 @@ console.log("REDIRECTING TO SIGNED PAGE");
         this.nav.setRoot('ProductsPage');
       }
     }
-  ) ;
 
-}
-
-this.initTime=false;
+    
+    
 
 
+   await this.platform.ready();
 
-// used for an example of ngFor and navigation
-this.pages = [
-{ title: 'חיפוש', component: 'ProductsPage', icon:'search' },
-{ title: 'מועדפים', component: 'FavoritesPage', icon:'star' },
+   
+      this.splashScreen.hide();
+    
 
-];
+  
+      // Get a FCM token
+     try{
 
-this.activePage=this.pages[0];
+      
+      if ( this.fcm.listenToNotifications()) // Listen to incoming messages
+        {                   
+          this.fcm.listenToNotifications().subscribe((notif)=>this.transferToPageWithNotif(notif));
+        }
+      
+      }
+      catch(error)
+      {
+        console.log(error);
+      }
+
+    }
 
 
-this.initializeApp();
-
-   });
-
-              
+      this.initTime=false;
+      this.activePage=this.pages[0]; 
+      
 
   }
 
  
-
-
-  initializeApp() {
+  transferToPageWithNotif(notif)
+  {
     
-      this.platform.ready().then( () => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      console.log("Platform is ready");
-       });
-  
-  
+      console.log("THE NOTIF");
+      console.log(notif);
+
+      if(notif.tap){
+        console.log("Received in background");
+        if (notif.key)
+        {
+          this.nav.setRoot("SellerPage",{sellerKey:notif.key});
+        
+          return;
+        }
+
+      } else {
+        console.log("Received in foreground");
+         // this.alertSvc.presentToast({message:notif.body});
+      }
+
   }
+
+
 
   openPage(page) {
     // Reset the content nav to have just this page

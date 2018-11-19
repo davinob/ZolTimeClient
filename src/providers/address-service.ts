@@ -8,6 +8,7 @@ import { Subject, Observable } from 'rxjs';
 
 import { map,first } from 'rxjs/operators';
 import { Storage } from '@ionic/storage';
+import * as fbConfig from './../providers/fbConfig'; 
 
 
 export interface Address{
@@ -54,7 +55,7 @@ export class AddressService{
 
   async findAddressDescriptionFromLatLng(lat:number,lng:number):Promise<string>
   {
-    let searchUrl:string="https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&language=iw&key=" +this.key;
+    let searchUrl:string="https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&language=iw&key=" +fbConfig.apiKey;
     
     console.log("SEARCH URL before timeout:"+searchUrl); 
     setTimeout(
@@ -72,10 +73,15 @@ export class AddressService{
     console.log(addressResp);
 
         let results=addressResp.results;
-        for(let j=0;j<results.length;j++)
+
+       for(let j=0;j<results.length;j++)
         {
           if (results[j].formatted_address)
           {
+            if (!(results[j].types[0]) || results[j].types[0]!="street_address")
+            {
+              continue;
+            }
 
             let address_components=results[j].address_components;
             let address="",streetNumber="",street="",city="";
@@ -110,11 +116,10 @@ export class AddressService{
 
   }
   
-  key:string="AIzaSyBrurdvN-JkU18waDg-_TidMJNKd75p3Ls";
       
   async searchAddresses(searchTerm:string)
-  {
-    let searchUrl:string="https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+searchTerm+"&types=geocode&components=country:il&language=iw&key="+this.key;
+  { 
+    let searchUrl:string="https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+searchTerm+"&types=geocode&components=country:il&language=iw&key="+fbConfig.apiKey;
     
     
 
@@ -167,31 +172,15 @@ export class AddressService{
   {
     let placeID=place.place_id;
     
-    let searchUrl:string="https://maps.googleapis.com/maps/api/place/details/json?placeid="+placeID+"&key="+this.key;
+    let searchUrl:string="https://maps.googleapis.com/maps/api/place/details/json?placeid="+placeID+"&key="+fbConfig.apiKey;
     let addressPos:Subject<any>=new Subject<any>();
 
      this.http.get(searchUrl).pipe(map(res => res.json())).subscribe(data => {
       let address:Address=<Address>{};
 
-     // console.log("POSITION OF ADDRESS AND OTHER INFO");
-    //  console.log(data);
-     for (let addressComp of data.result.address_components) {
-       if (addressComp.types[0]=="street_number")
-         address.streetNumber=addressComp.long_name;
-   
-       if (addressComp.types[0]=="route")
-         address.street=addressComp.long_name;
-      
-       if (addressComp.types[0]=="locality")
-         address.city=addressComp.long_name;
-      }
+    
       
       address.geoPoint=new firebase.firestore.GeoPoint(data.result.geometry.location.lat,data.result.geometry.location.lng);
-    //  console.log(data.result.geometry.location.lat);
-   //   console.log(data.result.geometry.location.lng);
-    // console.log("GEO POINT FROM ADDRESS");
-    // console.log(address.geoPoint);
-
       address.description=place.description;
 
       addressPos.next(address);

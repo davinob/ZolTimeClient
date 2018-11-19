@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import {  HttpClientModule } from '@angular/common/http';
 import { MyApp } from './app.component';
 
 
@@ -26,6 +26,8 @@ import * as fbConfig from './../providers/fbConfig';
 import { Geolocation } from '@ionic-native/geolocation';
 
 import { FcmService } from '../providers/fcm-service';
+
+
 import { CallNumber } from '@ionic-native/call-number';
 import { Firebase } from '@ionic-native/firebase';
 

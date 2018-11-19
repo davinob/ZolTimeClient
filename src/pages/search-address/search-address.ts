@@ -10,7 +10,7 @@ import { firestore } from 'firebase/app';
 import { UserService, SearchSettings } from '../../providers/user-service';
 import { fromEvent, interval } from 'rxjs';
 
-import { debounceTime,map } from 'rxjs/operators';
+import { debounceTime,map,first } from 'rxjs/operators';
 
 
 @IonicPage()
@@ -192,7 +192,7 @@ clearAddressSearch(){
   
   if (place.isAddress) 
   {
-    this.addressService.getPositionAddress(place).first().subscribe((address)=>
+    this.addressService.getPositionAddress(place).pipe(first()).subscribe((address)=>
     {
         console.log(address);
     

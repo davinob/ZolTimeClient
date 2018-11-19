@@ -18,10 +18,22 @@ export class FcmService {
     private userService:UserService
     
   ) {}
+
+
+
+  
+ 
+  
+ 
+
+
+
   
   async getToken() {
+
     console.log("GETTING TOKEN");
 
+ 
     this.fcm.onTokenRefresh().subscribe(token => {
       this.saveTokenToFirestore(token);
     });
@@ -41,6 +53,7 @@ export class FcmService {
     
     
     return this.saveTokenToFirestore(token)
+    
   }
 
   private saveTokenToFirestore(token) {
@@ -59,8 +72,11 @@ export class FcmService {
   }
   
 
+
+
+
   listenToNotifications(){
-      return this.fcm.onNotificationOpen();
+  return this.fcm.onNotificationOpen();
   }
 
 

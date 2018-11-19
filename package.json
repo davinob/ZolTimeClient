@@ -25,6 +25,7 @@
     "@ionic-native/core": "^4.17.0",
     "@ionic-native/date-picker": "^4.5.2",
     "@ionic-native/diagnostic": "^4.17.0",
+    "@ionic-native/fcm": "^4.17.0",
     "@ionic-native/file": "^4.4.2",
     "@ionic-native/file-transfer": "^4.4.2",
     "@ionic-native/firebase": "^4.9.2",

@@ -37,7 +37,7 @@ import { GlobalService } from './../providers/global-service';
 
 import * as firebase from "firebase";
 
-
+import { PhotoViewer } from '@ionic-native/photo-viewer';
   
 
 firebase.initializeApp(fbConfig.firebaseConfig);
@@ -75,7 +75,8 @@ firebase.initializeApp(fbConfig.firebaseConfig);
     CallNumber,
     LocationAccuracy,
     Diagnostic,
-    GlobalService
+    GlobalService,
+    PhotoViewer 
    
     
     

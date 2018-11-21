@@ -50,10 +50,14 @@ export class MyApp {
     await this.userService.getAllSellers();
     console.log("REDIRECTING TO SIGNED PAGE");
 
-    this.fcm.getToken();
-
     let stillWaiting=true;
     let cameFromNotif=false;
+
+    try{
+
+    this.fcm.getToken();
+
+   
 
     let firstNotifPrmise=this.fcm.listenToNotifications().pipe(first()).toPromise().then(notif=>
       {
@@ -64,6 +68,8 @@ export class MyApp {
       }
 
       });
+
+   
     
     
 
@@ -78,7 +84,15 @@ export class MyApp {
       promiseWait,
       firstNotifPrmise
     ]);
-    stillWaiting=false;
+    
+
+
+  }
+  catch(error)
+{
+  console.log(error);
+}
+stillWaiting=false;
 
     if (!cameFromNotif)
     {

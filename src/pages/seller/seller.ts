@@ -1,12 +1,12 @@
 import { Component,ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams,Content} from 'ionic-angular';
+import { IonicPage, NavController, NavParams,Content, AlertController} from 'ionic-angular';
 import { Seller, UserService, Product } from '../../providers/user-service';
 import { GlobalService } from '../../providers/global-service';
 import { Storage } from '@ionic/storage';
 import { CallNumber } from '@ionic-native/call-number';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 import * as globalConstants from '../../providers/globalConstants'; 
-
+import { PhotoViewer } from '@ionic-native/photo-viewer';
 
 @IonicPage()
 @Component({
@@ -26,7 +26,9 @@ export class SellerPage {
     public globalService:GlobalService,
     public storage:Storage,
     private callNumber: CallNumber,
-    public alertService: AlertAndLoadingService
+    public alertService: AlertAndLoadingService, 
+    public photoViewer:PhotoViewer,
+    public alertCtrl: AlertController
     ) {
     
     this.seller=this.navParams.data.seller;
@@ -45,6 +47,41 @@ export class SellerPage {
    }
 
 
+   daysNames=["א'","ב'","ג'","ד'","ה'","ו'","ש'"];
+
+   showDaysHours()
+   {
+     console.log("show DAYS HOURS");
+     let message="";
+     
+     console.log(this.seller.days);
+     for (let i=0; i<this.seller.days.length;i++)
+     {
+      message+="<div class='newLine'><span class='alertHourTitle'>"+this.daysNames[i]+":</span><span class='alertHourDetails'>  "+this.seller.days[i].startTime+" - "+this.seller.days[i].endTime+"</span></div>";
+     }
+
+     console.log(message);
+
+    this.alertCtrl.create(
+      {
+        title: 'שעות פתיחה',
+        message:message
+      }
+    ).present();
+
+
+   }
+
+   showPicture(product)
+   {
+    var options = {
+      share: false, // default is false
+      closeButton: true, // default is true
+      copyToReference: false // default is false
+    };
+
+     this.photoViewer.show( product.picture.url, '', options);
+   }
 
    callTel(num:string)
 {

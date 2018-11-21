@@ -33,6 +33,7 @@
     "@ionic-native/google-maps": "^4.3.2",
     "@ionic-native/launch-navigator": "^4.7.0",
     "@ionic-native/location-accuracy": "^4.17.0",
+    "@ionic-native/photo-viewer": "^4.17.0",
     "@ionic-native/splash-screen": "4.17.0",
     "@ionic-native/status-bar": "4.17.0",
     "@ionic/storage": "^2.1.3",
@@ -40,6 +41,7 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "angularfire2": "^5.0.0-rc.3",
     "call-number": "^1.0.1",
+    "com-sarriaroman-photoviewer": "^1.1.18",
     "cordova-android": "^7.1.1",
     "cordova-browser": "~5.0.3",
     "cordova-plugin-actionsheet": "^2.3.3",
@@ -106,7 +108,8 @@
       "cordova-plugin-firebase": {},
       "mx.ferreyra.callnumber": {},
       "cordova-plugin-request-location-accuracy": {},
-      "cordova.plugins.diagnostic": {}
+      "cordova.plugins.diagnostic": {},
+      "com-sarriaroman-photoviewer": {}
     },
     "platforms": [
       "windows",

@@ -59,6 +59,23 @@
 }
 
 
+
+
+
+
+
+.alertHourTitle
+{
+    position: sticky;
+}
+
+.alertHourDetails
+{
+    position: sticky;
+    right: 32px;
+}
+
+
 .sellerKosher
 {
  
@@ -189,8 +206,8 @@
 
 .alert-md .alert-wrapper
 {
-    background: linear-gradient(to bottom, #4B64F3, #34B3E6); /* Standard syntax */
-   
+    background: linear-gradient(to bottom, #1c2c8c, #34B3E6); /* Standard syntax */   
+    color:white
     
 }
 

@@ -450,13 +450,19 @@ isSellerFavorite(seller:Seller):boolean
       return {open:true, message: "פתוח היום עד "+sellerEndTime};
     }
     else
-    if (sellerStartTime==sellerEndTime) //closed today
+    if ( 
+      (timeH<startH ||(timeH==startH && timeM<startM))
+       )
+    {
+      return {open:false, message:"פותח היום ב"+sellerStartTime};
+    }
+    else  if (sellerStartTime==sellerEndTime) //closed today
     {
       return {open:false, message: "סגור היום"};
     }
     else
     
-      return {open:false, message: "שעות פתיחה היום: "+sellerStartTime+ " - "+ sellerEndTime};
+      return {open:false, message: "סגור כעט"};
     
     
 

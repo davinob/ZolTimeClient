@@ -129,6 +129,8 @@
     <allow-navigation href="http://10.100.102.5:8103" sessionid="7162d406" />
     <allow-navigation href="http://10.100.102.5:8107" sessionid="1fc24996" />
     <allow-navigation href="http://10.100.102.5:8108" sessionid="1578ef74" />
+    <plugin name="com-sarriaroman-photoviewer" spec="^1.1.18" />
+    <allow-navigation href="http://10.100.102.5:8101" sessionid="a83e896a" />
     <engine name="windows" spec="^6.0.1" />
     <engine name="browser" spec="~5.0.3" />
     <engine name="android" spec="^7.1.1" />

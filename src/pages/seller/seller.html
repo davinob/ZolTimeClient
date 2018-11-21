@@ -22,12 +22,12 @@
                   {{seller.hashgahaDescription}}
             </span>
       </ion-row>
-      <ion-row >
-              <span [ngClass]="userService.openHours(seller).open? 'sellerOpen' : 'sellerClose'" >
+      <ion-row>
+              <span [ngClass]="userService.openHours(seller).open? 'sellerOpen' : 'sellerClose'" (click)="showDaysHours()">
                       {{userService.openHours(seller).message}}
               </span>
       </ion-row>
-         
+        
            <ion-row class="sellerDetails">
               <span class="sellerDescription"> {{seller.description}}</span>
             </ion-row>
@@ -61,7 +61,7 @@
           <ion-row class="product" *ngFor="let product of categoProducts, let i=index"  [ngClass]="i%2==0? 'product one' :'product two'">
             <ion-col col-4> 
               <div class="prodPicBox">
-                <div class="picPic" [style.backgroundImage]="getURL(product.picture.url)"></div>
+                <div class="picPic" (click)="showPicture(product)" [style.backgroundImage]="getURL(product.picture.url)"></div>
                       
               </div>
             </ion-col>

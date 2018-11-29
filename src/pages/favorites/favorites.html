@@ -72,7 +72,9 @@
                  
                             <div class="scrolling-products" >
                                     <div *ngFor="let product of getSellerProducts(seller)" [ngClass]="product.bestPromo? 'product productPromo' :'product'" [hidden]="!product.toShow">
-                                            <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
+                                        <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
+                                     
+                                        <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
                                             <span *ngIf="product.bestPromo"  class="productPrice"><del>{{product.originalPrice}} ₪</del>  {{product.bestPromo.price}} ₪ </span>
                                             
                                             <div class="prodPic">
@@ -80,7 +82,6 @@
                                                   </div>
                                          
                                          
-                                            <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
                                         <span class="productName">{{product.name}}</span>
                                         <span *ngIf="product.bestPromo" class="productQty"> Only {{product.bestPromo.quantity}} left...</span>
                                     </div>

@@ -83,7 +83,7 @@ export class ProductsPage {
   subCategorySelected:string=null;
 
   selectCategory(catego:any){
-    console.log("CATEGO SELECTED:"+catego);
+    //console.log("CATEGO SELECTED:"+catego);
     if (catego==this.categorySelected)
     {
       this.categorySelected=null;
@@ -98,7 +98,7 @@ export class ProductsPage {
   }
 
   selectSubCategory(subCatego:any){
-    console.log("Sub CATEGO SELECTED:"+subCatego);
+    //console.log("Sub CATEGO SELECTED:"+subCatego);
     if (subCatego==this.subCategorySelected)
     {
       this.subCategorySelected=null;
@@ -183,12 +183,12 @@ export class ProductsPage {
       this.sellersFiltered=this.sellersFiltered.concat(Object.assign({}, seller)); 
     });
   
-    console.log(this.sellersFiltered);
+    //console.log(this.sellersFiltered);
 
     if (!this.categorySelected)
     return;
 
-    console.log(this.sellersFiltered);
+    //console.log(this.sellersFiltered);
     
     this.sellersFiltered=this.sellersFiltered.filter(seller=>
       {
@@ -218,7 +218,7 @@ export class ProductsPage {
 
   async initPosition()
   {
-    console.log("INIT POSITION");
+    //console.log("INIT POSITION");
     this.userService.userSearchSettings.position= this.addressService.createPosition(0,0,this.noLocationStr);
    
     try{
@@ -226,19 +226,19 @@ export class ProductsPage {
     
     let resp= await this.getUserPosition();
 
-      console.log("INIT POSITION");
-      console.log(resp);
-      console.log("AFTER GETTING POSITION");
+      //console.log("INIT POSITION");
+      //console.log(resp);
+      //console.log("AFTER GETTING POSITION");
     
       this.userService.userSearchSettings.position=await this.addressService.createPositionWithCurrentLocation(resp.coords.latitude,resp.coords.longitude);
-      console.log("POSITION NEWW");
-      console.log(this.userService.userSearchSettings.position);
+      //console.log("POSITION NEWW");
+      //console.log(this.userService.userSearchSettings.position);
 
       
      }
      catch(error) 
      {
-       console.log("ERROR FOR GEOLOCATION");
+       //console.log("ERROR FOR GEOLOCATION");
      this.userService.userSearchSettings.position=this.addressService.createPosition(0,0,this.noLocationStr);
   
     }
@@ -255,17 +255,17 @@ export class ProductsPage {
           let enabled=await this.diagnostic.isLocationEnabled();
 
          
-            console.log("GETUSERPOS1");
+            //console.log("GETUSERPOS1");
             if (enabled) {
               if (this.platform.is('android')) {
-                console.log("GETUSERPOS2");
+                //console.log("GETUSERPOS2");
                 this.diagnostic.getLocationMode().then(locationMode => {
-                  console.log("GETUSERPOS3");
+                  //console.log("GETUSERPOS3");
                   if (locationMode === HIGH_ACCURACY) {
-                    console.log("GETUSERPOS4");
+                    //console.log("GETUSERPOS4");
                     this.geolocation.getCurrentPosition({timeout: 30000, maximumAge: 0, enableHighAccuracy: true}).then(pos => {
                      
-                      console.log("GETUSERPOS5");
+                      //console.log("GETUSERPOS5");
                        resolve({
                         coords: {
                           latitude: pos.coords.latitude,
@@ -274,11 +274,11 @@ export class ProductsPage {
                       });
                     }).catch(error => resolve(error));
                   } else {
-                    console.log("GETUSERPOS6");
+                    //console.log("GETUSERPOS6");
                     this.geolocation.getCurrentPosition({timeout: 30000,enableHighAccuracy:false}).then(
                       position => {
-                        console.log("GETUSERPOS6.1");
-                        console.log(position);
+                        //console.log("GETUSERPOS6.1");
+                        //console.log(position);
                         resolve(position);
                       }, error => resolve(error)
                     );
@@ -286,7 +286,7 @@ export class ProductsPage {
                 });
               } else {
                 this.geolocation.getCurrentPosition({timeout: 30000, maximumAge: 0, enableHighAccuracy: true}).then(pos => {
-                  console.log("GETUSERPOS8");
+                  //console.log("GETUSERPOS8");
                   resolve({
                     coords: {
                       latitude: pos.coords.latitude,
@@ -296,16 +296,16 @@ export class ProductsPage {
                 }).catch(error => resolve(error));
               }
             } else {
-              console.log("GETUSERPOS9.1");
+              //console.log("GETUSERPOS9.1");
               this.locationAccuracy.request(1).then(result => {
-                console.log("GETUSERPOS9");
-                console.log(result);
+                //console.log("GETUSERPOS9");
+                //console.log(result);
                 if (result) {
-                  console.log("GETUSERPOS10");
+                  //console.log("GETUSERPOS10");
                   this.geolocation.getCurrentPosition({timeout: 30000,enableHighAccuracy:false}).then(
                     position => {
-                      console.log("GETUSERPOS11");
-                      console.log(position);
+                      //console.log("GETUSERPOS11");
+                      //console.log(position);
                       resolve(position);
                     }, error => resolve(error)
                   );
@@ -345,7 +345,7 @@ export class ProductsPage {
 
   shouldShowSeller(seller:Seller):boolean
   {
-    console.log(seller);
+    //console.log(seller);
   return !this.userService.userSearchSettings.onlyShowPromotion || seller.hasAtLeastOnePromo;
   }
 
@@ -368,10 +368,10 @@ export class ProductsPage {
     {
       this.content.resize();
     }
-    console.log("HAS SUBSCRIBED TO FETCH SELLERS?");
-    console.log(this.lookingForSellerSubscribed);
+    //console.log("HAS SUBSCRIBED TO FETCH SELLERS?");
+    //console.log(this.lookingForSellerSubscribed);
     this.pageIsShown=true;
-    console.log("ION VIEW DID ENTER");
+    //console.log("ION VIEW DID ENTER");
     this.alreadyShownAfterFirstEnter=false;
     if (this.justWentToSeller)
     {
@@ -381,7 +381,7 @@ export class ProductsPage {
 
     if (this.userService.doneLookingForSellersCompleteValue)
     {
-      console.log("FILTERING HERE");
+      //console.log("FILTERING HERE");
       this.filterSellersAndGetTheirProdsAndProms();
      }
 
@@ -409,7 +409,7 @@ export class ProductsPage {
         this.lookingForProdsSubscribed=true;
         if (!this.pageIsShown)
         return;
-        console.log("IN THE SUBSCRIBE isLookingforProds2");
+        //console.log("IN THE SUBSCRIBE isLookingforProds2");
 
         if  (isLookingforProds)
         {
@@ -417,8 +417,8 @@ export class ProductsPage {
         }
         else
         {
-          console.log("ABOUT TO FILTER PER CATEGO AND SUB CATEGO:");
-          console.log(this.userService.allSellersFiltered);
+          //console.log("ABOUT TO FILTER PER CATEGO AND SUB CATEGO:");
+          //console.log(this.userService.allSellersFiltered);
 
           this.filterPerCategoryAndSubCategory(this.userService.allSellersFiltered);
           this.alertService.dismissLoading();
@@ -452,12 +452,12 @@ export class ProductsPage {
       
   async filterSellersAndGetTheirProdsAndProms()
   {
-    console.log(this.userService.userSearchSettings);
-    console.log("GETTING SELLERS");
-    console.log(this.userService.userSearchSettings.position.description);
+    //console.log(this.userService.userSearchSettings);
+    //console.log("GETTING SELLERS");
+    //console.log(this.userService.userSearchSettings.position.description);
 
     if   (this.hasNoLocationFound()) {
-      console.log(this.userService.userSearchSettings);
+      //console.log(this.userService.userSearchSettings);
 
       this.alertService.showLoading(); 
 
@@ -489,14 +489,14 @@ hasNoLocationFound():boolean
 
 goToSeller(seller:Seller,event:MouseEvent)
 {
-  console.log(event);
-  console.log(event.srcElement.className);
+  //console.log(event);
+  //console.log(event.srcElement.className);
   if (event.srcElement.className.includes('star-outline')
     ||event.srcElement.className.includes('star'))
   return;
 
   
-  console.log("GO TO SELLER");
+  //console.log("GO TO SELLER");
   this.justWentToSeller=true;
   this.navCtrl.push("SellerPage",{seller:seller});
 }

@@ -303,7 +303,7 @@ clearAddressesHistory()
 
 
 
-addAddressToHistory(position:any)
+async addAddressToHistory(position:any)
 {
  // console.log("POSITION");
  // console.log(position);
@@ -330,7 +330,7 @@ console.log("POS BEING SAVED");
 console.log(posToSave);
 
 // Or to get a key/value pair
-this.getAddressesHistory().then((placesFromHistory) => {
+let placesFromHistory=await this.getAddressesHistory();
   if(!placesFromHistory)
  placesFromHistory=new Array<any>();
  
@@ -339,42 +339,62 @@ this.getAddressesHistory().then((placesFromHistory) => {
  console.log(posToSave);
 
 //if same address already in the list, we won't add it:
-if (posToSave.isAddress)
-{
+
   for (let index = 0; index < placesFromHistory.length; index++) {
     const place = placesFromHistory[index];
-    if ((place.description==posToSave.description)||(place.lat==posToSave.lat)&&(place.lng==posToSave.lng))
+
+    if (this.areSamePlaces(posToSave,place))
     {
-      console.log("NO NEED TO SAVE");
-      //no need to save the place
+      this.putHistoryAddressToFirstPlace(posToSave);
       return;
     }
+  
   }  
-}  
-else
-{
-  for (let index = 0; index < placesFromHistory.length; index++) {
-    const place = placesFromHistory[index];
-    if (place.key==posToSave.key)
-    {
-      console.log("NO NEED TO SAVE");
-      //no need to save the place
-      return;
-    }
-  }  
-}
-
-
-
  
 placesFromHistory.unshift(posToSave);
 if (placesFromHistory.length>=10)
   placesFromHistory.pop();
-this.storage.set('locations',placesFromHistory );
-});
+
+  this.saveAddressesHistory(placesFromHistory);
+
 }
 
 
+saveAddressesHistory(placesFromHistory)
+{
+  this.storage.set('locations',placesFromHistory );
+}
+
+areSamePlaces(place1,place2):boolean
+{
+  if (place1.isAddress)
+    {
+    if ((place2.description==place1.description)||(place2.lat==place1.lat)&&(place2.lng==place1.lng))
+    {
+      return true;
+    }
+    }
+    else
+    {
+      if (place2.key==place1.key)
+      {
+        return true;
+      }
+    }
+}
+
+
+
+async putHistoryAddressToFirstPlace(position)
+{
+  let addressesHistory=await this.getAddressesHistory();
+  
+  addressesHistory=addressesHistory.filter(place=>{return !this.areSamePlaces(place,position)});
+
+  addressesHistory.unshift(position);
+
+  await this.saveAddressesHistory(addressesHistory);
+}
 
 
 getAddressesHistory():Promise<any[]>

@@ -31,7 +31,7 @@ export class SellerPage {
     public alertCtrl: AlertController
     ) {
     
-    this.seller=this.navParams.data.seller;
+      this.seller=this.navParams.data.seller;
     if (!this.seller)
     {
       let sellerKey=this.navParams.data.sellerKey;
@@ -39,11 +39,6 @@ export class SellerPage {
     }
 
     
-
-    console.log("MY SELLER is:");
-    console.log(this.seller);
-    this.userService.fetchSellerProdsAndPromsReturnNeedsToWait(this.seller);
-    this.initSubCategories();
    }
 
 
@@ -94,9 +89,23 @@ export class SellerPage {
        
   }
 
-  ionViewDidEnter()
+   ionViewDidEnter()
   {
-    console.log('ionViewDidEnter SellerPage'); 
+    this.pageIsShown=true;
+    this.initStuff();
+  }
+
+  async initStuff()
+{
+    console.log("MY SELLER is:");
+    console.log(this.seller);
+    await this.userService.fetchSellerProdsAndPromsReturnNeedsToWait(this.seller);
+    this.initSubCategories();
+    this.subscribeToRefreshProductsAndCategos();
+
+
+    console.log('ionViewDidEnter SellerPageEEE'); 
+    console.log(this.subCategoriesToShow);
     if (this.content)
     {
       this.content.resize();
@@ -115,39 +124,10 @@ export class SellerPage {
   }
 
   subCategories:any[]=new Array();
-  
-  wasFiltered:boolean=false;
-  
-  getSubCategories():any[]{
-  
-    if (!this.wasFiltered)
-    {
-      if (this.seller.productsPerCategory)
-      {
-      this.subCategories=this.subCategories.filter(subCatego=>
-        {
-          return this.seller.productsPerCategory[subCatego];
-  
-        });
-        this.wasFiltered=true;
-      }
-    }
-    return this.subCategories;
-  }
+  subCategoriesToShow:any[]=null;
 
-  getSubCategoriesForShow():any[]
-  {
-    let subCategos:Array<any>;
-    if (!this.subCategorySelected)
-    subCategos=this.subCategories;
-    else
-    subCategos= [this.subCategorySelected];
 
-    return subCategos.filter(catego=>
-    {
-      return this.getCategoryProducts(catego) && this.getCategoryProducts(catego).length>0;
-    });
-  }
+  
 
   initSubCategories(){
     let category=null;
@@ -159,10 +139,12 @@ export class SellerPage {
         {
           console.log(category.subCategories);
           this.subCategories=category.subCategories;
-          return;
+          break;
         }
     }
-    return new Array();
+   
+    this.setCategoProductsToShow();
+
   }
 
 
@@ -184,6 +166,8 @@ export class SellerPage {
     this.subCategorySelected=subCatego;
     }
 
+    
+
   }
 
 
@@ -202,6 +186,63 @@ export class SellerPage {
     return this.seller.products;
 
   }
+
+  lookingForProdsSubscribed=false;
+  pageIsShown:boolean;
+
+  ionViewDidLeave()
+  {
+    this.pageIsShown=false;
+  }
+
+
+
+setCategoProductsToShow()
+{
+  console.log("SUB CATEGO TO SHOW");
+  this.subCategoriesToShow=this.subCategories.filter(subCatego=>
+    {
+
+     if (!this.getCategoryProducts(subCatego))
+      return false;
+
+      if (this.getCategoryProducts(subCatego).length==0)
+      return false;
+
+      //at least one to show:
+      let toShow= this.getCategoryProducts(subCatego).filter(product=>{return product.toShow}).length>0;
+      console.log("TO SHOW:"+toShow);
+      return toShow;
+    });
+
+  }
+
+  isCategoProdsToShow(catego)
+  {
+    return !this.subCategorySelected || this.subCategorySelected==catego;
+  }
+
+  subscribeToRefreshProductsAndCategos()
+  {
+    if (!this.lookingForProdsSubscribed)
+    {
+      this.userService.lookingForProducts.subscribe(isLookingforProds=>
+        {
+          this.lookingForProdsSubscribed=true;
+          if (!this.pageIsShown)
+          return;
+
+
+          this.setCategoProductsToShow();
+          
+
+     });
+   }
+  }
+
+
+
+
 
 
 

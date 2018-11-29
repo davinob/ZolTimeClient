@@ -10,9 +10,9 @@ import { Injectable } from '@angular/core';
   
    
 import { Storage } from '@ionic/storage';
-import { Subject } from 'rxjs';
+import { Subject, interval } from 'rxjs';
 
-import { merge  } from 'rxjs/operators';
+import { merge } from 'rxjs/operators';
 
   
   
@@ -152,16 +152,16 @@ export class UserService {
       {
       this.storage.get("favorites").then((favs:Array<string>) => {
         this.myFavorites=favs;
-        console.log("FAVORITES");
-        console.log(this.myFavorites);
+        //console.log("FAVORITES");
+        //console.log(this.myFavorites);
         });
       }
 
 
      setSellerHashgahaDescription(seller:any)
       {
-        console.log(seller.hashgaha);
-        console.log(seller);
+        //console.log(seller.hashgaha);
+        //console.log(seller);
         if (!seller.hashgaha)
         return;
 
@@ -184,13 +184,13 @@ export class UserService {
           return;
         }
         this.myFavorites=this.myFavorites.filter(fav=>fav!=seller.key);
-        console.log(seller);
-        console.log(this.myFavorites);
+        //console.log(seller);
+        //console.log(this.myFavorites);
         
         this.storage.set("favorites",this.myFavorites);
         if (this.userFCMToken)
            await this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).delete();
-        console.log("REMOVE FROM FAVORITES");
+        //console.log("REMOVE FROM FAVORITES");
         return;
     
     }
@@ -204,18 +204,18 @@ export class UserService {
     }
 
     this.myFavorites.push(seller.key);
-    console.log(seller);
-    console.log(this.myFavorites);
+    //console.log(seller);
+    //console.log(this.myFavorites);
     
-    console.log(this.userFCMToken);
+    //console.log(this.userFCMToken);
 
     if (this.userFCMToken)
     {
      await this.favoritesCollectionRef.doc(seller.key).collection("devices").doc(this.userFCMToken).set({token:this.userFCMToken});
-    console.log("Favorites added : "+ this.favoritesCollectionRef+"seller.key");
+    //console.log("Favorites added : "+ this.favoritesCollectionRef+"seller.key");
     }
     this.storage.set("favorites",this.myFavorites);
-    console.log("ADDED TO FAVORITES");
+    //console.log("ADDED TO FAVORITES");
 }
 
 
@@ -232,11 +232,13 @@ isSellerFavorite(seller:Seller):boolean
 
 
 
-      public getAllSellers()
+      async  getAllSellers()
       {
         this.doneLookingForSellers.next(false);
-        return this.sellersCollectionRef.get().then(sellersInfos =>
-          {
+
+        try
+        {
+        let sellersInfos=await this.sellersCollectionRef.get()
 
             if (!sellersInfos || sellersInfos.empty)
             {
@@ -249,22 +251,24 @@ isSellerFavorite(seller:Seller):boolean
             let seller=doc.data();  
             seller.key=uid;
             this.setSellerHashgahaDescription(seller);
-            console.log(seller);
+            //console.log(seller);
 
              this.allSellers.push(seller);
              this.allSellersFiltered.push(seller);
            });
-           
-          }).then(()=>{
+
+          }
+          catch( error)
+          {
+            //console.log(error);
+          }
+          finally
+          {
             this.doneLookingForSellers.next(true);
             this.doneLookingForSellersCompleteValue=true;
-          }).catch(error=>{
-            console.log(error);
-            this.doneLookingForSellers.next(true);
-            this.doneLookingForSellersCompleteValue=true;
+          }
       
-      
-          });
+         
       }
 
 
@@ -300,10 +304,12 @@ isSellerFavorite(seller:Seller):boolean
    }
 
   
+   subscribedForRecalculatingPromo=false;
+
   async filterSellersByKeysAndGetTheirProdsAndDeals(keys:Array<string>)
   {
-    console.log(keys);
-    console.log(this.allSellers);
+    console.log("filterSellersByKeysAndGetTheirProdsAndDeals");
+    //console.log(this.allSellers);
   
     this.lookingForProducts.next(true);
   
@@ -331,13 +337,27 @@ isSellerFavorite(seller:Seller):boolean
 
       await this.allSellersFiltered.forEach(async seller=>{
        toWait=await this.fetchSellerProdsAndPromsReturnNeedsToWait(seller);
-          console.log("SELLER IN PROMISE");
-          console.log(seller);
+      
+       if (!this.subscribedForRecalculatingPromo)
+       {
+         console.log("SUBSCRIBING TO INTERVAL FOR UPDATING CALCULATION");
+       interval(60*1000).subscribe( sub=>
+        {
+          this.subscribedForRecalculatingPromo=true;
+          console.log("CALCULATING AGAIN !");
+            this.allSellersFiltered.forEach(seller=>{
+           this.findAndSetBestPromoForAllProductsOfSeller(seller);
+           this.lookingForProducts.next(false);
+         });
+        });
+      }
+          //console.log("SELLER IN PROMISE");
+          //console.log(seller);
          });
 
     if (!toWait)
     {
-      console.log("STOP LOOKING FOR PRODS FROM METHOD 2");
+      //console.log("STOP LOOKING FOR PRODS FROM METHOD 2");
       this.lookingForProducts.next(false);
     }
 }
@@ -353,10 +373,10 @@ isSellerFavorite(seller:Seller):boolean
 
   this.allSellersFiltered=new Array();
 
-  console.log("queryAllBasedOnFilters");
+  //console.log("queryAllBasedOnFilters");
   if (!this.userSearchSettings.position.geoPoint)
   {
-    console.log("אין מיקום");
+    //console.log("אין מיקום");
     this.lookingForProducts.next(false);
     return;
   }
@@ -389,14 +409,14 @@ isSellerFavorite(seller:Seller):boolean
     
         let distance=this.addressService.distance(seller.address.geoPoint,this.userSearchSettings.position.geoPoint);
         distance=Math.round(distance*100)/100;
-        console.log("DISTANCE:" +distance);
+        //console.log("DISTANCE:" +distance);
        seller.distanceFromPosition=Math.round(distance*this.nbMinPerKm);
    
        toWait= await this.fetchSellerProdsAndPromsReturnNeedsToWait(seller);
 
    
-        console.log("SELLER IN PROMISE");
-        console.log(seller);
+        //console.log("SELLER IN PROMISE");
+        //console.log(seller);
       });
 
     
@@ -409,9 +429,24 @@ isSellerFavorite(seller:Seller):boolean
         
       });
 
+
+      if (!this.subscribedForRecalculatingPromo)
+       {
+        this.subscribedForRecalculatingPromo=true;
+         console.log("SUBSCRIBING TO INTERVAL FOR UPDATING CALCULATION");
+       interval(60*1000).subscribe( sub=>
+        {
+          console.log("CALCULATING AGAIN !");
+            this.allSellersFiltered.forEach(seller=>{
+           this.findAndSetBestPromoForAllProductsOfSeller(seller);
+           this.lookingForProducts.next(false);
+         });
+        });
+      }
+
       if (!toWait)
       {
-        console.log("STOP LOOKING FOR PROD FROM METHOD 1");
+        //console.log("STOP LOOKING FOR PROD FROM METHOD 1");
         this.lookingForProducts.next(false);
       }
      
@@ -473,11 +508,11 @@ isSellerFavorite(seller:Seller):boolean
 
 async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
 {
-  console.log("SELLER before return PROMISE");
+  //console.log("SELLER before return PROMISE");
 
   
-  console.log(seller.products);
-  console.log(seller.promotions);
+  //console.log(seller.products);
+  //console.log(seller.promotions);
 
   if (!seller.productsAlreadyFetched)
   {
@@ -493,14 +528,14 @@ async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
 
       seller.products=new Array();
 
-        console.log("PRODUCTS");
+        //console.log("PRODUCTS");
       
 
         snapshot.forEach(product=>{
              seller.products.push(product.data());
         });
 
-        console.log(seller.products);
+        //console.log(seller.products);
         seller.productsAlreadyFetched=true;
 
        sellerProdsObserable.next(true);
@@ -511,7 +546,7 @@ async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
               promotionsInfo =>
               { 
                 seller.promotions=new Array();
-                  console.log("PROMOTIONSSS");
+                  //console.log("PROMOTIONSSS");
                
                   promotionsInfo.forEach(promotion=>{
                     seller.promotions.push(promotion.data());
@@ -522,10 +557,10 @@ async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
         
       sellerProdsObserable.pipe(merge(sellerPromsObserable)).subscribe(()=>
          {
-             console.log("DOING UPDATE OF PRODS/PROMS");
+             //console.log("DOING UPDATE OF PRODS/PROMS");
                 this.findAndSetBestPromoForAllProductsOfSeller(seller);
                 this.allSellersHasBeenUpdated.next(true);
-                console.log("STOP LOOKING FOR PROD FROM OBS");
+                //console.log("STOP LOOKING FOR PROD FROM OBS");
                 this.lookingForProducts.next(false);
                
           }
@@ -537,9 +572,9 @@ async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
     else
     {
 
-      console.log("SELLER before return PROMISE 1");
+      //console.log("SELLER before return PROMISE 1");
       this.findAndSetBestPromoForAllProductsOfSeller(seller);
-      console.log("SELLER before return PROMISE 2");
+      //console.log("SELLER before return PROMISE 2");
     
       return false;
     }
@@ -548,11 +583,26 @@ async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
 }
 
 
+setToShowBasedOnZolTimeProductsCategory(products:Array<any>):Array<any>
+{
+  let theProds= products.map( product=> 
+    {
+      product.toShow= product.bestPromo || product.category!="מבצע ZolTime";
+      //console.log("IN FILTER ZOLTIME FOR EACH");
+        //console.log(product);
+    return product;
+    });
+    //console.log("IN FILTER ZOLTIME");
+    //console.log(theProds);
+    return theProds;
+}
+
+
 findAndSetBestPromoForAllProductsOfSeller(seller:any){
-  console.log("findAndSetBestPromoForAllProducts:")
+  //console.log("findAndSetBestPromoForAllProducts:")
  
 
-    console.log(seller);
+    //console.log(seller);
     let hasFoundOnePromo=false;
     if (!seller)
     return;
@@ -599,10 +649,10 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
         
           if (prodKey==product.key)
           {
-            console.log("PRICE COMPARISONS");
+            //console.log("PRICE COMPARISONS");
             if (lastGoodPromo)
             {
-            console.log(prodPromo.reducedPrice+"vs"+lastGoodPromo.price);
+            //console.log(prodPromo.reducedPrice+"vs"+lastGoodPromo.price);
             }
 
             if (lastGoodPromo==null ||(prodPromo.reducedPrice<lastGoodPromo.price)&&(prodPromo.currentQuantity>0))
@@ -614,8 +664,8 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
                             name:promo.name,
                             promoTimes:promoTimes};
 
-                    console.log("lastGoodPromo:");
-                            console.log(lastGoodPromo);
+                    //console.log("lastGoodPromo:");
+                            //console.log(lastGoodPromo);
             }
           } 
         }
@@ -623,6 +673,11 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
   
       seller.products[indexProd].bestPromo=lastGoodPromo;
       });
+      //console.log("AVANT FILTER ZOLTIME PRODS");
+      //console.log(seller.products);
+      seller.products=this.setToShowBasedOnZolTimeProductsCategory(seller.products);
+      //console.log("APRES FILTER ZOLTIME PRODS");
+      //console.log(seller.products);
 
       seller.products=seller.products.sort((prod1,prod2)=>
       {
@@ -657,6 +712,8 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
 
       seller.products.forEach(
       product=>{
+        if (!product)
+          return;
         if (productsPerCategos[product.category])
         {
         (<Array<any>>productsPerCategos[product.category]).push(product);
@@ -678,13 +735,13 @@ async searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>)
  
    let addresses=await this.addressService.searchAddresses(searchTerm);
     
-   console.log("SEARCHED ADDRESSES");
-   console.log(addresses);
+   //console.log("SEARCHED ADDRESSES");
+   //console.log(addresses);
      
       let sellersAndAddresses=new Array();
 
       sellersAndAddresses=sellersAndAddresses.concat(sellersNames,addresses);
-      console.log(sellersAndAddresses);
+      //console.log(sellersAndAddresses);
     
       return sellersAndAddresses;
  

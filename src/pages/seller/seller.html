@@ -39,7 +39,7 @@
 
    <div class="scrolling-wrapper">
     <div class="scrolling-wrapperSubCategorySelected">
-      <div [hidden]='!wasFiltered' *ngFor="let subCategory of getSubCategories()" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
+      <div  *ngFor="let subCategory of subCategoriesToShow" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
         <span class="categoryName">{{subCategory}}</span>
       </div>
     </div>
@@ -53,12 +53,12 @@
 
 
   <div class="products_enabled">
-    <ion-list class="listOfProdsCatego" *ngIf="getSubCategoriesForShow()">
-      <div *ngFor="let category of getSubCategoriesForShow()" text-wrap>
+    <ion-list class="listOfProdsCatego" *ngIf="subCategoriesToShow">
+  <div *ngFor="let category of subCategoriesToShow" text-wrap [hidden]="!isCategoProdsToShow(category)">
         <div class="categoTitle">{{category}}</div>
         <ion-grid class="listOfProds" *ngIf="getCategoryProducts(category) as categoProducts ">
 
-          <ion-row class="product" *ngFor="let product of categoProducts, let i=index"  [ngClass]="i%2==0? 'product one' :'product two'">
+          <ion-row class="product" *ngFor="let product of categoProducts, let i=index"  [ngClass]="i%2==0? 'product one' :'product two'"  [hidden]="!product.toShow">
             <ion-col col-4> 
               <div class="prodPicBox">
                 <div class="picPic" (click)="showPicture(product)" [style.backgroundImage]="getURL(product.picture.url)"></div>

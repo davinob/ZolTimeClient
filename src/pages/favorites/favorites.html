@@ -71,7 +71,7 @@
             </ion-grid>
                  
                             <div class="scrolling-products" >
-                                    <div *ngFor="let product of getSellerProducts(seller)" [ngClass]="product.bestPromo? 'product productPromo' :'product'" >
+                                    <div *ngFor="let product of getSellerProducts(seller)" [ngClass]="product.bestPromo? 'product productPromo' :'product'" [hidden]="!product.toShow">
                                             <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
                                             <span *ngIf="product.bestPromo"  class="productPrice"><del>{{product.originalPrice}} ₪</del>  {{product.bestPromo.price}} ₪ </span>
                                             

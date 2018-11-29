@@ -150,11 +150,12 @@ clearAddressSearch(){
 
  
 
-  selectAddressFromHistory(position:any)
+  async selectAddressFromHistory(position:any)
   {
     this.addresses=null;
     this.searchAddress=position.description;
     
+    await this.addressService.putHistoryAddressToFirstPlace(position);
     
     if (position.isAddress)
     {

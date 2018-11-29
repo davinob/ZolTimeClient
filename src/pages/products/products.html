@@ -110,7 +110,8 @@
             </ion-grid>
                  
                             <div class="scrolling-products" >
-                                    <div *ngFor="let product of getSellerProducts(seller)" [ngClass]="product.bestPromo? 'product productPromo' :'product'" >
+                                    <div *ngFor="let product of getSellerProducts(seller) " [ngClass]="product.bestPromo? 'product productPromo' :'product'" [hidden]="!product.toShow">
+                                        
                                             <span *ngIf="!product.bestPromo" class="productPrice">{{product.originalPrice}} ₪</span>
                                             <span *ngIf="product.bestPromo"  class="productPrice"><del>{{product.originalPrice}} ₪</del>  {{product.bestPromo.price}} ₪ </span>
                                             <div class="prodPic">
@@ -119,8 +120,10 @@
                                                  <span *ngIf="product.bestPromo" class="promoTime"><ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span> 
                                         <span class="productName">{{product.name}}</span>
                                         <span *ngIf="showPromoQty(product)" class="productQty"> רק {{product.bestPromo.quantity}} נשארים...</span>
+                                        
                                     </div>
                                     <div class="seeOthers"><p class="cardText" >...</p></div>
+
                                 </div>
             </ion-card>
         </ion-list>

@@ -39,10 +39,9 @@
     "@ionic/storage": "^2.2.0",
     "@ngx-translate/core": "^11.0.0",
     "@ngx-translate/http-loader": "^4.0.0",
-    "angularfire2": "^5.0.0-rc.3",
     "call-number": "^1.0.1",
     "com-sarriaroman-photoviewer": "^1.1.18",
-    "cordova-android": "^7.1.1",
+    "cordova-android": "6.4.0",
     "cordova-browser": "~5.0.3",
     "cordova-plugin-actionsheet": "^2.3.3",
     "cordova-plugin-camera": "^4.0.3",
@@ -52,7 +51,6 @@
     "cordova-plugin-dialogs": "^2.0.1",
     "cordova-plugin-firebase": "^2.0.5",
     "cordova-plugin-geolocation": "^4.0.1",
-    "cordova-plugin-googlemaps": "^2.1.1",
     "cordova-plugin-ionic-webview": "^2.2.0",
     "cordova-plugin-photo-library": "^2.1.0",
     "cordova-plugin-request-location-accuracy": "^2.2.3",
@@ -84,10 +82,6 @@
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
-      "cordova-plugin-googlemaps": {
-        "API_KEY_FOR_ANDROID": "AIzaSyBmxI971QDou4stkeb_17cwj5zQRlN9KtQ",
-        "API_KEY_FOR_IOS": "AIzaSyAjWA95pZuVvxzbhj0Q4NTU1shF0LQW1VU"
-      },
       "cordova-sqlite-storage": {},
       "cordova-plugin-device": {},
       "cordova-plugin-ionic-webview": {},

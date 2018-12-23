@@ -3,7 +3,7 @@ export const  categories=
    [
     {
       name: "מאפייה",
-      description:"מאפיה",
+      description:"מאפייה",
       icon: "bread.svg",
       subCategories: ["מבצע ZolTime","לחם", "עוגה", "בורקס", "סלט", "כריך","שתייה"]
     },

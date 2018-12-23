@@ -730,22 +730,7 @@ findAndSetBestPromoForAllProductsOfSeller(seller:any){
 
  
  
-async searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>)
-{
- 
-   let addresses=await this.addressService.searchAddresses(searchTerm);
-    
-   //console.log("SEARCHED ADDRESSES");
-   //console.log(addresses);
-     
-      let sellersAndAddresses=new Array();
 
-      sellersAndAddresses=sellersAndAddresses.concat(sellersNames,addresses);
-      //console.log(sellersAndAddresses);
-    
-      return sellersAndAddresses;
- 
-}
 
 getAllSellersWithSearchTerm(searchTerm:string)
 {

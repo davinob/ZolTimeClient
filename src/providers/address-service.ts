@@ -55,8 +55,10 @@ export class AddressService{
 
   async findAddressDescriptionFromLatLng(lat:number,lng:number):Promise<string>
   {
-    let searchUrl:string="https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&language=iw&key=" +fbConfig.apiKey;
+    //let searchUrl:string="https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&language=iw&key=" +fbConfig.apiKey;
     
+    let searchUrl:string="https://nominatim.openstreetmap.org/reverse?format=json&lat="+lat+"&lon="+lng+"&zoom=18&addressdetails=1";
+
     console.log("SEARCH URL before timeout:"+searchUrl); 
     setTimeout(
       ()=>{
@@ -72,32 +74,17 @@ export class AddressService{
   
     console.log(addressResp);
 
-        let results=addressResp.results;
+     
 
-       for(let j=0;j<results.length;j++)
-        {
-          if (results[j].formatted_address)
-          {
-            if (!(results[j].types[0]) || results[j].types[0]!="street_address")
+       
+      
+            let address_components=addressResp.address;
+            let address="",streetNumber=address_components.house_number,street=address_components.road,city=address_components.town;
+            if (!city)
             {
-              continue;
+              city=address_components.city;
             }
 
-            let address_components=results[j].address_components;
-            let address="",streetNumber="",street="",city="";
-            address_components.forEach(addressComp => {
-              
-              if (addressComp.types[0]=="street_number")
-              streetNumber=addressComp.long_name;
-        
-            if (addressComp.types[0]=="route")
-              street=addressComp.long_name;
-           
-            if (addressComp.types[0]=="locality")
-              city=addressComp.long_name;
-
-            });
-           
             if (streetNumber)
             address=street+" "+streetNumber+", "+city ;
             else if (street)
@@ -108,17 +95,101 @@ export class AddressService{
             console.log(address);
 
             return address;
-          }
-        }
+   
+        
   
 
     
 
   }
   
-      
+
+
   async searchAddresses(searchTerm:string)
   { 
+
+    let  csvUrl = 'assets/streets/streets.csv';
+
+   searchTerm=searchTerm.trim();
+
+     let dataT=await this.http.get(csvUrl).toPromise();
+
+     console.log("AUTOCOMPLETE");
+
+            let wholeText=dataT.text();
+            let arr=wholeText.split("\n");
+            let numReturned=0;
+
+            let searchTermStreet=searchTerm.split(",")[0];
+            if (searchTermStreet)
+            searchTermStreet=searchTermStreet.trim();
+
+            let searchTermCity=searchTerm.split(",")[1];
+            if (searchTermCity)
+            searchTermCity=searchTermCity.trim();
+            
+
+            let searchTermStreetWithoutNumber=searchTermStreet.replace(/[0-9]/g, '');
+            console.log("Without number:");
+            searchTermStreetWithoutNumber=searchTermStreetWithoutNumber.trim();
+             console.log(searchTermStreetWithoutNumber);
+
+             let newAddresses=new Array<any>();
+
+            arr.filter(val=>{
+               if (val.indexOf(searchTermStreetWithoutNumber)==-1 || numReturned>5)
+                {
+                return false;
+                }
+            
+                if (searchTermCity)
+                {
+                  if ((! val.split(",")[1]) || (val.split(",")[1].indexOf(searchTermCity)==-1))
+                  {
+                    return false;
+                  } 
+                }
+
+                numReturned++;
+                return true;
+            }
+              ).map(val=>
+                {
+                  if (searchTermStreetWithoutNumber!=searchTermStreet)
+                  {
+                    console.log(val);
+                    let values=val.split(",");
+                    console.log(values);
+                    console.log(values[1]);
+                    if (values[1])
+                    {
+                      val=searchTermStreet+","+values[1];
+                    }
+                  }
+                  return val.trim();
+
+                }).filter((elem, index, self)=> { //removing duplicates
+                  return index === self.indexOf(elem);
+                }).forEach(val=>
+                  {
+                  
+                  let address={description:val,isAddress:true};
+                  newAddresses.push(address);
+                  console.log(address);
+                  }
+                  );
+
+                  console.log("SEARCHED ADDRESSES SERVICE");
+                  console.log(newAddresses);
+
+              
+
+                  return newAddresses; 
+
+/*
+      if (1==1)
+        return new Array<any>();
+
     let searchUrl:string="https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+searchTerm+"&types=geocode&components=country:il&language=iw&key="+fbConfig.apiKey;
     
     
@@ -164,23 +235,27 @@ export class AddressService{
       console.log(newAddresses);
         return newAddresses;
     
-    
+    */
   }
   
   
   getPositionAddress(place):Observable<Address>
   {
-    let placeID=place.place_id;
-    
-    let searchUrl:string="https://maps.googleapis.com/maps/api/place/details/json?placeid="+placeID+"&key="+fbConfig.apiKey;
+   
+    console.log(place);
+    let searchUrl:string="https://nominatim.openstreetmap.org/search?q="+place.description+"&format=json&polygon=1&addressdetails=1&countrycodes=IL";
+
+
+    //let searchUrl:string="https://maps.googleapis.com/maps/api/place/details/json?placeid="+placeID+"&key="+fbConfig.apiKey;
     let addressPos:Subject<any>=new Subject<any>();
 
      this.http.get(searchUrl).pipe(map(res => res.json())).subscribe(data => {
       let address:Address=<Address>{};
 
-    
+      console.log(data);
+      let resAddress=data[0];
       
-      address.geoPoint=new firebase.firestore.GeoPoint(data.result.geometry.location.lat,data.result.geometry.location.lng);
+      address.geoPoint=new firebase.firestore.GeoPoint(Number(resAddress.lat),Number(resAddress.lon));
       address.description=place.description;
 
       addressPos.next(address);

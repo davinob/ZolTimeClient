@@ -5,12 +5,10 @@ import { Platform } from 'ionic-angular';
 
 import { UserService } from './user-service';
 
-import * as firebase from 'firebase/app';
-
 @Injectable()
 export class FcmService {
 
-  db=firebase.firestore();
+  
 
   constructor(
     public fcm: Firebase,
@@ -21,22 +19,11 @@ export class FcmService {
 
 
 
-  
- 
-  
- 
-
-
-
-  
   async getToken() {
 
     console.log("GETTING TOKEN");
 
  
-    this.fcm.onTokenRefresh().subscribe(token => {
-      this.saveTokenToFirestore(token);
-    });
 
 
     let token;
@@ -59,16 +46,9 @@ export class FcmService {
   private saveTokenToFirestore(token) {
     
     if (!token) return;
-  
-    const devicesRef = this.db.collection('pushDevices')
-  
-    const docData = { 
-      token
-    }
+     
     this.userService.userFCMToken=token;
-    console.log("TOKEN saved locally");
-    console.log(this.userService.userFCMToken);
-    return devicesRef.doc(token).set(docData)
+    
   }
   
 

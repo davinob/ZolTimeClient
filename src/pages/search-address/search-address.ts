@@ -1,7 +1,7 @@
 import { Component,ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams,ViewController } from 'ionic-angular';
 
-import { TextInput } from 'ionic-angular/components/input/input';
+import { TextInput } from 'ionic-angular';
 import { AddressService } from '../../providers/address-service';
 
 import { Storage } from '@ionic/storage';
@@ -92,6 +92,25 @@ export class SearchAddressPage {
 
 }
 
+
+async searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>)
+{
+ 
+   let addresses=await this.addressService.searchAddresses(searchTerm);
+    
+   //console.log("SEARCHED ADDRESSES");
+   //console.log(addresses);
+     
+      let sellersAndAddresses=new Array();
+
+      sellersAndAddresses=sellersAndAddresses.concat(sellersNames,addresses);
+      //console.log(sellersAndAddresses);
+    
+      return sellersAndAddresses;
+ 
+}
+
+
 clearAddressSearch(){
   this.searchAddress="";
   this.addresses=new Array();
@@ -126,7 +145,7 @@ clearAddressSearch(){
       try{
 
 
-      let promSearch=this.userService.searchAddressesAndSellers(this.searchAddress,sellersNamesFiltered);
+      let promSearch=this.searchAddressesAndSellers(this.searchAddress,sellersNamesFiltered);
       
       
       let timeOutPromise=new Promise((resolve)=>{

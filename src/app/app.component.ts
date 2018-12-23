@@ -11,7 +11,7 @@ import { first } from 'rxjs/operators';
 
  
 import { FcmService } from '../providers/fcm-service';
-import { ToastController } from 'ionic-angular/components/toast/toast-controller';
+import { ToastController } from 'ionic-angular';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { timer } from 'rxjs';
@@ -100,14 +100,14 @@ stillWaiting=false;
    
       console.log("VALUE");
       console.log(viewed);
-      if(!viewed)
+    /*  if(!viewed)
      {
       this.nav.setRoot('TutorialPage');
-      }
+      } 
       else
-      {
+      {*/
         this.nav.setRoot('ProductsPage');
-      }
+    /*  }*/
     }
 
     

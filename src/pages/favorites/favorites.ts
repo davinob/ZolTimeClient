@@ -2,11 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { UserService, Seller, Product } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
-import { FormBuilder } from '@angular/forms/src/form_builder';
-import { ElementRef } from '@angular/core/src/linker/element_ref';
-import { AddressService } from '../../providers/address-service';
-import { PopoverController } from 'ionic-angular/components/popover/popover-controller';
-import { GlobalService } from '../../providers/global-service';
 import { Storage } from '@ionic/storage';
 
 /**

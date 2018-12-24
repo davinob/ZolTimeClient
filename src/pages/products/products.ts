@@ -1,5 +1,5 @@
-import { Component,ViewChild,ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform  } from 'ionic-angular';
+import { Component,ViewChild,ElementRef, NgZone } from '@angular/core';
+import { IonicPage, NavController, NavParams, Platform, TextInput  } from 'ionic-angular';
  
 import { UserService, Seller } from '../../providers/user-service';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
@@ -23,6 +23,7 @@ import * as globalConstants from '../../providers/globalConstants';
 
 import { Diagnostic } from '@ionic-native/diagnostic';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @IonicPage()
@@ -35,9 +36,7 @@ export class ProductsPage {
 
   allInputsShows:any={};
   
-  @ViewChild('categoriesInput') categoriesInput;
-  @ViewChild('hashgahaInput') hashgahaInput;
-  @ViewChild('rangeInput') rangeInput;
+  @ViewChild('searchInput') searchInput:TextInput;
   @ViewChild(Content) content: Content;
 
  
@@ -55,8 +54,16 @@ export class ProductsPage {
      public storage:Storage,
     public diagnostic: Diagnostic,
     public locationAccuracy: LocationAccuracy,
-    public platform: Platform ) {
-      
+    public platform: Platform, public translateService: TranslateService, public zone:NgZone) {
+
+   
+      this.translateService.onLangChange.subscribe(langHasChanged=>
+        {
+       this.translateService.get('אין מיקום').subscribe((value) => {
+        console.log("TRANS EIN MIKUM:"+value);
+        this.noLocationStr=value;
+      });
+    });
      
   }
 

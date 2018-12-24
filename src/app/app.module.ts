@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import {  HttpClientModule } from '@angular/common/http';
+import {  HttpClientModule, HttpClient } from '@angular/common/http';
 import { MyApp } from './app.component';
 
 
@@ -13,7 +13,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Camera } from '@ionic-native/camera';
 
 
-import { HttpModule } from '@angular/http';
+import { HttpModule, Http } from '@angular/http';
 
 import { IonicStorageModule } from '@ionic/storage';
 
@@ -38,27 +38,47 @@ import { GlobalService } from './../providers/global-service';
 import * as firebase from "firebase";
 
 import { PhotoViewer } from '@ionic-native/photo-viewer';
+import { ProductsPage } from '../pages/products/products';
+
   
+import { TranslateModule,TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 firebase.initializeApp(fbConfig.firebaseConfig);
 
 
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
+
 @NgModule({
   declarations: [
-    MyApp
+    MyApp,
+    ProductsPage
   ],
   imports: [
     BrowserModule,
     HttpModule,
     HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
+    }),
     IonicStorageModule.forRoot(),
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+   
+    
     
     
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp
+    MyApp,
+    ProductsPage
   ],
   providers: [
     

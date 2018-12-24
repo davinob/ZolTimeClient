@@ -136,15 +136,30 @@ export class AddressService{
 
              let newAddresses=new Array<any>();
 
-            arr.filter(val=>{
-               if (val.indexOf(searchTermStreetWithoutNumber)==-1 || numReturned>5)
+            arr.filter((val:string)=>{
+
+              let valLow=val.toLocaleLowerCase();
+              let valLowParts=valLow.split(",");
+
+              let valLowPartsStreet=valLowParts[0];
+              if (valLowPartsStreet)
+              valLowPartsStreet=valLowPartsStreet.trim();
+  
+              let valLowPartsCity=valLowParts[1];
+              if (valLowPartsCity)
+              valLowPartsCity=valLowPartsCity.trim();
+
+              let searchTermStreetWithoutNumberLow=searchTermStreetWithoutNumber.toLocaleLowerCase();
+
+               if (valLowPartsStreet.indexOf(searchTermStreetWithoutNumberLow)==-1 || numReturned>5)
                 {
                 return false;
                 }
             
                 if (searchTermCity)
                 {
-                  if ((! val.split(",")[1]) || (val.split(",")[1].indexOf(searchTermCity)==-1))
+                  let searchTermCityLow=searchTermCity.toLocaleLowerCase();
+                  if ((! valLowPartsCity) || (valLowPartsCity.indexOf(searchTermCityLow)==-1))
                   {
                     return false;
                   } 

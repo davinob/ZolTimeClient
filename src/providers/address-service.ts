@@ -239,7 +239,7 @@ export class AddressService{
   }
   
   
-  getPositionAddress(place):Observable<Address>
+  async getPositionAddress(place)
   {
    
     console.log(place);
@@ -247,27 +247,29 @@ export class AddressService{
 
 
     //let searchUrl:string="https://maps.googleapis.com/maps/api/place/details/json?placeid="+placeID+"&key="+fbConfig.apiKey;
-    let addressPos:Subject<any>=new Subject<any>();
-
-     this.http.get(searchUrl).pipe(map(res => res.json())).subscribe(data => {
+    
+    console.log(searchUrl);
+     let data= await this.http.get(searchUrl).pipe(map(res => res.json())).pipe(first()).toPromise();
+     
+   
       let address:Address=<Address>{};
 
       console.log(data);
       let resAddress=data[0];
       
+      if (!resAddress)
+      {
+        throw new Error(" כתובת לא נמצאת, נא לבדוק חיבור לשרת או לשנות כתובת");
+      }
+      
       address.geoPoint=new firebase.firestore.GeoPoint(Number(resAddress.lat),Number(resAddress.lon));
+
       address.description=place.description;
 
-      addressPos.next(address);
+      return address;
+   
       
-     
-     },
-    err=>{
-    console.log(err);
-    }
-    );
- 
-    return addressPos.asObservable();
+    
   }
 
 

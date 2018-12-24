@@ -9,10 +9,17 @@
     <ion-list class="menuList">
         <ion-item class="menuItem" *ngFor="let p of pages">
             <button menuClose clear ion-button  [class.activeHighLight]="checkActive(p)" (click)="openPage(p)">
-                <div class="menuButton"> <ion-icon name="{{p.icon}}"></ion-icon>   {{p.title}}</div> 
+                <div class="menuButton"> <ion-icon name="{{p.icon}}"></ion-icon>   {{p.title  | translate}}</div> 
             </button>
         </ion-item>
-   
+        <ion-item class="menuItem">
+            <div class="menuButton menuLanguage"> <ion-icon name="settings"></ion-icon> {{'בחר שפה'  | translate }}</div> 
+            <div class="flags">
+                <span class="flagSpan"><img class="categoryPic" src="assets/icon/isrFlag.png" (click)="setLanguage('he',true)"/> </span>
+                <span class="flagSpan"><img class="categoryPic" src="assets/icon/enFlag.svg" (click)="setLanguage('en',true)"  /> </span>
+                <span class="flagSpan"> <img class="categoryPic" src="assets/icon/frenchFlag.svg" (click)="setLanguage('fr',true)"/> </span>
+            </div>
+          </ion-item>
      </ion-list>
   </ion-content>
 

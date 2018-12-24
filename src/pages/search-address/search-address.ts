@@ -201,7 +201,7 @@ clearAddressSearch(){
     
   }
 
-  selectAddress(place:any)
+  async selectAddress(place:any)
   {
     console.log("SELECT ADDRESS" + place.description);
     this.addresses=[];
@@ -212,8 +212,10 @@ clearAddressSearch(){
   
   if (place.isAddress) 
   {
-    this.addressService.getPositionAddress(place).pipe(first()).subscribe((address)=>
+    try
     {
+    let address= await this.addressService.getPositionAddress(place);
+    
         console.log(address);
     
         this.settings.position.geoPoint=address.geoPoint;
@@ -221,7 +223,13 @@ clearAddressSearch(){
         this.addressService.addAddressToHistory(this.settings.position); 
         this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
         this.navCtrl.pop();
-    });
+    }
+    catch(error)
+    {
+      this.alertLoadingService.showToast({message:error});
+      return;
+    }
+   
   }
   else
   {

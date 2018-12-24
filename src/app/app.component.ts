@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform} from 'ionic-angular';
+import { Nav, Platform, MenuController} from 'ionic-angular';
 
 
 import { UserService } from '../providers/user-service';
@@ -14,9 +14,12 @@ import { FcmService } from '../providers/fcm-service';
 import { ToastController } from 'ionic-angular';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { timer } from 'rxjs';
-import { AlertAndLoadingService } from '../providers/alert-loading-service';
 
+import { AlertAndLoadingService } from '../providers/alert-loading-service';
+import { ProductsPage } from '../pages/products/products';
+
+
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   templateUrl: 'app.html'
@@ -26,9 +29,11 @@ export class MyApp {
 
   activePage: any;
   initTime:boolean=true;
+
+  rootPage:any = ProductsPage;
   
   pages: Array<{title: string, component: any, icon: string}>=[
-  { title: 'חיפוש', component: 'ProductsPage', icon:'search' },
+  { title: 'חיפוש', component: ProductsPage, icon:'search' },
   { title: 'מועדפים', component: 'FavoritesPage', icon:'star' },
   
   ];
@@ -37,13 +42,58 @@ export class MyApp {
   constructor(public platform: Platform, 
     public userService: UserService,
   private storage: Storage, public fcm: FcmService, 
-  public toastCtrl: ToastController, public splashScreen:SplashScreen, public alertSvc:AlertAndLoadingService ) {
+  public toastCtrl: ToastController, public splashScreen:SplashScreen, 
+  public alertSvc:AlertAndLoadingService, public translate: TranslateService,public menuCtrl: MenuController ) {
 
     this.initApp();
   }
 
+
+  async setLanguage(lan:string,doReInit:boolean)
+  {
+    if (doReInit)
+    {
+      this.splashScreen.show();
+      window.location.reload();
+      await this.nav.setRoot(ProductsPage);
+      this.splashScreen.hide();
+    }
+
+    this.translate.use(lan);
+    this.translate.setDefaultLang(lan);
+    
+    await this.storage.set("language",lan);
+
+    if (lan=="en"||lan=="fr")
+    {
+      this.platform.setDir('rtl', false);
+      this. platform.setDir('ltr', true);
+    }
+    if (lan=="he")
+    {
+      this.platform.setDir('rtl', true);
+      this. platform.setDir('ltr', false);
+    }
+
+   
+    
+
+  }
+
+
   async initApp(){
 
+    let language=await this.storage.get("language");
+    if (!language)
+    {
+    this.setLanguage("he",false);
+    }
+    else
+    {
+      this.setLanguage(language,false);
+    }
+
+    console.log("LANGUAGE SET:"+language);
 
     if (this.initTime)
   {
@@ -106,7 +156,7 @@ stillWaiting=false;
       } 
       else
       {*/
-        this.nav.setRoot('ProductsPage');
+       // this.nav.setRoot('ProductsPage');
     /*  }*/
     }
 

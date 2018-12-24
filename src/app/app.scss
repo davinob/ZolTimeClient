@@ -102,6 +102,19 @@
     max-width: 160px;
   }
 
+.flags
+{
+    margin-top: 7px;
+}
+.menuLanguage
+{
+    margin-left: 8px;
+}
+
+  .categoryPic{
+    max-height: 17px;
+    margin-left: 11px;
+  }
   
  .spinner-container {
         width: 100%;
@@ -285,9 +298,7 @@ ion-app.md [padding] .scroll-content
  
 }
 
-body{
-    direction: rtl;
-}
+
 
 ion-navbar.toolbar{
 direction: ltr;

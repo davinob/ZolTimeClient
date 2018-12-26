@@ -22,9 +22,8 @@
              <ion-row>
 
                 <div class="searchDetails">
-                    {{getSearchDetails()}}
-                </div>
-                
+                    {{userService.searchDetails}}
+                 </div> 
              </ion-row>
              
             </ion-grid>
@@ -78,8 +77,8 @@
                                       </span>
                                 </ion-row>
                                 <ion-row >
-                                        <span [ngClass]="userService.openHours(seller).open? 'sellerOpen' : 'sellerClose'" >
-                                                {{userService.openHours(seller).message}}
+                                        <span [ngClass]="seller.openHours.open? 'sellerOpen' : 'sellerClose'" >
+                                                {{seller.openHours.message}}
                                         </span>
                                 </ion-row>
                                 <ion-row>
@@ -95,7 +94,7 @@
                                    
 
                                 <span > <img class="iconPic" src="assets/icon/walking.png" /></span>
-                                <span class="distanceText">  {{seller.distanceFromPosition}} דקות
+                                <span class="distanceText">  {{seller.distanceFromPosition}} {{"דקות"|translate}}
                                 </span>
                                        
                                    

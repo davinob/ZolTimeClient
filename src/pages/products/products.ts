@@ -25,6 +25,9 @@ import { Diagnostic } from '@ionic-native/diagnostic';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { TranslateService } from '@ngx-translate/core';
 
+import { first } from 'rxjs/operators';
+
+
 
 @IonicPage()
 @Component({
@@ -56,7 +59,6 @@ export class ProductsPage {
     public locationAccuracy: LocationAccuracy,
     public platform: Platform, public translateService: TranslateService, public zone:NgZone) {
 
-   
       this.translateService.onLangChange.subscribe(langHasChanged=>
         {
        this.translateService.get('אין מיקום').subscribe((value) => {
@@ -476,7 +478,8 @@ export class ProductsPage {
       await Promise.race([initPromise, timeOutPromise]);
 
       if   (this.hasNoLocationFound()&&!this.alreadyShownAfterFirstEnter) {
-      this.alertService.showToastNoDismiss({message:" מיקום לא אותר, נא להדליק את מקלט הGPS או להכניס כתובת חיפוש."});
+        let errorMessage=await this.translateService.get(" מיקום לא אותר, נא להדליק את מקלט הGPS או להכניס כתובת חיפוש.").pipe(first()).toPromise();
+      this.alertService.showToastNoDismiss({message:errorMessage});
       this.alreadyShownAfterFirstEnter=true;
 
      }
@@ -510,24 +513,7 @@ goToSeller(seller:Seller,event:MouseEvent)
   
 
 
-  getSearchDetails()
-  {
-    let searchDetails="";
-   
-    if (this.userService.userSearchSettings.hashgaha!="ללא")
-    {
-      searchDetails+= this.userService.userSearchSettings.hashgaha;
-    }
-    
 
-    if (this.userService.userSearchSettings.onlyShowPromotion)
-    {
-      searchDetails+=", רק מבצעים";
-    }
-
-    return searchDetails;
-
-  }
 
 
 

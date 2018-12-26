@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, MenuController} from 'ionic-angular';
+import { Nav, Platform, MenuController, App} from 'ionic-angular';
 
 
 import { UserService } from '../providers/user-service';
@@ -39,7 +39,7 @@ export class MyApp {
   ];
   
 
-  constructor(public platform: Platform, 
+  constructor(public appCtrl:App, public platform: Platform, 
     public userService: UserService,
   private storage: Storage, public fcm: FcmService, 
   public toastCtrl: ToastController, public splashScreen:SplashScreen, 
@@ -54,8 +54,8 @@ export class MyApp {
     if (doReInit)
     {
       this.splashScreen.show();
-      window.location.reload();
-      await this.nav.setRoot(ProductsPage);
+      await  this.appCtrl.getRootNav().setRoot(ProductsPage);
+       await window.location.reload();
       this.splashScreen.hide();
     }
 
@@ -75,7 +75,7 @@ export class MyApp {
       this. platform.setDir('ltr', false);
     }
 
-   
+   this.userService.chosenLanguage=lan;
     
 
   }

@@ -4,19 +4,19 @@
       <ion-list *ngIf="getHashgahot()" no-border radio-group [(ngModel)]="settings.hashgaha" (ionChange)="updateStorageAndSearch()">
   
      
-          <div class="listTitle">כשרות</div>
+          <div class="listTitle">{{"כשרות"|translate}}</div>
       
   
 
       <ion-item *ngFor="let hashga of getHashgahot()" >
-          <ion-label>{{hashga}}</ion-label>
+          <ion-label>{{hashga|translate}}</ion-label>
           <ion-radio value="{{hashga}}"></ion-radio>
         </ion-item>
   
     </ion-list>
 
   <ion-item  >
-        <ion-label class="optionDeal">רק מבצעים</ion-label>
+        <ion-label class="optionDeal">{{"רק מבצעים"|translate}}</ion-label>
      <ion-checkbox  item-right [(ngModel)]="settings.onlyShowPromotion" (ionChange)="updateStorageAndSearch()"></ion-checkbox>
   </ion-item>
 

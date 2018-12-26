@@ -1,7 +1,7 @@
 <ion-header>
     <ion-navbar>
         <ion-item >
-        <ion-input  class="position" #address    type="text" [(ngModel)]="searchAddress"  placeholder="מיקום הנוכחי"></ion-input>
+        <ion-input  class="position" #address    type="text" [(ngModel)]="searchAddress"  placeholder="{{'מיקום הנוכחי'|translate}}"></ion-input>
         <button *ngIf="searchAddress" ion-button type="button" clear item-right (click)="clearAddressSearch()"> <ion-icon class='white'  name="close-circle"> </ion-icon> </button>
       </ion-item> 
       </ion-navbar>
@@ -25,7 +25,7 @@
      </ion-list>
 
      <div *ngIf="!searchAddress && addressService.addressesHistory && addressService.addressesHistory.length>0">
-        <span class="historyHeader">היסטוריית החיפוש</span>
+        <span class="historyHeader">{{'היסטוריית החיפוש'|translate}}</span>
      <ion-list   class="addressesList">
         <ion-item class="addressItem" *ngFor="let place of addressService.addressesHistory" (click)="selectAddressFromHistory(place)">
             <span *ngIf="!place.isAddress">  <ion-icon name="basket"></ion-icon><span class="sellerName"> {{place.description}}</span><span class="sellerAddress"> {{place.address}}</span></span>
@@ -33,7 +33,7 @@
             
         </ion-item>
      </ion-list>
-     <span class="historyFooter"><a class="historyFooterLink" (click)="clearAddressesHistory()">למחוק את היסטוריית החיפוש</a></span>
+     <span class="historyFooter"><a class="historyFooterLink" (click)="clearAddressesHistory()">{{'למחוק את היסטוריית החיפוש'|translate}}</a></span>
     </div>
 
 </ion-content>

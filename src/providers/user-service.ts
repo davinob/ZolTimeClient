@@ -12,7 +12,8 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { Subject, interval } from 'rxjs';
 
-import { merge } from 'rxjs/operators';
+import { merge,first } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
   
   
@@ -92,7 +93,7 @@ export class UserService {
   allSellersHasBeenUpdated:Subject<boolean>=new Subject();
 
   userSearchSettings:SearchSettings;
-
+  searchDetails:string="";
   
 
   lookingForProducts:Subject<boolean>=new Subject();
@@ -107,8 +108,11 @@ export class UserService {
 
   nbMinPerKm=16;
 
+
+  chosenLanguage:string="he";
+
   constructor(private addressService:AddressService,
-  private storage:Storage) {
+  private storage:Storage,public translateService:TranslateService) {
 
 
     this.userSearchSettings={
@@ -232,7 +236,7 @@ isSellerFavorite(seller:Seller):boolean
 
 
 
-      async  getAllSellers()
+  async  getAllSellers()
       {
         this.doneLookingForSellers.next(false);
 
@@ -245,11 +249,31 @@ isSellerFavorite(seller:Seller):boolean
               return;
             }
       
-            sellersInfos.forEach(doc=>{
+            sellersInfos.forEach( async doc=>{
               
               let uid=doc.id;
             let seller=doc.data();  
             seller.key=uid;
+
+            
+            console.log("PROD");
+            console.log(seller);
+            console.log(this.chosenLanguage);
+            if (this.chosenLanguage=="fr")
+            {
+              console.log("FR");
+              seller.description=seller.descriptionFr;
+            }
+          if (this.chosenLanguage=="en")
+            {
+              console.log("EN");
+              seller.description=seller.descriptionEn;
+            }
+
+            seller.openHours=await this.openHours(seller);
+            console.log("OPEN HOURS");
+            console.log(seller.openHours);
+
             this.setSellerHashgahaDescription(seller);
             //console.log(seller);
 
@@ -455,7 +479,7 @@ isSellerFavorite(seller:Seller):boolean
 
   }
 
-  openHours(seller:Seller):any
+  async openHours(seller:any)
   {
     let date=new Date();
     let dayIndex=new Date().getDay();
@@ -482,23 +506,28 @@ isSellerFavorite(seller:Seller):boolean
         (timeH<endH || (timeH==endH && timeM<endM))
       )
       {
-      return {open:true, message: "פתוח היום עד "+sellerEndTime};
+        let message=await this.translateService.get("פתוח היום עד ").pipe(first()).toPromise();
+    
+      return {open:true, message: message+sellerEndTime};
     }
     else
     if ( 
       (timeH<startH ||(timeH==startH && timeM<startM))
        )
     {
-      return {open:false, message:"פותח היום ב"+sellerStartTime};
+      let message=await this.translateService.get("פותח היום ב").pipe(first()).toPromise();
+      return {open:false, message:message+sellerStartTime};
     }
     else  if (sellerStartTime==sellerEndTime) //closed today
     {
-      return {open:false, message: "סגור היום"};
+      let message=await this.translateService.get("סגור היום").pipe(first()).toPromise();
+      return {open:false, message: message};
     }
     else
-    
-      return {open:false, message: "סגור כעט"};
-    
+    {
+      let message=await this.translateService.get("סגור כעט").pipe(first()).toPromise();
+      return {open:false, message: message};
+    }
     
 
 
@@ -532,7 +561,24 @@ async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
       
 
         snapshot.forEach(product=>{
-             seller.products.push(product.data());
+
+            let prodData=product.data();
+            console.log("PROD");
+            console.log(prodData);
+            console.log(this.chosenLanguage);
+            if (this.chosenLanguage=="fr")
+            {
+              console.log("FR");
+              prodData.description=prodData.descriptionFr;
+              prodData.name=prodData.nameFr;
+            }
+          if (this.chosenLanguage=="en")
+            {
+              console.log("EN");
+              prodData.description=prodData.descriptionEn;
+              prodData.name=prodData.nameEn;
+            }
+             seller.products.push(prodData);
         });
 
         //console.log(seller.products);

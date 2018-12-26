@@ -39,8 +39,8 @@
                                       </span>
                                 </ion-row>
                                 <ion-row >
-                                        <span [ngClass]="userService.openHours(seller).open? 'sellerOpen' : 'sellerClose'" >
-                                                {{userService.openHours(seller).message}}
+                                        <span [ngClass]="seller.openHours.open? 'sellerOpen' : 'sellerClose'" >
+                                                {{seller.openHours.message}}
                                         </span>
                                 </ion-row>
                                 <ion-row>

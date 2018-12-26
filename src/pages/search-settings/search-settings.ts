@@ -3,7 +3,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { SearchSettings, UserService } from '../../providers/user-service';
 import * as globalConstants from '../../providers/globalConstants'; 
-
+import { TranslateService } from '@ngx-translate/core';
+import { first } from 'rxjs/operators';
 /**
  * Generated class for the SearchSettingsPage page.
  *
@@ -27,7 +28,7 @@ export class SearchSettingsPage {
   settings:SearchSettings=null;
   previousSearchSettings:SearchSettings=null;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public storage:Storage,
+  constructor(public translateService:TranslateService ,public navCtrl: NavController, public navParams: NavParams, public storage:Storage,
     private userService:UserService) {
     console.log('constructor SearchSettingsPage');
     this.settings=this.userService.cloneSettings();
@@ -58,10 +59,10 @@ export class SearchSettingsPage {
 lastTime:number=0;
 
 
-updateStorageAndSearch()
+async updateStorageAndSearch()
 {
 
-
+  await this.setSearchDetails();
   this.lastTime=new Date().getTime();
 
   setTimeout(
@@ -77,9 +78,11 @@ if (now-this.lastTime>=1000)
   console.log("NOT SAME SETTINGS") ;
   console.log(this.settings) ;
 
+  
   this.storage.set("settings",this.settings);
   this.previousSearchSettings=this.userService.cloneSettings();
   this.userService.filterSellersAndGetTheirProdsAndDeals(this.settings);
+
 }
   },1000);
 }
@@ -87,6 +90,32 @@ if (now-this.lastTime>=1000)
 
  
 
+
+   async setSearchDetails()
+  {
+    let searchDetails="";
+   
+    if (this.settings.hashgaha!="ללא")
+    {
+      console.log("HERE HASHGAHA");
+      let hash= await this.translateService.get(this.settings.hashgaha).pipe(first()).toPromise();
+      searchDetails+=hash ;
+    }
+    
+
+    if (this.settings.onlyShowPromotion)
+    {
+      if ((this.settings.hashgaha!="ללא"))
+      {
+        searchDetails+=", ";
+      }
+      console.log("HERE DEALS");
+
+      searchDetails+=  await this.translateService.get("רק מבצעים").pipe(first()).toPromise();
+    }
+    this.userService.searchDetails=searchDetails;
+
+  }
 
 
 

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="zol.time" version="1.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="zol.time" version="1.0.6" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>ZolTime</name>
     <description>Zol Time App</description>
     <author email="yodaleta@gmail.com">Yodaleta</author>
@@ -128,6 +128,7 @@
     <plugin name="cordova.plugins.diagnostic" spec="~4.0.10" />
     <plugin name="com-sarriaroman-photoviewer" spec="~1.1.18" />
     <allow-navigation href="http://172.22.131.153:8100" sessionid="4225441a" />
+    <allow-navigation href="http://10.100.102.10:8100" sessionid="766e23b3" />
     <engine name="windows" spec="^6.0.1" />
     <engine name="browser" spec="~5.0.3" />
     <engine name="android" spec="^7.1.4" />

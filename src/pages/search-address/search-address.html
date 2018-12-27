@@ -1,7 +1,7 @@
 <ion-header>
     <ion-navbar>
         <ion-item >
-        <ion-input  class="position" #address    type="text" [(ngModel)]="searchAddress"  placeholder="{{'מיקום הנוכחי'|translate}}"></ion-input>
+        <ion-input  class="lanDirection"  #address    type="text" [(ngModel)]="searchAddress"  placeholder="{{'מיקום הנוכחי'|translate}}"></ion-input>
         <button *ngIf="searchAddress" ion-button type="button" clear item-right (click)="clearAddressSearch()"> <ion-icon class='white'  name="close-circle"> </ion-icon> </button>
       </ion-item> 
       </ion-navbar>

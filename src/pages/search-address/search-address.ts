@@ -11,6 +11,8 @@ import { UserService, SearchSettings } from '../../providers/user-service';
 import { fromEvent, interval } from 'rxjs';
 
 import { debounceTime,map,first } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
+
 
 
 @IonicPage()
@@ -38,7 +40,8 @@ export class SearchAddressPage {
     public addressService:AddressService,
     private viewCtrl:ViewController,
     private alertLoadingService:AlertAndLoadingService,
-    private userService:UserService) {
+    private userService:UserService,
+    public translateService:TranslateService) {
       this.settings=this.userService.userSearchSettings;
 
   }
@@ -59,6 +62,7 @@ export class SearchAddressPage {
 
 
   ionViewDidEnter() {
+
     this.settings.position.description="";
     this.tmpDescription="";
     console.log(this.settings.position);
@@ -111,7 +115,7 @@ async searchAddressesAndSellers(searchTerm:string,sellersNames:Array<any>)
 }
 
 
-clearAddressSearch(){
+async clearAddressSearch(){
   this.searchAddress="";
   this.addresses=new Array();
   this.searching=false;
@@ -158,7 +162,8 @@ clearAddressSearch(){
       catch(error)
       {
         console.log(error);
-        this.alertLoadingService.showToast({message:"  אירעה שגיאה בעת החיבור לשרת."});
+        let message=await this.translateService.get(" אירעה שגיאה בעת החיבור לשרת.").pipe(first()).toPromise();
+        this.alertLoadingService.showToast({message:message});
         this.searching=false;
       }
       this.searching=false;

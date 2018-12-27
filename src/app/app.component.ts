@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, MenuController, App} from 'ionic-angular';
+import { Nav, Platform, MenuController, App, NavController} from 'ionic-angular';
 
 
 import { UserService } from '../providers/user-service';
@@ -39,7 +39,7 @@ export class MyApp {
   ];
   
 
-  constructor(public appCtrl:App, public platform: Platform, 
+  constructor(public appCtrl:App,public platform: Platform, 
     public userService: UserService,
   private storage: Storage, public fcm: FcmService, 
   public toastCtrl: ToastController, public splashScreen:SplashScreen, 
@@ -55,13 +55,6 @@ export class MyApp {
     this.userService.chosenLanguage=lan;
     
 
-    if (doReInit)
-    {
-      this.splashScreen.show();
-      await  this.appCtrl.getRootNav().setRoot(ProductsPage);
-       await window.location.reload();
-      this.splashScreen.hide();
-    }
 
     this.translate.use(lan);
     this.translate.setDefaultLang(lan);
@@ -81,6 +74,18 @@ export class MyApp {
 
     this.setTextInputsDirection();
     
+    
+    if (doReInit)
+    {
+      //this.nav.setRoot(ProductsPage);
+      //await  this.appCtrl.getRootNav().setRoot(ProductsPage);
+      this.splashScreen.show();
+      console.log(this.initialLocRef);
+      window.location.replace(this.initialLocRef);
+      //window.location=this.initialLoc;
+      //window.location.reload();
+      this.nav.setRoot(ProductsPage);
+    }
 
   }
 
@@ -97,9 +102,12 @@ export class MyApp {
         }
   }
 
+  initialLocRef;
 
   async initApp(){
-
+    this.initialLocRef=window.location.href;
+    console.log("INIT LOC");
+    console.log(this.initialLocRef);
     let language=await this.storage.get("language");
     if (!language)
     {

@@ -44,7 +44,7 @@ export class ProductsPage {
 
  
   justWentToSeller:boolean=false;
-  noLocationStr:string="אין מיקום";
+  noLocationStr:string;
   
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -59,18 +59,33 @@ export class ProductsPage {
     public locationAccuracy: LocationAccuracy,
     public platform: Platform, public translateService: TranslateService, public zone:NgZone) {
 
-      this.translateService.onLangChange.subscribe(langHasChanged=>
-        {
-       this.translateService.get('אין מיקום').subscribe((value) => {
-        console.log("TRANS EIN MIKUM:"+value);
-        this.noLocationStr=value;
-      });
-    });
+      this.initComp();
+
+   
      
   }
 
 
+async initComp()
+{
+ this.noLocationStr=await this.translateService.get('אין מיקום').pipe(first()).toPromise();
 
+ this.translateService.onLangChange.subscribe(async langHasChanged=>
+  {
+ let value:string=await this.translateService.get('אין מיקום').pipe(first()).toPromise();
+  
+ console.log("TRANS EIN MIKUM:"+value);
+  this.noLocationStr=value;
+  //no location found
+  if (this.userService.userSearchSettings.position && this.userService.userSearchSettings.position.geoPoint && this.userService.userSearchSettings.position.geoPoint.latitude==0 && this.userService.userSearchSettings.position.geoPoint.longitude==0)
+  {
+    this.userService.userSearchSettings.position.description=this.noLocationStr;
+  }
+
+
+});
+ 
+}
   
   
   showPromoQty(product:Product)
@@ -370,8 +385,12 @@ export class ProductsPage {
   lookingForSellerSubscribed:boolean=false;
   lookingForProdsSubscribed:boolean=false;
 
+
+
   ionViewDidEnter()
   {
+ console.log("ENTER");
+ console.log(this.userService.userSearchSettings.position.description);
 
     if (this.content)
     {

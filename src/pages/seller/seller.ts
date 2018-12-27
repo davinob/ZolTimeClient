@@ -7,6 +7,9 @@ import { CallNumber } from '@ionic-native/call-number';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 import * as globalConstants from '../../providers/globalConstants'; 
 import { PhotoViewer } from '@ionic-native/photo-viewer';
+import { TranslateService } from '@ngx-translate/core';
+
+import { first } from 'rxjs/operators';
 
 @IonicPage()
 @Component({
@@ -28,7 +31,8 @@ export class SellerPage {
     private callNumber: CallNumber,
     public alertService: AlertAndLoadingService, 
     public photoViewer:PhotoViewer,
-    public alertCtrl: AlertController
+    public alertCtrl: AlertController,
+    public translateService:TranslateService
     ) {
     
       this.seller=this.navParams.data.seller;
@@ -42,9 +46,26 @@ export class SellerPage {
    }
 
 
+   async addToFavorites(seller)
+   {
+
+    this.userService.addToFavorites(seller); 
+    let message=await this.translateService.get("הוסף למועדפים").pipe(first()).toPromise();
+    this.alertService.presentToast({'message':message})
+
+   }
+
+   async removeFromFavorites(seller)
+   {
+    this.userService.removeFromFavorites(seller);
+    let message=await this.translateService.get("הוסר מהמועדפים").pipe(first()).toPromise();
+    this.alertService.presentToast({'message':message})
+
+   }
+
    daysNames=["א'","ב'","ג'","ד'","ה'","ו'","ש'"];
 
-   showDaysHours()
+   async showDaysHours()
    {
      console.log("show DAYS HOURS");
      let message="";
@@ -52,14 +73,16 @@ export class SellerPage {
      console.log(this.seller.days);
      for (let i=0; i<this.seller.days.length;i++)
      {
-      message+="<div class='newLine'><span class='alertHourTitle'>"+this.daysNames[i]+":</span><span class='alertHourDetails'>  "+this.seller.days[i].startTime+" - "+this.seller.days[i].endTime+"</span></div>";
+       let dayName=await this.translateService.get(this.daysNames[i]).pipe(first()).toPromise();
+      message+="<div class='newLine'><span class='alertHourTitle'>"+dayName+":</span><span class='alertHourDetails'>  "+this.seller.days[i].startTime+" - "+this.seller.days[i].endTime+"</span></div>";
      }
 
      console.log(message);
-
-    this.alertCtrl.create(
+     let openHoursText=await this.translateService.get("שעות פתיחה").pipe(first()).toPromise();
+    
+     this.alertCtrl.create(
       {
-        title: 'שעות פתיחה',
+        title: openHoursText,
         message:message
       }
     ).present();

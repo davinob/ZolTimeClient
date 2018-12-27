@@ -534,6 +534,10 @@ isSellerFavorite(seller:Seller):boolean
   }
 
 
+  isRtl()
+  {
+    return this.chosenLanguage=="he";
+  }
 
 async fetchSellerProdsAndPromsReturnNeedsToWait(seller:any)
 {

@@ -51,6 +51,10 @@ export class MyApp {
 
   async setLanguage(lan:string,doReInit:boolean)
   {
+
+    this.userService.chosenLanguage=lan;
+    
+
     if (doReInit)
     {
       this.splashScreen.show();
@@ -75,9 +79,22 @@ export class MyApp {
       this. platform.setDir('ltr', false);
     }
 
-   this.userService.chosenLanguage=lan;
+    this.setTextInputsDirection();
     
 
+  }
+
+
+
+  setTextInputsDirection()
+  {
+     if (this.userService.isRtl()) {
+          document.documentElement.style.setProperty("--myDirection", "rtl");
+         
+        }
+        else {
+          document.documentElement.style.setProperty("--myDirection", "ltr");
+        }
   }
 
 
@@ -93,6 +110,8 @@ export class MyApp {
       this.setLanguage(language,false);
     }
 
+    
+    
     console.log("LANGUAGE SET:"+language);
 
     if (this.initTime)

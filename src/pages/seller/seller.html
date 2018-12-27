@@ -5,7 +5,7 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     
-    <ion-grid class="productsSeller">
+    <ion-grid  class="lanDirection">
       <ion-row>
           <ion-col col-4>
               <div class="prodPicBox">
@@ -15,8 +15,8 @@
 
         <ion-col col-8>
           <ion-row class="sellerDetails">
-              <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'הוסף למועדפים'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
-              <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'הוסר מהמועדפים'})"> <ion-icon class="star" name="star"></ion-icon></span>
+              <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="addToFavorites(seller) "> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
+              <span *ngIf="userService.isSellerFavorite(seller)"   (click)="removeFromFavorites(seller) "> <ion-icon class="star" name="star"></ion-icon></span>
                <span class="sellerName"> {{seller.restaurantName}}</span>
                <span *ngIf="seller.hashgahaDescription" class="sellerKosher" >
                   {{seller.hashgahaDescription}}
@@ -40,7 +40,7 @@
    <div class="scrolling-wrapper">
     <div class="scrolling-wrapperSubCategorySelected">
       <div  *ngFor="let subCategory of subCategoriesToShow" (click)="selectSubCategory(subCategory)" [ngClass]="isSubCategorySelected(subCategory)? 'subCategorySelected' :'subCategory' ">
-        <span class="categoryName">{{subCategory}}</span>
+        <span class="categoryName">{{subCategory |translate}}</span>
       </div>
     </div>
   </div>
@@ -55,7 +55,7 @@
   <div class="products_enabled">
     <ion-list class="listOfProdsCatego" *ngIf="subCategoriesToShow">
   <div *ngFor="let category of subCategoriesToShow" text-wrap [hidden]="!isCategoProdsToShow(category)">
-        <div class="categoTitle">{{category}}</div>
+        <div class="categoTitle">{{category |translate}}</div>
         <ion-grid class="listOfProds" *ngIf="getCategoryProducts(category) as categoProducts ">
 
           <ion-row class="product" *ngFor="let product of categoProducts, let i=index"  [ngClass]="i%2==0? 'product one' :'product two'"  [hidden]="!product.toShow">
@@ -71,7 +71,7 @@
                     <ion-icon name="time"></ion-icon> {{product.bestPromo.promoTimes.start}} --> {{product.bestPromo.promoTimes.end}}</span>
                   <span class="productName">{{product.name}}</span>
                   <span class="productDescription">{{product.description}}</span>
-                  <span *ngIf="showPromoQty(product)" class="productQty"> רק {{product.bestPromo.quantity}} נשארים...</span>
+                  <span *ngIf="showPromoQty(product)" class="productQty">{{"רק"|translate}} {{product.bestPromo.quantity}} {{"נשארים" |translate}} ...</span>
 
             </ion-col>
 
@@ -97,7 +97,7 @@
         
         <div class="oneLine">  
           <span class="footerIcon"><ion-icon name="call"></ion-icon></span>
-          <span class="footerLabel">  חייג</span>
+          <span class="footerLabel"> {{"חייג" |translate}} </span>
         </div>
         <div class="oneLine">  
           <span class="sellerTelNo">
@@ -112,7 +112,7 @@
           
             <div class="oneLine">  
             <span class="footerIcon"> <ion-icon name="navigate"></ion-icon></span>
-                <span class="footerLabel"> נווט</span>
+                <span class="footerLabel">{{"נווט" |translate}} </span>
               </div> 
               <div class="oneLine">  
                 <span class="sellerDistance" >

@@ -308,3 +308,17 @@ direction: ltr;
 
 
 
+.lanDirection
+{
+    direction:var(--myDirection);
+}
+
+
+:root {
+    myDirection: ltr;
+  }
+
+.text-input{
+    direction:var(--myDirection);
+}
+

@@ -6,7 +6,7 @@
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>
-            <ion-grid class="searchGrid">
+            <ion-grid class="lanDirection">
                 <ion-row>
                     <ion-col col-10>
 
@@ -69,8 +69,8 @@
                                     </ion-col>
                             <ion-col col-8> 
                                 <ion-row>
-                                        <span *ngIf="!userService.isSellerFavorite(seller)"  (click)="userService.addToFavorites(seller); alertService.presentToast({'message':'הוסף למועדפים'})"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
-                                        <span *ngIf="userService.isSellerFavorite(seller)"   (click)="userService.removeFromFavorites(seller); alertService.presentToast({'message':'הוסר מהמועדפים'})"> <ion-icon class="star" name="star"></ion-icon></span>
+                                        <span *ngIf="!userService.isSellerFavorite(seller)"> <ion-icon class="star-outline" name="star-outline"></ion-icon></span>
+                                        <span *ngIf="userService.isSellerFavorite(seller)" > <ion-icon class="star" name="star"></ion-icon></span>
                                     <span class="sellerName"> {{seller.restaurantName}}</span> 
                                     <span *ngIf="seller.hashgahaDescription" class="sellerKosher" >
                                             {{seller.hashgahaDescription}}
@@ -119,7 +119,7 @@
                                              <div class="picPic" [style.backgroundImage]="getURL(product.picture.url)"></div>
                                            </div>
                                         <span class="productName">{{product.name}}</span>
-                                        <span *ngIf="showPromoQty(product)" class="productQty"> רק {{product.bestPromo.quantity}} נשארים...</span>
+                                        <span *ngIf="showPromoQty(product)" class="productQty"> {{"רק"|translate}} {{product.bestPromo.quantity}} {{"נשארים" |translate}} ...</span>
                                         
                                     </div>
                                     <div class="seeOthers"><p class="cardText" >...</p></div>

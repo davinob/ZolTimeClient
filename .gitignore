@@ -35,3 +35,4 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 src/providers/fbConfigProd.ts
 src/providers/fbConfig.ts
+google-services.json

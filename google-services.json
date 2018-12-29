@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "952500733232",
+    "firebase_url": "https://zoltimeprod.firebaseio.com",
+    "project_id": "zoltimeprod",
+    "storage_bucket": "zoltimeprod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:952500733232:android:5df18736d504ca26",
+        "android_client_info": {
+          "package_name": "zol.time"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "952500733232-kn3srbck315c1jdbol2flicvnqk4cfj4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaPCYVnngTqEiZMSBjhxhLSb7ZbsX6ekI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

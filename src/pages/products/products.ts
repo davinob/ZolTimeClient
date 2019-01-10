@@ -442,6 +442,22 @@ getCategoriesInResults()
       this.justWentToSeller=false;
       return;
     }
+    //console.log("HAS SUBSCRIBED TO FETCH SELLERS?");
+    //console.log(this.lookingForSellerSubscribed);
+    this.pageIsShown=true;
+    //console.log("ION VIEW DID ENTER");
+    this.alreadyShownAfterFirstEnter=false;
+    if (this.justWentToSeller)
+    {
+      this.justWentToSeller=false;
+      return;
+    }
+
+    if (this.userService.doneLookingForSellersCompleteValue)
+    {
+      //console.log("FILTERING HERE");
+      this.filterSellersAndGetTheirProdsAndProms();
+     }
 
     if (this.userService.doneLookingForSellersCompleteValue)
     {

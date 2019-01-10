@@ -87,6 +87,8 @@ async initComp()
  
 }
   
+
+
   
   showPromoQty(product:Product)
   {
@@ -97,6 +99,8 @@ async initComp()
   {
     return globalConstants.categories;
   }
+
+
 
   getURL(url:string)
   {
@@ -196,6 +200,34 @@ async initComp()
 
   sellersFiltered=new Array();
 
+  thereAreALotOfResults:boolean=false;
+  categoriesWithCatInResults=new Array();
+
+
+
+
+  areThereALotOfResults()
+{
+  return  this.categorySelected || (this.haveOrganizedSellers() && this.getOrganizedSellers().length>2);
+}
+
+isCategoryInResults(catego):boolean
+{
+  let filtered= this.getOrganizedSellers().filter(val=>
+    {
+    return val.category==catego;
+    })
+
+    return filtered.length>0;
+}
+
+getCategoriesInResults()
+{
+  return globalConstants.categories.filter(catego=> this.isCategoryInResults(catego.name));
+}
+
+
+
   filterPerCategoryAndSubCategory(sellers:Array<any>)
   {
     this.sellersFiltered=new Array();
@@ -208,6 +240,10 @@ async initComp()
     });
   
     //console.log(this.sellersFiltered);
+
+    this.thereAreALotOfResults=this.areThereALotOfResults();
+    this.categoriesWithCatInResults=this.getCategoriesInResults();
+
 
     if (!this.categorySelected)
     return;

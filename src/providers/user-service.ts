@@ -242,7 +242,7 @@ isSellerFavorite(seller:Seller):boolean
 
         try
         {
-        let sellersInfos=await this.sellersCollectionRef.get()
+        let sellersInfos=await this.sellersCollectionRef.get();
 
             if (!sellersInfos || sellersInfos.empty)
             {
@@ -256,23 +256,23 @@ isSellerFavorite(seller:Seller):boolean
             seller.key=uid;
 
             
-            console.log("PROD");
-            console.log(seller);
-            console.log(this.chosenLanguage);
+          //  console.log("PROD");
+         //   console.log(seller);
+        //    console.log(this.chosenLanguage);
             if (this.chosenLanguage=="fr")
             {
-              console.log("FR");
+         //     console.log("FR");
               seller.description=seller.descriptionFr;
             }
           if (this.chosenLanguage=="en")
             {
-              console.log("EN");
+       //       console.log("EN");
               seller.description=seller.descriptionEn;
             }
 
             seller.openHours=await this.openHours(seller);
-            console.log("OPEN HOURS");
-            console.log(seller.openHours);
+            //console.log("OPEN HOURS");
+           // console.log(seller.openHours);
 
             this.setSellerHashgahaDescription(seller);
             //console.log(seller);

@@ -30,9 +30,9 @@
         </ion-title>
         
     </ion-navbar>
-    <ion-toolbar>
-    <div class="scrolling-wrapper">
-        <div *ngFor="let category of getCategories()" (click)="selectCategory(category)" [ngClass]="isCategorySelected(category)? 'categorySelected' :'category' ">
+    <ion-toolbar [hidden]="!thereAreALotOfResults">
+    <div  class="scrolling-wrapper">
+        <div *ngFor="let category of categoriesWithCatInResults" (click)="selectCategory(category)" [ngClass]="isCategorySelected(category)? 'categorySelected' :'category' ">
            
             <span class="categoryName">{{category.description |translate}}   </span>
         </div>

@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams,Content, AlertController} from 'ion
 import { Seller, UserService, Product } from '../../providers/user-service';
 import { GlobalService } from '../../providers/global-service';
 import { Storage } from '@ionic/storage';
-import { CallNumber } from '@ionic-native/call-number';
 import { AlertAndLoadingService } from '../../providers/alert-loading-service';
 import * as globalConstants from '../../providers/globalConstants'; 
 import { PhotoViewer } from '@ionic-native/photo-viewer';
@@ -28,7 +27,6 @@ export class SellerPage {
     public userService:UserService,
     public globalService:GlobalService,
     public storage:Storage,
-    private callNumber: CallNumber,
     public alertService: AlertAndLoadingService, 
     public photoViewer:PhotoViewer,
     public alertCtrl: AlertController,
@@ -101,10 +99,6 @@ export class SellerPage {
      this.photoViewer.show( product.picture.url, '', options);
    }
 
-   callTel(num:string)
-{
-  this.callNumber.callNumber(num, true);
-}
 
 
   ionViewDidLoad() {

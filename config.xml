@@ -123,13 +123,12 @@
         <variable name="OKHTTP_VERSION" value="3.+" />
     </plugin>
     <plugin name="cordova-plugin-firebase" spec="^1.0.5" />
-    <plugin name="mx.ferreyra.callnumber" spec="~0.0.2" />
     <plugin name="cordova-plugin-request-location-accuracy" spec="~2.2.3" />
     <plugin name="cordova.plugins.diagnostic" spec="~4.0.10" />
-    <plugin name="com-sarriaroman-photoviewer" spec="~1.1.18" />
     <allow-navigation href="http://172.22.131.153:8100" sessionid="4225441a" />
     <allow-navigation href="http://10.100.102.10:8100" sessionid="766e23b3" />
+    <plugin name="com-sarriaroman-photoviewer" spec="^1.1.10" />
     <engine name="windows" spec="^6.0.1" />
     <engine name="browser" spec="~5.0.3" />
-    <engine name="android" spec="^7.1.4" />
+    <engine name="android" spec="7.0.0" />
 </widget>

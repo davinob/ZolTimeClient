@@ -28,7 +28,6 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { FcmService } from '../providers/fcm-service';
 
 
-import { CallNumber } from '@ionic-native/call-number';
 import { Firebase } from '@ionic-native/firebase';
 
 import { Diagnostic } from '@ionic-native/diagnostic';
@@ -92,7 +91,6 @@ export function createTranslateLoader(http: HttpClient) {
     Geolocation,
     Firebase,
     FcmService,
-    CallNumber,
     LocationAccuracy,
     Diagnostic,
     GlobalService,

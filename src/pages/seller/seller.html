@@ -92,9 +92,9 @@
 
  <ion-footer class="">
      
-    
+ 
     <div (click)="callTel(seller.telNo)" class="footerButton">
-        
+      <a href="tel:+{{seller.telNo}}">  
         <div class="oneLine">  
           <span class="footerIcon"><ion-icon name="call"></ion-icon></span>
           <span class="footerLabel"> {{"חייג" |translate}} </span>
@@ -104,6 +104,7 @@
                 {{seller.telNo}}
             </span>
         </div>
+      </a>
       </div>
     
       <div class="footerButton">

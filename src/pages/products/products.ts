@@ -208,7 +208,7 @@ async initComp()
 
   areThereALotOfResults()
 {
-  return  this.categorySelected || (this.haveOrganizedSellers() && this.getOrganizedSellers().length>2);
+  return  this.categorySelected || (this.haveOrganizedSellers() && this.getOrganizedSellers().length>20);
 }
 
 isCategoryInResults(catego):boolean
@@ -243,7 +243,7 @@ getCategoriesInResults()
 
     this.thereAreALotOfResults=this.areThereALotOfResults();
     this.categoriesWithCatInResults=this.getCategoriesInResults();
-
+    this.content.resize();
 
     if (!this.categorySelected)
     return;
